@@ -70,6 +70,8 @@ class Hyperparameters:
     rope_base = float(os.environ.get("ROPE_BASE", 10000.0))
     logit_softcap = float(os.environ.get("LOGIT_SOFTCAP", 30.0))
     parallel_residual = bool(int(os.environ.get("PARALLEL_RESIDUAL", "0")))
+    encoder_layer_order = os.environ.get("ENCODER_LAYER_ORDER", "").strip()
+    decoder_layer_order = os.environ.get("DECODER_LAYER_ORDER", "").strip()
 
     # Optimizer hyperparameters.
     embed_lr = float(os.environ.get("EMBED_LR", 0.6))
@@ -653,6 +655,19 @@ class Block(nn.Module):
         return x
 
 
+def parse_layer_order(spec: str, default: list[int], num_layers: int, label: str) -> list[int]:
+    if not spec:
+        return default
+    tokens = [token.strip() for token in spec.split(",")]
+    if any(not token for token in tokens):
+        raise ValueError(f"{label} contains an empty layer index: {spec!r}")
+    order = [int(token) for token in tokens]
+    for index in order:
+        if index < 0 or index >= num_layers:
+            raise ValueError(f"{label} index {index} is out of range for NUM_LAYERS={num_layers}")
+    return order
+
+
 class GPT(nn.Module):
     def __init__(
         self,
@@ -668,6 +683,8 @@ class GPT(nn.Module):
         rope_base: float,
         qk_gain_init: float,
         parallel_residual: bool,
+        encoder_layer_order: str,
+        decoder_layer_order: str,
     ):
         super().__init__()
         if logit_softcap <= 0.0:
@@ -676,9 +693,22 @@ class GPT(nn.Module):
         self.tied_embed_init_std = tied_embed_init_std
         self.logit_softcap = logit_softcap
         self.tok_emb = nn.Embedding(vocab_size, model_dim)
-        self.num_encoder_layers = num_layers // 2
-        self.num_decoder_layers = num_layers - self.num_encoder_layers
-        self.num_skip_weights = min(self.num_encoder_layers, self.num_decoder_layers)
+        default_num_encoder_layers = num_layers // 2
+        default_encoder_layer_order = list(range(default_num_encoder_layers))
+        default_decoder_layer_order = list(range(default_num_encoder_layers, num_layers))
+        self.encoder_layer_order = parse_layer_order(
+            encoder_layer_order,
+            default_encoder_layer_order,
+            num_layers,
+            "ENCODER_LAYER_ORDER",
+        )
+        self.decoder_layer_order = parse_layer_order(
+            decoder_layer_order,
+            default_decoder_layer_order,
+            num_layers,
+            "DECODER_LAYER_ORDER",
+        )
+        self.num_skip_weights = min(len(self.encoder_layer_order), len(self.decoder_layer_order))
         self.skip_weights = nn.Parameter(torch.ones(self.num_skip_weights, model_dim, dtype=torch.float32))
         self.blocks = nn.ModuleList(
             [
@@ -714,13 +744,13 @@ class GPT(nn.Module):
         skips: list[Tensor] = []
 
         # First half stores skips; second half reuses them in reverse order.
-        for i in range(self.num_encoder_layers):
-            x = self.blocks[i](x, x0)
+        for block_index in self.encoder_layer_order:
+            x = self.blocks[block_index](x, x0)
             skips.append(x)
-        for i in range(self.num_decoder_layers):
-            if skips:
+        for i, block_index in enumerate(self.decoder_layer_order):
+            if i < self.num_skip_weights and skips:
                 x = x + self.skip_weights[i].to(dtype=x.dtype)[None, None, :] * skips.pop()
-            x = self.blocks[self.num_encoder_layers + i](x, x0)
+            x = self.blocks[block_index](x, x0)
 
         x = self.final_norm(x).reshape(-1, x.size(-1))
         targets = target_ids.reshape(-1)
@@ -846,6 +876,8 @@ def main() -> None:
         rope_base=args.rope_base,
         qk_gain_init=args.qk_gain_init,
         parallel_residual=args.parallel_residual,
+        encoder_layer_order=args.encoder_layer_order,
+        decoder_layer_order=args.decoder_layer_order,
     ).to(device).bfloat16()
     for module in base_model.modules():
         if isinstance(module, CastedLinear):
@@ -908,6 +940,11 @@ def main() -> None:
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
     log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
     log0(f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads}")
+    log0(
+        f"layer_order:encoder={base_model.encoder_layer_order} "
+        f"decoder={base_model.decoder_layer_order} "
+        f"virtual_depth:{len(base_model.encoder_layer_order) + len(base_model.decoder_layer_order)}"
+    )
     log0(
         f"tie_embeddings:{args.tie_embeddings} embed_lr:{token_lr} "
         f"head_lr:{args.head_lr if base_model.lm_head is not None else 0.0} "
