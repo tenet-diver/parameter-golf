@@ -17,6 +17,7 @@ The goal is not to replace the upstream challenge workflow. The goal is to:
 - `logs/experiment-log.jsonl`: append-only experiment and learning ledger
 - `scripts/mine_records.py`: converts `records/**/submission.json` into a ranked local backlog
 - `scripts/generate_experiment_matrix.py`: turns public motifs into concrete env-var sweeps
+- `scripts/analyze_motif_composition.py`: scores which public motif pairs actually co-occur near the top
 - `scripts/log_experiment.py`: appends a structured experiment result to the learning log
 - `scripts/check_size_budget.py`: cheap code-size and artifact-budget check
 
@@ -48,7 +49,14 @@ python3 fastest/scripts/generate_experiment_matrix.py
 cat fastest/generated/experiment_matrix.json
 ```
 
-4. Record each completed experiment or rejected idea:
+4. Inspect motif pair evidence before stacking more changes:
+
+```bash
+python3 fastest/scripts/analyze_motif_composition.py
+cat fastest/generated/motif_composition_matrix.json
+```
+
+5. Record each completed experiment or rejected idea:
 
 ```bash
 python3 fastest/scripts/log_experiment.py \
@@ -61,7 +69,7 @@ python3 fastest/scripts/log_experiment.py \
   --next-step "Keep recurrence fixed and test QK gain variants instead."
 ```
 
-5. Check cheap artifact budget constraints before expensive work:
+6. Check cheap artifact budget constraints before expensive work:
 
 ```bash
 python3 fastest/scripts/check_size_budget.py train_gpt.py --target-total-bytes 16000000

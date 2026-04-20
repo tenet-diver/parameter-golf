@@ -1,0 +1,1266 @@
+{
+  "generated_at": "2026-04-20T21:46:55Z",
+  "track": "10min_16mb",
+  "record_count": 7,
+  "best_public_val_bpb": 1.081,
+  "motif_summary": [
+    {
+      "tag": "recurrence",
+      "count": 5,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.088956
+    },
+    {
+      "tag": "parallel_residuals",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.089787
+    },
+    {
+      "tag": "qk_gain",
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.084299
+    },
+    {
+      "tag": "sdclip",
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082937
+    },
+    {
+      "tag": "sp8192",
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082937
+    },
+    {
+      "tag": "high_wd",
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.089425
+    },
+    {
+      "tag": "score_first_ttt",
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159
+    },
+    {
+      "tag": "ema",
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081
+    },
+    {
+      "tag": "legal_ttt",
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081
+    },
+    {
+      "tag": "mlp4x",
+      "count": 3,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.089915
+    },
+    {
+      "tag": "muoneq_r",
+      "count": 3,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085842
+    },
+    {
+      "tag": "gptq_embeddings",
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905
+    },
+    {
+      "tag": "sp4096",
+      "count": 2,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.093783
+    },
+    {
+      "tag": "int6",
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716
+    },
+    {
+      "tag": "bigramhash",
+      "count": 1,
+      "best_val_bpb": 1.114735,
+      "mean_val_bpb": 1.114735
+    },
+    {
+      "tag": "xsa",
+      "count": 1,
+      "best_val_bpb": 1.114735,
+      "mean_val_bpb": 1.114735
+    }
+  ],
+  "pair_summary": [
+    {
+      "pair": [
+        "high_wd",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.008606,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "recurrence"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.00819,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "qk_gain"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.005862,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "sdclip"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.005181,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "sp8192"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.005181,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.004772,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.004772,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.004508,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.004393,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.004393,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "high_wd"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.004212,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "legal_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.004212,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "score_first_ttt"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.004099,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "recurrence"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.003978,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "recurrence"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.003978,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "recurrence",
+        "score_first_ttt"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.003683,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "recurrence",
+        "sdclip"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082937,
+      "synergy_delta_vs_single_mean": -0.00301,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "recurrence",
+        "sp8192"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082937,
+      "synergy_delta_vs_single_mean": -0.00301,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "qk_gain"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.084299,
+      "synergy_delta_vs_single_mean": -0.002744,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "recurrence"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.084299,
+      "synergy_delta_vs_single_mean": -0.002329,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.002028,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.002028,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "qk_gain"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.00165,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "qk_gain"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.00165,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "score_first_ttt"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.001355,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "sdclip"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.000968,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "sp8192"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.000968,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "sdclip"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.000968,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "sp8192"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.000968,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "score_first_ttt",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.000674,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "score_first_ttt",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159,
+      "synergy_delta_vs_single_mean": -0.000674,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.000295,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.000295,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "sdclip",
+        "sp8192"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082937,
+      "synergy_delta_vs_single_mean": -0.0,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "legal_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": 0.0,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "recurrence"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.089787,
+      "synergy_delta_vs_single_mean": 0.000416,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "mlp4x"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.00473,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.004666,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "sdclip"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.004246,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "sp8192"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.004246,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "parallel_residuals"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": -0.003903,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.003573,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "recurrence"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": -0.003488,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "recurrence"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": -0.002526,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "muoneq_r"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": -0.001931,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "qk_gain"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.001922,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "parallel_residuals"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": -0.001867,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "recurrence"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085842,
+      "synergy_delta_vs_single_mean": -0.001557,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.001536,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "qk_gain"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": -0.001159,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "muoneq_r"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": -0.000969,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.000568,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": -0.000485,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": -0.000485,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": 0.000484,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": 0.000484,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "qk_gain"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": 0.000877,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "sp4096"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -0.002069,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "sp4096"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -0.002033,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "recurrence",
+        "sp4096"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -0.001653,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "mlp4x"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -9.9e-05,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "sp4096"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -9.6e-05,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -3.5e-05,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "recurrence"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": 0.00038,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "sp4096"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": 0.000675,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "sp4096"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.093783,
+      "synergy_delta_vs_single_mean": 0.001934,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "muoneq_r"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": 0.001937,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "qk_gain"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": 0.002709,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "sp4096"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.09785,
+      "mean_val_bpb": 1.09785,
+      "synergy_delta_vs_single_mean": 0.006246,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "mlp4x"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.09785,
+      "mean_val_bpb": 1.09785,
+      "synergy_delta_vs_single_mean": 0.00818,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.114735,
+      "mean_val_bpb": 1.114735,
+      "synergy_delta_vs_single_mean": 0.0,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json"
+      ]
+    }
+  ],
+  "recommendations": {
+    "repeat_offenders": [
+      {
+        "pair": [
+          "parallel_residuals",
+          "sdclip"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.08159,
+        "synergy_delta_vs_single_mean": -0.004772,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "parallel_residuals",
+          "sp8192"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.08159,
+        "synergy_delta_vs_single_mean": -0.004772,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "parallel_residuals",
+          "score_first_ttt"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.08159,
+        "synergy_delta_vs_single_mean": -0.004099,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "recurrence",
+          "score_first_ttt"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.08159,
+        "synergy_delta_vs_single_mean": -0.003683,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "recurrence",
+          "sdclip"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.082937,
+        "synergy_delta_vs_single_mean": -0.00301,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "recurrence",
+          "sp8192"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.082937,
+        "synergy_delta_vs_single_mean": -0.00301,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "parallel_residuals",
+          "qk_gain"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.084299,
+        "synergy_delta_vs_single_mean": -0.002744,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "qk_gain",
+          "recurrence"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.084299,
+        "synergy_delta_vs_single_mean": -0.002329,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+        ]
+      }
+    ],
+    "single_record_watchlist": [
+      {
+        "pair": [
+          "high_wd",
+          "parallel_residuals"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081,
+        "synergy_delta_vs_single_mean": -0.008606,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "recurrence"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081,
+        "synergy_delta_vs_single_mean": -0.00819,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "qk_gain"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081,
+        "synergy_delta_vs_single_mean": -0.005862,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "sdclip"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081,
+        "synergy_delta_vs_single_mean": -0.005181,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "sp8192"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081,
+        "synergy_delta_vs_single_mean": -0.005181,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "score_first_ttt"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081,
+        "synergy_delta_vs_single_mean": -0.004508,
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      }
+    ]
+  }
+}
