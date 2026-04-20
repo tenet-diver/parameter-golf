@@ -1,0 +1,121 @@
+{
+  "generated_at": "2026-04-20T20:10:17Z",
+  "record_count": 34,
+  "leaderboard_count": 7,
+  "best_public_record": {
+    "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + QK-Gain 5.25 + Legal Score-First TTT",
+    "date": "2026-04-09",
+    "val_bpb": 1.081,
+    "path": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+    "tags": [
+      "ema",
+      "high_wd",
+      "legal_ttt",
+      "parallel_residuals",
+      "qk_gain",
+      "recurrence",
+      "score_first_ttt",
+      "sdclip",
+      "sp8192"
+    ]
+  },
+  "latest_record_date": "2026-04-09",
+  "motif_summary": [
+    {
+      "tag": "recurrence",
+      "count": 5,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.088956
+    },
+    {
+      "tag": "parallel_residuals",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.089787
+    },
+    {
+      "tag": "qk_gain",
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.084299
+    },
+    {
+      "tag": "sdclip",
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082937
+    },
+    {
+      "tag": "sp8192",
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082937
+    },
+    {
+      "tag": "high_wd",
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.089425
+    },
+    {
+      "tag": "score_first_ttt",
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.08159
+    },
+    {
+      "tag": "ema",
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081
+    },
+    {
+      "tag": "legal_ttt",
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081
+    },
+    {
+      "tag": "mlp4x",
+      "count": 3,
+      "best_val_bpb": 1.08217956,
+      "mean_val_bpb": 1.089915
+    },
+    {
+      "tag": "muoneq_r",
+      "count": 3,
+      "best_val_bpb": 1.08217956,
+      "mean_val_bpb": 1.085842
+    },
+    {
+      "tag": "gptq_embeddings",
+      "count": 2,
+      "best_val_bpb": 1.08217956,
+      "mean_val_bpb": 1.083905
+    },
+    {
+      "tag": "sp4096",
+      "count": 2,
+      "best_val_bpb": 1.08971631,
+      "mean_val_bpb": 1.093783
+    },
+    {
+      "tag": "int6",
+      "count": 1,
+      "best_val_bpb": 1.08971631,
+      "mean_val_bpb": 1.089716
+    },
+    {
+      "tag": "bigramhash",
+      "count": 1,
+      "best_val_bpb": 1.11473509,
+      "mean_val_bpb": 1.114735
+    },
+    {
+      "tag": "xsa",
+      "count": 1,
+      "best_val_bpb": 1.11473509,
+      "mean_val_bpb": 1.114735
+    }
+  ]
+}

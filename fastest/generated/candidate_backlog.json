@@ -1,0 +1,115 @@
+{
+  "tasks": [
+    {
+      "priority": 1,
+      "category": "baseline",
+      "title": "Reproduce the current internal baseline and top public control stack",
+      "rationale": "Autonomous work needs a trusted control before it can judge any new idea.",
+      "evidence": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ],
+      "ideas": [
+        "baseline",
+        "reproducibility"
+      ]
+    },
+    {
+      "priority": 2,
+      "category": "experiment",
+      "title": "Prepare a local-to-remote experiment plan around the current dominant SP8192 stack",
+      "rationale": "Top entries as of 2026-04-09 converge on SP8192 + recurrence + parallel residuals + QK gain + legal score-first TTT.",
+      "evidence": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+      ],
+      "ideas": [
+        "sp8192",
+        "recurrence",
+        "parallel_residuals",
+        "qk_gain",
+        "legal_ttt"
+      ]
+    },
+    {
+      "priority": 3,
+      "category": "validation",
+      "title": "Build a legality and evaluation checklist for score-first TTT and related test-time adaptation",
+      "rationale": "Test-time training appears in the strongest runs but carries rule risk if implemented loosely.",
+      "evidence": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ],
+      "ideas": [
+        "legal_ttt",
+        "score_first_ttt"
+      ]
+    },
+    {
+      "priority": 4,
+      "category": "experiment",
+      "title": "Ablate QK gain around the public winning range before composing more changes",
+      "rationale": "Recent record movement includes QK gain changes from 5.0 to 5.25; that is cheap to isolate compared with new architectures.",
+      "evidence": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ],
+      "ideas": [
+        "qk_gain"
+      ]
+    },
+    {
+      "priority": 5,
+      "category": "experiment",
+      "title": "Probe whether Hessian-aware SDClip composes cleanly with the latest public winning stack",
+      "rationale": "SDClip variants improved recent runs but are not obviously present in the very latest top entry.",
+      "evidence": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ],
+      "ideas": [
+        "sdclip",
+        "sp8192",
+        "parallel_residuals"
+      ]
+    },
+    {
+      "priority": 6,
+      "category": "measurement",
+      "title": "Create a motif-composition matrix from prior records to avoid naive stack-everything experiments",
+      "rationale": "The repo contains enough historical records to learn which ideas compose and which ideas likely interfere.",
+      "evidence": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
+        "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json"
+      ],
+      "ideas": [
+        "analysis",
+        "composition"
+      ]
+    },
+    {
+      "priority": 7,
+      "category": "knowledge",
+      "title": "Log negative or inconclusive local results immediately so the backlog stops rediscovering them",
+      "rationale": "The non-record single-GPU exploration path shows that cheap experiments are useful only when they generate durable learning.",
+      "evidence": [
+        "records/track_non_record_16mb/2026-03-19_SwiGLU_WarmdownFix_QuarterBatch_1x5090/submission.json"
+      ],
+      "ideas": [
+        "learning",
+        "non_record"
+      ]
+    }
+  ]
+}

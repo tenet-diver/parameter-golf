@@ -1,0 +1,285 @@
+#!/usr/bin/env python3
+"""Mine Parameter Golf records into a local research backlog."""
+
+from __future__ import annotations
+
+import json
+import re
+from collections import Counter, defaultdict
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[2]
+RECORDS_ROOT = ROOT / "records"
+GENERATED_ROOT = ROOT / "fastest" / "generated"
+
+
+KEYWORDS: dict[str, tuple[str, ...]] = {
+    "sp8192": ("sp8192", "sentencepiece 8192", "8192-token sentencepiece", "8192bpe"),
+    "sp4096": ("sp4096", "4096-vocab", "4096 vocab", "4096-token"),
+    "recurrence": ("recurrence", "recur", "loop layers", "depth recurrence"),
+    "parallel_residuals": ("parallel residual", "parallel residuals"),
+    "legal_ttt": ("legal ttt", "legal score-first ttt"),
+    "score_first_ttt": ("score-first ttt", "score first ttt"),
+    "qk_gain": ("qk-gain", "qk gain"),
+    "sdclip": ("sdclip", "sd-clip", "hessian-aware sdclip"),
+    "gptq_embeddings": ("gptq embeddings", "gptq-quantize embeddings"),
+    "muoneq_r": ("muoneq-r", "row-normalized muon", "muon eq-r"),
+    "ema": (" ema", "ema "),
+    "high_wd": ("wd=0.090", "wd 0.095", "high wd", "weight decay"),
+    "xsa": ("xsa", "cross-layer", "efficient partial xsa"),
+    "mlp3x": ("mlp3x", "3x mlp"),
+    "mlp4x": ("mlp 4x", "mlp4x"),
+    "qat": ("qat", "quantization-aware"),
+    "int6": ("int6", "all-int6"),
+    "sliding_window": ("sliding window", "stride=64", "sliding eval"),
+    "bigramhash": ("bigramhash", "bigram hash"),
+    "partial_rope": ("partial rope",),
+    "smeargate": ("smeargate",),
+    "ternary": ("ternary", "1 bit", "binary"),
+}
+
+
+@dataclass
+class Record:
+    path: str
+    track: str
+    name: str
+    date: str
+    val_bpb: float | None
+    bytes_total: int | None
+    summary: str
+    tags: list[str]
+
+
+def parse_date(raw: str, fallback: str) -> str:
+    candidate = raw or fallback
+    if "T" in candidate:
+        candidate = candidate.split("T", 1)[0]
+    return candidate
+
+
+def read_json(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text())
+
+
+def detect_tags(text: str) -> list[str]:
+    normalized = f" {text.lower()} "
+    tags = [tag for tag, needles in KEYWORDS.items() if any(needle in normalized for needle in needles)]
+    return sorted(set(tags))
+
+
+def load_records() -> list[Record]:
+    records: list[Record] = []
+    for path in sorted(RECORDS_ROOT.glob("**/submission.json")):
+        payload = read_json(path)
+        name = str(payload.get("name") or payload.get("run_name") or path.parent.name)
+        summary_parts = [
+            name,
+            str(payload.get("blurb") or ""),
+            str(payload.get("technique_summary") or ""),
+            str(payload.get("architecture") or ""),
+        ]
+        summary = " ".join(part for part in summary_parts if part).strip()
+        date = parse_date(str(payload.get("date") or ""), path.parent.name[:10])
+        val_bpb = payload.get("val_bpb")
+        if isinstance(val_bpb, str):
+            try:
+                val_bpb = float(val_bpb)
+            except ValueError:
+                val_bpb = None
+        bytes_total = payload.get("bytes_total") or payload.get("artifact_bytes_mean")
+        if isinstance(bytes_total, str):
+            try:
+                bytes_total = int(bytes_total)
+            except ValueError:
+                bytes_total = None
+        records.append(
+            Record(
+                path=str(path.relative_to(ROOT)),
+                track=str(payload.get("track") or "unknown"),
+                name=name,
+                date=date,
+                val_bpb=float(val_bpb) if isinstance(val_bpb, (int, float)) else None,
+                bytes_total=int(bytes_total) if isinstance(bytes_total, (int, float)) else None,
+                summary=summary,
+                tags=detect_tags(summary),
+            )
+        )
+    return records
+
+
+def iso_to_ordinal(value: str) -> int:
+    return datetime.strptime(value, "%Y-%m-%d").toordinal()
+
+
+def leaderboard_tasks(records: list[Record]) -> list[dict[str, Any]]:
+    ranked = [record for record in records if record.track == "10min_16mb" and record.val_bpb is not None]
+    ranked.sort(key=lambda record: (record.val_bpb, record.date))
+    top = ranked[:8]
+
+    frequency = Counter(tag for record in top for tag in record.tags)
+    best_by_tag: dict[str, float] = {}
+    for record in ranked:
+        for tag in record.tags:
+            current = best_by_tag.get(tag)
+            if current is None or (record.val_bpb is not None and record.val_bpb < current):
+                best_by_tag[tag] = record.val_bpb
+
+    tasks: list[dict[str, Any]] = []
+    priority = 1
+
+    tasks.append(
+        {
+            "priority": priority,
+            "category": "baseline",
+            "title": "Reproduce the current internal baseline and top public control stack",
+            "rationale": "Autonomous work needs a trusted control before it can judge any new idea.",
+            "evidence": [record.path for record in top[:3]],
+            "ideas": ["baseline", "reproducibility"],
+        }
+    )
+    priority += 1
+
+    if {"sp8192", "recurrence", "parallel_residuals", "legal_ttt", "qk_gain"} <= set(frequency):
+        tasks.append(
+            {
+                "priority": priority,
+                "category": "experiment",
+                "title": "Prepare a local-to-remote experiment plan around the current dominant SP8192 stack",
+                "rationale": "Top entries as of 2026-04-09 converge on SP8192 + recurrence + parallel residuals + QK gain + legal score-first TTT.",
+                "evidence": [record.path for record in top[:5]],
+                "ideas": ["sp8192", "recurrence", "parallel_residuals", "qk_gain", "legal_ttt"],
+            }
+        )
+        priority += 1
+
+    tasks.extend(
+        [
+            {
+                "priority": priority,
+                "category": "validation",
+                "title": "Build a legality and evaluation checklist for score-first TTT and related test-time adaptation",
+                "rationale": "Test-time training appears in the strongest runs but carries rule risk if implemented loosely.",
+                "evidence": [record.path for record in top if "ttt" in record.summary.lower()][:5],
+                "ideas": ["legal_ttt", "score_first_ttt"],
+            },
+            {
+                "priority": priority + 1,
+                "category": "experiment",
+                "title": "Ablate QK gain around the public winning range before composing more changes",
+                "rationale": "Recent record movement includes QK gain changes from 5.0 to 5.25; that is cheap to isolate compared with new architectures.",
+                "evidence": [record.path for record in top if "qk_gain" in record.tags][:5],
+                "ideas": ["qk_gain"],
+            },
+            {
+                "priority": priority + 2,
+                "category": "experiment",
+                "title": "Probe whether Hessian-aware SDClip composes cleanly with the latest public winning stack",
+                "rationale": "SDClip variants improved recent runs but are not obviously present in the very latest top entry.",
+                "evidence": [record.path for record in ranked if "sdclip" in record.tags][:5],
+                "ideas": ["sdclip", "sp8192", "parallel_residuals"],
+            },
+            {
+                "priority": priority + 3,
+                "category": "measurement",
+                "title": "Create a motif-composition matrix from prior records to avoid naive stack-everything experiments",
+                "rationale": "The repo contains enough historical records to learn which ideas compose and which ideas likely interfere.",
+                "evidence": [record.path for record in ranked[:12]],
+                "ideas": ["analysis", "composition"],
+            },
+            {
+                "priority": priority + 4,
+                "category": "knowledge",
+                "title": "Log negative or inconclusive local results immediately so the backlog stops rediscovering them",
+                "rationale": "The non-record single-GPU exploration path shows that cheap experiments are useful only when they generate durable learning.",
+                "evidence": [record.path for record in records if "1x5090" in record.summary.lower()][:3],
+                "ideas": ["learning", "non_record"],
+            },
+        ]
+    )
+    return tasks
+
+
+def summarize(records: list[Record]) -> dict[str, Any]:
+    leaderboard = [record for record in records if record.track == "10min_16mb" and record.val_bpb is not None]
+    leaderboard.sort(key=lambda record: (record.val_bpb, record.date))
+
+    tag_scores: dict[str, list[float]] = defaultdict(list)
+    for record in leaderboard:
+        for tag in record.tags:
+            tag_scores[tag].append(record.val_bpb)  # type: ignore[arg-type]
+
+    motif_summary = []
+    for tag, scores in sorted(tag_scores.items(), key=lambda item: (min(item[1]), -len(item[1]))):
+        motif_summary.append(
+            {
+                "tag": tag,
+                "count": len(scores),
+                "best_val_bpb": min(scores),
+                "mean_val_bpb": round(sum(scores) / len(scores), 6),
+            }
+        )
+
+    latest = max(records, key=lambda record: record.date)
+    best = leaderboard[0] if leaderboard else None
+
+    return {
+        "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "record_count": len(records),
+        "leaderboard_count": len(leaderboard),
+        "best_public_record": None
+        if best is None
+        else {
+            "name": best.name,
+            "date": best.date,
+            "val_bpb": best.val_bpb,
+            "path": best.path,
+            "tags": best.tags,
+        },
+        "latest_record_date": latest.date,
+        "motif_summary": motif_summary,
+    }
+
+
+def write_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
+
+
+def main() -> None:
+    records = load_records()
+    summary = summarize(records)
+    tasks = leaderboard_tasks(records)
+
+    record_index = [
+        {
+            "path": record.path,
+            "track": record.track,
+            "name": record.name,
+            "date": record.date,
+            "val_bpb": record.val_bpb,
+            "bytes_total": record.bytes_total,
+            "tags": record.tags,
+        }
+        for record in sorted(records, key=lambda record: (record.date, record.path), reverse=True)
+    ]
+
+    write_json(GENERATED_ROOT / "record_index.json", {"records": record_index})
+    write_json(GENERATED_ROOT / "leaderboard_snapshot.json", summary)
+    write_json(GENERATED_ROOT / "candidate_backlog.json", {"tasks": tasks})
+
+    print(f"wrote {GENERATED_ROOT / 'record_index.json'}")
+    print(f"wrote {GENERATED_ROOT / 'leaderboard_snapshot.json'}")
+    print(f"wrote {GENERATED_ROOT / 'candidate_backlog.json'}")
+    if summary["best_public_record"] is not None:
+        best = summary["best_public_record"]
+        print(f"best_public_record: {best['date']} {best['name']} val_bpb={best['val_bpb']}")
+    print(f"candidate_tasks: {len(tasks)}")
+
+
+if __name__ == "__main__":
+    main()
