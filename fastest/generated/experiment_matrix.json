@@ -44,11 +44,35 @@
     },
     {
       "id": "qk525-parallel-residual",
-      "stage": "remote-candidate",
+      "stage": "local-screen",
       "summary": "Public-winning QK gain composed with parallel residuals.",
       "env": {
         "QK_GAIN_INIT": "5.25",
         "PARALLEL_RESIDUAL": "1"
+      },
+      "expected_signal": "Confirm that the higher-gain parallel path remains stable before adding recurrence."
+    },
+    {
+      "id": "qk525-parallel-mini-recurrence",
+      "stage": "local-screen",
+      "summary": "Add a lightweight mid-stack recurrence loop on top of the current best local composition.",
+      "env": {
+        "QK_GAIN_INIT": "5.25",
+        "PARALLEL_RESIDUAL": "1",
+        "ENCODER_LAYER_ORDER": "0,1,2,3,2",
+        "DECODER_LAYER_ORDER": "3,2,4,5,6,7,8"
+      },
+      "expected_signal": "Check whether a compact recurrence schedule improves directionally without obvious local instability."
+    },
+    {
+      "id": "qk525-parallel-deeper-recurrence",
+      "stage": "remote-candidate",
+      "summary": "Escalate the recurrence schedule once the mini loop is non-regressive.",
+      "env": {
+        "QK_GAIN_INIT": "5.25",
+        "PARALLEL_RESIDUAL": "1",
+        "ENCODER_LAYER_ORDER": "0,1,2,3,2,3",
+        "DECODER_LAYER_ORDER": "3,2,3,4,5,6,7,8"
       },
       "expected_signal": "Best first remote candidate if local screens do not show obvious regressions."
     }
