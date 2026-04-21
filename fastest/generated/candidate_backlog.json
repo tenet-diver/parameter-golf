@@ -8,12 +8,28 @@
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
       ],
       "ideas": [
         "baseline",
         "reproducibility"
-      ]
+      ],
+      "idea_classification": {
+        "baseline": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        },
+        "reproducibility": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        }
+      }
     },
     {
       "priority": 2,
@@ -23,9 +39,9 @@
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
-        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
       ],
       "ideas": [
         "sp8192",
@@ -33,7 +49,70 @@
         "parallel_residuals",
         "qk_gain",
         "legal_ttt"
-      ]
+      ],
+      "idea_classification": {
+        "sp8192": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        },
+        "recurrence": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        },
+        "parallel_residuals": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        },
+        "qk_gain": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        },
+        "legal_ttt": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        }
+      }
     },
     {
       "priority": 3,
@@ -42,12 +121,39 @@
       "rationale": "Test-time training appears in the strongest runs but carries rule risk if implemented loosely.",
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
       ],
       "ideas": [
         "legal_ttt",
         "score_first_ttt"
-      ]
+      ],
+      "idea_classification": {
+        "legal_ttt": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        },
+        "score_first_ttt": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        }
+      }
     },
     {
       "priority": 4,
@@ -57,11 +163,26 @@
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ],
       "ideas": [
         "qk_gain"
-      ]
+      ],
+      "idea_classification": {
+        "qk_gain": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        }
+      }
     },
     {
       "priority": 5,
@@ -71,13 +192,55 @@
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
         "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
       ],
       "ideas": [
         "sdclip",
         "sp8192",
         "parallel_residuals"
-      ]
+      ],
+      "idea_classification": {
+        "sdclip": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        },
+        "sp8192": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        },
+        "parallel_residuals": {
+          "status": "leaderboard-legal",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes"
+          ]
+        }
+      }
     },
     {
       "priority": 6,
@@ -87,16 +250,37 @@
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
         "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
         "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
         "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
-        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json"
+        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json"
       ],
       "ideas": [
         "analysis",
         "composition"
-      ]
+      ],
+      "idea_classification": {
+        "analysis": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        },
+        "composition": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        }
+      }
     },
     {
       "priority": 7,
@@ -109,7 +293,23 @@
       "ideas": [
         "learning",
         "non_record"
-      ]
+      ],
+      "idea_classification": {
+        "learning": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        },
+        "non_record": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        }
+      }
     }
   ]
 }

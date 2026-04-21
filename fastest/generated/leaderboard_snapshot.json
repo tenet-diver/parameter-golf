@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-21T19:02:01Z",
+  "generated_at": "2026-04-21T21:38:34Z",
   "record_count": 34,
-  "leaderboard_count": 7,
+  "leaderboard_count": 29,
   "best_public_record": {
     "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + QK-Gain 5.25 + Legal Score-First TTT",
     "date": "2026-04-09",
@@ -71,6 +71,46 @@
       }
     },
     {
+      "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
+      "date": "2026-04-06",
+      "val_bpb": 1.08279384,
+      "path": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+      "tags": [
+        "ema",
+        "int6",
+        "legal_ttt",
+        "mlp4x",
+        "partial_rope",
+        "qk_gain",
+        "recurrence",
+        "score_first_ttt",
+        "sdclip",
+        "sp8192",
+        "xsa"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828"
+      }
+    },
+    {
+      "name": "Non-record: Parallel Residuals + Hessian-Aware SDClip",
+      "date": "2026-04-06",
+      "val_bpb": 1.08354,
+      "path": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+      "tags": [
+        "parallel_residuals",
+        "recurrence",
+        "sdclip"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence"
+      }
+    },
+    {
       "name": "SP8192 + GPTQ Embeddings + Depth Recurrence + MuonEq-R + SD-Clip + Simplifications",
       "date": "2026-04-05",
       "val_bpb": 1.08563,
@@ -106,6 +146,23 @@
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
         "track_dir": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR"
+      }
+    },
+    {
+      "name": "Record: MuonEq-R + Depth Recurrence + WD=0.090 + All-Int6 GPTQ",
+      "date": "2026-04-03",
+      "val_bpb": 1.0912,
+      "path": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+      "tags": [
+        "high_wd",
+        "int6",
+        "muoneq_r",
+        "recurrence"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6"
       }
     },
     {
@@ -158,69 +215,69 @@
   "motif_summary": [
     {
       "tag": "recurrence",
-      "count": 5,
+      "count": 8,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.088956
-    },
-    {
-      "tag": "parallel_residuals",
-      "count": 4,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.089787
-    },
-    {
-      "tag": "qk_gain",
-      "count": 3,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.084299
-    },
-    {
-      "tag": "sdclip",
-      "count": 3,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.082937
-    },
-    {
-      "tag": "sp8192",
-      "count": 3,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.082937
+      "mean_val_bpb": 1.087789
     },
     {
       "tag": "high_wd",
-      "count": 2,
+      "count": 7,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.089425
-    },
-    {
-      "tag": "score_first_ttt",
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159
+      "mean_val_bpb": 1.114072
     },
     {
       "tag": "ema",
-      "count": 1,
+      "count": 5,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081
+      "mean_val_bpb": 1.107699
+    },
+    {
+      "tag": "parallel_residuals",
+      "count": 5,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.088538
+    },
+    {
+      "tag": "sdclip",
+      "count": 5,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.083029
+    },
+    {
+      "tag": "qk_gain",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.083922
+    },
+    {
+      "tag": "score_first_ttt",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.091343
+    },
+    {
+      "tag": "sp8192",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082901
     },
     {
       "tag": "legal_ttt",
-      "count": 1,
+      "count": 3,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081
+      "mean_val_bpb": 1.094398
     },
     {
       "tag": "mlp4x",
-      "count": 3,
+      "count": 4,
       "best_val_bpb": 1.08217956,
-      "mean_val_bpb": 1.089915
+      "mean_val_bpb": 1.088135
     },
     {
       "tag": "muoneq_r",
-      "count": 3,
+      "count": 4,
       "best_val_bpb": 1.08217956,
-      "mean_val_bpb": 1.085842
+      "mean_val_bpb": 1.087181
     },
     {
       "tag": "gptq_embeddings",
@@ -229,36 +286,83 @@
       "mean_val_bpb": 1.083905
     },
     {
+      "tag": "int6",
+      "count": 13,
+      "best_val_bpb": 1.08279384,
+      "mean_val_bpb": 1.135301
+    },
+    {
+      "tag": "xsa",
+      "count": 6,
+      "best_val_bpb": 1.08279384,
+      "mean_val_bpb": 1.117157
+    },
+    {
+      "tag": "partial_rope",
+      "count": 3,
+      "best_val_bpb": 1.08279384,
+      "mean_val_bpb": 1.11014
+    },
+    {
       "tag": "sp4096",
       "count": 2,
       "best_val_bpb": 1.08971631,
       "mean_val_bpb": 1.093783
     },
     {
-      "tag": "int6",
-      "count": 1,
-      "best_val_bpb": 1.08971631,
-      "mean_val_bpb": 1.089716
-    },
-    {
       "tag": "bigramhash",
-      "count": 1,
+      "count": 7,
       "best_val_bpb": 1.11473509,
-      "mean_val_bpb": 1.114735
+      "mean_val_bpb": 1.126481
     },
     {
-      "tag": "xsa",
-      "count": 1,
-      "best_val_bpb": 1.11473509,
-      "mean_val_bpb": 1.114735
+      "tag": "smeargate",
+      "count": 6,
+      "best_val_bpb": 1.12278022,
+      "mean_val_bpb": 1.134472
+    },
+    {
+      "tag": "qat",
+      "count": 4,
+      "best_val_bpb": 1.12278022,
+      "mean_val_bpb": 1.139099
+    },
+    {
+      "tag": "sliding_window",
+      "count": 7,
+      "best_val_bpb": 1.12484502,
+      "mean_val_bpb": 1.152758
+    },
+    {
+      "tag": "mlp3x",
+      "count": 5,
+      "best_val_bpb": 1.12707468,
+      "mean_val_bpb": 1.1487
     }
   ],
   "recent_movement": [
     {
+      "date": "2026-03-23",
+      "name": "LeakyReLU\u00b2 + Legal Score-First TTT + Parallel Muon",
+      "val_bpb": 1.1194,
+      "delta_vs_previous_best": 0.00338,
+      "path": "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+      "tags": [
+        "bigramhash",
+        "legal_ttt",
+        "score_first_ttt"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon"
+      }
+    },
+    {
       "date": "2026-03-25",
       "name": "AR Self-Gen GPTQ + XSA-all + BigramHash 3072x112",
       "val_bpb": 1.11473509,
-      "delta_vs_previous_best": null,
+      "delta_vs_previous_best": 0.004665,
       "path": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
       "tags": [
         "bigramhash",
@@ -304,10 +408,28 @@
       }
     },
     {
+      "date": "2026-04-03",
+      "name": "Record: MuonEq-R + Depth Recurrence + WD=0.090 + All-Int6 GPTQ",
+      "val_bpb": 1.0912,
+      "delta_vs_previous_best": 0.00665,
+      "path": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+      "tags": [
+        "high_wd",
+        "int6",
+        "muoneq_r",
+        "recurrence"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6"
+      }
+    },
+    {
       "date": "2026-04-04",
       "name": "SP4096 + Depth Recurrence + Parallel Residuals + MuonEq-R + QK-Gain 5.0",
       "val_bpb": 1.08971631,
-      "delta_vs_previous_best": 0.008134,
+      "delta_vs_previous_best": 0.001484,
       "path": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
       "tags": [
         "int6",
@@ -344,10 +466,35 @@
       }
     },
     {
+      "date": "2026-04-06",
+      "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
+      "val_bpb": 1.08279384,
+      "delta_vs_previous_best": 0.002836,
+      "path": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+      "tags": [
+        "ema",
+        "int6",
+        "legal_ttt",
+        "mlp4x",
+        "partial_rope",
+        "qk_gain",
+        "recurrence",
+        "score_first_ttt",
+        "sdclip",
+        "sp8192",
+        "xsa"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828"
+      }
+    },
+    {
       "date": "2026-04-08",
       "name": "SP8192 + Parallel Residuals + Score-First TTT",
       "val_bpb": 1.08217956,
-      "delta_vs_previous_best": 0.00345,
+      "delta_vs_previous_best": 0.000614,
       "path": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
       "tags": [
         "gptq_embeddings",

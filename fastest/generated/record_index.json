@@ -18,6 +18,19 @@
         "sdclip",
         "sp8192"
       ],
+      "legality": {
+        "status": "uncertain",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": null,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": [
+          "missing_artifact_bytes"
+        ]
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
@@ -42,6 +55,19 @@
         "sdclip",
         "sp8192"
       ],
+      "legality": {
+        "status": "uncertain",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": null,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": [
+          "missing_artifact_bytes"
+        ]
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
@@ -50,7 +76,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
       "date": "2026-04-06",
       "val_bpb": 1.08279384,
@@ -68,6 +94,17 @@
         "sp8192",
         "xsa"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
@@ -76,7 +113,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Non-record: Parallel Residuals + Hessian-Aware SDClip",
       "date": "2026-04-06",
       "val_bpb": 1.08354,
@@ -86,6 +123,17 @@
         "recurrence",
         "sdclip"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
@@ -106,6 +154,17 @@
         "sdclip",
         "sp8192"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
@@ -128,6 +187,19 @@
         "recurrence",
         "sp4096"
       ],
+      "legality": {
+        "status": "uncertain",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": null,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": [
+          "missing_artifact_bytes"
+        ]
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
@@ -136,7 +208,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Record: MuonEq-R + Depth Recurrence + WD=0.090 + All-Int6 GPTQ",
       "date": "2026-04-03",
       "val_bpb": 1.0912,
@@ -147,6 +219,17 @@
         "muoneq_r",
         "recurrence"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
@@ -165,6 +248,17 @@
         "mlp4x",
         "sp4096"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
@@ -182,6 +276,17 @@
         "parallel_residuals",
         "recurrence"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
@@ -199,6 +304,17 @@
         "bigramhash",
         "xsa"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
@@ -207,7 +323,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "LeakyReLU\u00b2 + Legal Score-First TTT + Parallel Muon",
       "date": "2026-03-23",
       "val_bpb": 1.1194,
@@ -217,6 +333,17 @@
         "legal_ttt",
         "score_first_ttt"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
@@ -225,7 +352,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Record: 11L EMA + GPTQ-lite + warmdown3500 + QAT@0.15",
       "date": "2026-03-22",
       "val_bpb": 1.12278022,
@@ -239,6 +366,17 @@
         "smeargate",
         "xsa"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
@@ -255,6 +393,19 @@
       "tags": [
         "recurrence"
       ],
+      "legality": {
+        "status": "non-record-only",
+        "rules": {
+          "track": "non_record_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [
+          "track_marked_non_record"
+        ],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_non_record_16mb/2026-03-21_DepthRecurrence_MixedPrecisionQuant/submission.json",
@@ -263,7 +414,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Record: 11L Partial RoPE + LN Scale + EMA + XSA4",
       "date": "2026-03-21",
       "val_bpb": 1.12484502,
@@ -279,6 +430,17 @@
         "smeargate",
         "xsa"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
@@ -287,7 +449,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Record: 11L XSA + EMA + Int6 MLP3x + WD=0.04",
       "date": "2026-03-21",
       "val_bpb": 1.12707468,
@@ -302,6 +464,17 @@
         "smeargate",
         "xsa"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
@@ -310,7 +483,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Int6 MLP3x + SmearGate + BigramHash + OrthoInit + Muon WD + SWA",
       "date": "2026-03-20",
       "val_bpb": 1.14581692,
@@ -323,6 +496,17 @@
         "sliding_window",
         "smeargate"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json",
@@ -331,7 +515,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "11L + Efficient Partial XSA + FA3 + SWA/120 (val_bpb: 1.1307)",
       "date": "2026-03-20",
       "val_bpb": 1.13071416,
@@ -343,6 +527,17 @@
         "smeargate",
         "xsa"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
@@ -351,7 +546,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-20_10L_Int5MLP_MuonWD04_SWA50/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "10L Int5-MLP + BigramHash(10240) + SWA(frac=0.4) + WD=0.04",
       "date": "2026-03-20",
       "val_bpb": null,
@@ -361,6 +556,19 @@
         "int6",
         "smeargate"
       ],
+      "legality": {
+        "status": "uncertain",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": false
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": [
+          "missing_val_bpb"
+        ]
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-20_10L_Int5MLP_MuonWD04_SWA50/submission.json",
@@ -369,7 +577,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Int6 MLP3x Sliding Window",
       "date": "2026-03-20",
       "val_bpb": 1.1574404,
@@ -379,6 +587,17 @@
         "mlp3x",
         "sliding_window"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json",
@@ -387,7 +606,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "11L_MLP3x_WD04_Int6QAT_Zstd22_SlidingWindow",
       "date": "2026-03-20",
       "val_bpb": 1.15015359,
@@ -397,6 +616,17 @@
         "mlp3x",
         "qat"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json",
@@ -411,6 +641,19 @@
       "val_bpb": 1.32814313,
       "bytes_total": 15327112,
       "tags": [],
+      "legality": {
+        "status": "non-record-only",
+        "rules": {
+          "track": "non-record-16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [
+          "track_marked_non_record"
+        ],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_non_record_16mb/2026-03-19_SwiGLU_WarmdownFix_QuarterBatch_1x5090/submission.json",
@@ -419,7 +662,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_smeargate_orthoinit_muonwd/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "2026-03-19_smeargate_orthoinit_muonwd",
       "date": "2026-03-19",
       "val_bpb": 1.1556,
@@ -427,6 +670,19 @@
       "tags": [
         "smeargate"
       ],
+      "legality": {
+        "status": "uncertain",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": null,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": [
+          "missing_artifact_bytes"
+        ]
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_smeargate_orthoinit_muonwd/submission.json",
@@ -435,12 +691,23 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_TrainingOptSeq4096/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Training Opt Seq4096 v1",
       "date": "2026-03-19",
       "val_bpb": 1.20143417,
       "bytes_total": 15868326,
       "tags": [],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_TrainingOptSeq4096/submission.json",
@@ -457,6 +724,20 @@
       "tags": [
         "sliding_window"
       ],
+      "legality": {
+        "status": "uncertain",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": null,
+          "has_val_bpb": false
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": [
+          "missing_artifact_bytes",
+          "missing_val_bpb"
+        ]
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_SlidingWindow_FP16Emb_10L_MuonWD_OvertoneInit/submission.json",
@@ -465,7 +746,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_SlidingWindowEval/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Sliding Window Eval (stride=64)",
       "date": "2026-03-19",
       "val_bpb": 1.19250007,
@@ -473,6 +754,17 @@
       "tags": [
         "sliding_window"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_SlidingWindowEval/submission.json",
@@ -481,7 +773,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "10L Int6 QAT + Zstd MLP2.6x Muon0.99 Sliding Window",
       "date": "2026-03-19",
       "val_bpb": 1.15861696,
@@ -491,6 +783,17 @@
         "qat",
         "sliding_window"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json",
@@ -499,7 +802,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_MixedQuant_Int6Int8_SlidingWindow/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Mixed Quant (int6 blocks + int8 embeddings) + Sliding Window Eval, val_bpb=1.1630",
       "date": "2026-03-19",
       "val_bpb": 1.16301431,
@@ -509,6 +812,17 @@
         "mlp3x",
         "sliding_window"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_MixedQuant_Int6Int8_SlidingWindow/submission.json",
@@ -517,7 +831,7 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-19_10L_MixedPrecision/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "10L Mixed Precision",
       "date": "2026-03-19",
       "val_bpb": 1.214745,
@@ -525,6 +839,17 @@
       "tags": [
         "int6"
       ],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-19_10L_MixedPrecision/submission.json",
@@ -533,12 +858,23 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-18_LongContextSeq2048/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Long Context Seq2048 v2",
       "date": "2026-03-19",
       "val_bpb": 1.20576485,
       "bytes_total": 15867270,
       "tags": [],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-18_LongContextSeq2048/submission.json",
@@ -547,12 +883,23 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-17_LoRA_TTT/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "LoRA TTT",
       "date": "2026-03-19",
       "val_bpb": 1.1929,
       "bytes_total": 15882446,
       "tags": [],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-17_LoRA_TTT/submission.json",
@@ -567,6 +914,20 @@
       "val_bpb": 1.20737944,
       "bytes_total": 15810161,
       "tags": [],
+      "legality": {
+        "status": "non-record-only",
+        "rules": {
+          "track": "non-record-unlimited-compute-16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [
+          "declared_unlimited_compute",
+          "track_marked_non_record"
+        ],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_non_record_16mb/2026-03-18_Quasi10Bfrom50B_SP1024_9x512_KV4_4h_pgut3/submission.json",
@@ -575,12 +936,23 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-18_LowerLR/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Lower LR",
       "date": "2026-03-18",
       "val_bpb": 1.22296644,
       "bytes_total": 15854246,
       "tags": [],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-18_LowerLR/submission.json",
@@ -589,12 +961,23 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-18_FP16Embed_WD3600/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "FP16 Tied Embedding + LR/Warmdown Tuning",
       "date": "2026-03-18",
       "val_bpb": 1.21972502,
       "bytes_total": 15896222,
       "tags": [],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-18_FP16Embed_WD3600/submission.json",
@@ -603,12 +986,23 @@
     },
     {
       "path": "records/track_10min_16mb/2026-03-17_NaiveBaseline/submission.json",
-      "track": "unknown",
+      "track": "10min_16mb",
       "name": "Naive Baseline",
       "date": "2026-03-18",
       "val_bpb": 1.2243657,
       "bytes_total": 15863489,
       "tags": [],
+      "legality": {
+        "status": "leaderboard-legal",
+        "rules": {
+          "track": "10min_16mb",
+          "artifact_limit_bytes": 16000000,
+          "artifact_within_limit": true,
+          "has_val_bpb": true
+        },
+        "non_record_reasons": [],
+        "uncertainty_reasons": []
+      },
       "source": {
         "kind": "submission_json",
         "path": "records/track_10min_16mb/2026-03-17_NaiveBaseline/submission.json",

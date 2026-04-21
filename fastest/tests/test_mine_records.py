@@ -66,6 +66,54 @@ class MineRecordsKnowledgeTests(unittest.TestCase):
         self.assertGreaterEqual(len(summary["recent_movement"]), 2)
         self.assertEqual("2026-04-09", summary["best_public_record"]["date"])
 
+    def test_legality_rule_checker_classifies_records_and_ideas(self) -> None:
+        legal = mine_records.Record(
+            path="records/track_10min_16mb/2026-04-09_Legal/submission.json",
+            track="10min_16mb",
+            name="Legal",
+            date="2026-04-09",
+            val_bpb=1.08,
+            bytes_total=15_900_000,
+            summary="legal score-first ttt",
+            tags=["legal_ttt", "score_first_ttt"],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+        )
+        non_record = mine_records.Record(
+            path="records/track_non_record_16mb/2026-04-09_NonRecord/submission.json",
+            track="non-record",
+            name="NonRecord",
+            date="2026-04-09",
+            val_bpb=1.05,
+            bytes_total=15_800_000,
+            summary="unlimited compute",
+            tags=["ternary"],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+        )
+        uncertain = mine_records.Record(
+            path="records/track_10min_16mb/2026-04-09_Uncertain/submission.json",
+            track="10min_16mb",
+            name="Uncertain",
+            date="2026-04-09",
+            val_bpb=1.12,
+            bytes_total=None,
+            summary="missing artifact evidence",
+            tags=["qk_gain"],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+        )
+
+        legal_result = mine_records.classify_record_legality(legal)
+        non_record_result = mine_records.classify_record_legality(non_record)
+        uncertain_result = mine_records.classify_record_legality(uncertain)
+        idea_status = mine_records.classify_ideas([legal, non_record, uncertain])
+
+        self.assertEqual("leaderboard-legal", legal_result["status"])
+        self.assertEqual("non-record-only", non_record_result["status"])
+        self.assertEqual("uncertain", uncertain_result["status"])
+        self.assertIn("missing_artifact_bytes", uncertain_result["uncertainty_reasons"])
+        self.assertEqual("leaderboard-legal", idea_status["score_first_ttt"]["status"])
+        self.assertEqual("non-record-only", idea_status["ternary"]["status"])
+        self.assertEqual("uncertain", idea_status["qk_gain"]["status"])
+
 
 if __name__ == "__main__":
     unittest.main()

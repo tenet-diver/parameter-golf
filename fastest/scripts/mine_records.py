@@ -7,7 +7,7 @@ import json
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +15,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 RECORDS_ROOT = ROOT / "records"
 GENERATED_ROOT = ROOT / "fastest" / "generated"
+ARTIFACT_LIMIT_BYTES = 16_000_000
 
 
 KEYWORDS: dict[str, tuple[str, ...]] = {
@@ -77,6 +78,9 @@ def load_records() -> list[Record]:
     records: list[Record] = []
     for path in sorted(RECORDS_ROOT.glob("**/submission.json")):
         payload = read_json(path)
+        parent_track = path.parent.parent.name
+        inferred_track = parent_track[6:] if parent_track.startswith("track_") else "unknown"
+        track = str(payload.get("track") or inferred_track)
         name = str(payload.get("name") or payload.get("run_name") or path.parent.name)
         summary_parts = [
             name,
@@ -101,7 +105,7 @@ def load_records() -> list[Record]:
         records.append(
             Record(
                 path=str(path.relative_to(ROOT)),
-                track=str(payload.get("track") or "unknown"),
+                track=track,
                 name=name,
                 date=date,
                 val_bpb=float(val_bpb) if isinstance(val_bpb, (int, float)) else None,
@@ -122,10 +126,75 @@ def iso_to_ordinal(value: str) -> int:
     return datetime.strptime(value, "%Y-%m-%d").toordinal()
 
 
+def classify_record_legality(record: Record) -> dict[str, Any]:
+    summary = record.summary.lower()
+    non_record_reasons: list[str] = []
+    uncertainty_reasons: list[str] = []
+    is_track_non_record = "non_record" in record.track or "non-record" in record.track
+
+    if is_track_non_record:
+        non_record_reasons.append("track_marked_non_record")
+    if "unlimited compute" in summary or "not intended to satisfy the 10-minute cutoff" in summary:
+        non_record_reasons.append("declared_unlimited_compute")
+    if record.bytes_total is not None and record.bytes_total > ARTIFACT_LIMIT_BYTES:
+        non_record_reasons.append("artifact_over_16mb")
+
+    if record.track == "10min_16mb":
+        if record.val_bpb is None:
+            uncertainty_reasons.append("missing_val_bpb")
+        if record.bytes_total is None:
+            uncertainty_reasons.append("missing_artifact_bytes")
+    elif not is_track_non_record and record.track != "non-record":
+        uncertainty_reasons.append("unknown_track")
+
+    if non_record_reasons:
+        status = "non-record-only"
+    elif uncertainty_reasons:
+        status = "uncertain"
+    else:
+        status = "leaderboard-legal"
+
+    return {
+        "status": status,
+        "rules": {
+            "track": record.track,
+            "artifact_limit_bytes": ARTIFACT_LIMIT_BYTES,
+            "artifact_within_limit": None if record.bytes_total is None else record.bytes_total <= ARTIFACT_LIMIT_BYTES,
+            "has_val_bpb": record.val_bpb is not None,
+        },
+        "non_record_reasons": sorted(set(non_record_reasons)),
+        "uncertainty_reasons": sorted(set(uncertainty_reasons)),
+    }
+
+
+def classify_ideas(records: list[Record]) -> dict[str, dict[str, Any]]:
+    by_tag: dict[str, list[tuple[Record, dict[str, Any]]]] = defaultdict(list)
+    for record in records:
+        legality = classify_record_legality(record)
+        for tag in record.tags:
+            by_tag[tag].append((record, legality))
+
+    ranked_status = {"leaderboard-legal": 0, "non-record-only": 1, "uncertain": 2}
+    result: dict[str, dict[str, Any]] = {}
+    for tag, tagged_records in by_tag.items():
+        best = min(tagged_records, key=lambda item: ranked_status[item[1]["status"]])[1]
+        uncertainty_reasons: set[str] = set()
+        for _, legality in tagged_records:
+            if legality["status"] == "uncertain":
+                uncertainty_reasons.update(legality["uncertainty_reasons"])
+        result[tag] = {
+            "status": best["status"],
+            "evidence_paths": [record.path for record, _ in tagged_records][:5],
+            "uncertainty_reasons": sorted(uncertainty_reasons),
+        }
+    return result
+
+
 def leaderboard_tasks(records: list[Record]) -> list[dict[str, Any]]:
     ranked = [record for record in records if record.track == "10min_16mb" and record.val_bpb is not None]
     ranked.sort(key=lambda record: (record.val_bpb, record.date))
     top = ranked[:8]
+    idea_legality = classify_ideas(records)
 
     frequency = Counter(tag for record in top for tag in record.tags)
     best_by_tag: dict[str, float] = {}
@@ -207,6 +276,11 @@ def leaderboard_tasks(records: list[Record]) -> list[dict[str, Any]]:
             },
         ]
     )
+    for task in tasks:
+        task["idea_classification"] = {
+            idea: idea_legality.get(idea, {"status": "uncertain", "evidence_paths": [], "uncertainty_reasons": ["no_supporting_records"]})
+            for idea in task["ideas"]
+        }
     return tasks
 
 
@@ -263,7 +337,7 @@ def summarize(records: list[Record]) -> dict[str, Any]:
             best_so_far = record.val_bpb
 
     return {
-        "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "record_count": len(records),
         "leaderboard_count": len(leaderboard),
         "best_public_record": None
@@ -302,6 +376,7 @@ def main() -> None:
             "val_bpb": record.val_bpb,
             "bytes_total": record.bytes_total,
             "tags": record.tags,
+            "legality": classify_record_legality(record),
             "source": record.source,
         }
         for record in sorted(records, key=lambda record: (record.date, record.path), reverse=True)
