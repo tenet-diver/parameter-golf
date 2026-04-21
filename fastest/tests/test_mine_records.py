@@ -254,6 +254,33 @@ class MineRecordsKnowledgeTests(unittest.TestCase):
         self.assertEqual("uncertain", result["status"])
         self.assertIn("artifact_or_compression_mismatch", result["uncertainty_reasons"])
 
+    def test_legality_detects_artifact_mismatch_without_validation_block(self) -> None:
+        mismatched_record = mine_records.Record(
+            path="records/track_10min_16mb/2026-04-09_MismatchNoValidation/submission.json",
+            track="10min_16mb",
+            name="MismatchNoValidation",
+            date="2026-04-09",
+            val_bpb=1.09,
+            bytes_total=15_995_000,
+            train_time_seconds=590,
+            hardware="8xH100 80GB SXM",
+            summary="artifact mismatch check without validation payload",
+            tags=[],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+            payload={
+                "artifact_bytes_max": 15_995_000,
+                "seed_results": {
+                    "0": {"artifact_bytes": 16_050_000},
+                },
+                "compliance": {"artifact_under_16mb": True},
+            },
+        )
+
+        result = mine_records.classify_record_legality(mismatched_record)
+
+        self.assertEqual("uncertain", result["status"])
+        self.assertIn("artifact_or_compression_mismatch", result["uncertainty_reasons"])
+
     def test_legality_fails_promising_result_without_reproducibility(self) -> None:
         unreproducible_record = mine_records.Record(
             path="records/track_10min_16mb/2026-04-09_Unreproducible/submission.json",

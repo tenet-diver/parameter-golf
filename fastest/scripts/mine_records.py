@@ -264,24 +264,24 @@ def normalize_text(value: Any) -> str | None:
 def validation_uncertainty_reasons(record: Record) -> list[str]:
     payload = record.payload if isinstance(record.payload, dict) else {}
     validation = payload.get("validation")
-    if not isinstance(validation, dict):
-        return []
+    validation_data = validation if isinstance(validation, dict) else None
 
     reasons: list[str] = []
 
-    controls = validation.get("trusted_controls")
-    if isinstance(controls, list):
-        for control in controls:
-            if not isinstance(control, dict):
-                continue
-            expected = coerce_float(control.get("expected_val_bpb"))
-            observed = coerce_float(control.get("observed_val_bpb"))
-            max_drift = coerce_float(control.get("max_drift_bpb"))
-            if expected is None or observed is None or max_drift is None:
-                continue
-            if abs(observed - expected) > max_drift:
-                reasons.append("eval_drift_vs_trusted_control")
-                break
+    if validation_data is not None:
+        controls = validation_data.get("trusted_controls")
+        if isinstance(controls, list):
+            for control in controls:
+                if not isinstance(control, dict):
+                    continue
+                expected = coerce_float(control.get("expected_val_bpb"))
+                observed = coerce_float(control.get("observed_val_bpb"))
+                max_drift = coerce_float(control.get("max_drift_bpb"))
+                if expected is None or observed is None or max_drift is None:
+                    continue
+                if abs(observed - expected) > max_drift:
+                    reasons.append("eval_drift_vs_trusted_control")
+                    break
 
     seed_results = payload.get("seed_results")
     seed_artifact_bytes: list[int] = []
@@ -305,7 +305,7 @@ def validation_uncertainty_reasons(record: Record) -> list[str]:
             mismatch_found = True
 
     claimed_compression = normalize_text(payload.get("compression"))
-    artifact_probe = validation.get("artifact_probe")
+    artifact_probe = validation_data.get("artifact_probe") if validation_data is not None else None
     observed_compression = normalize_text(artifact_probe.get("compression")) if isinstance(artifact_probe, dict) else None
     if claimed_compression and observed_compression and claimed_compression != observed_compression:
         mismatch_found = True
@@ -313,18 +313,19 @@ def validation_uncertainty_reasons(record: Record) -> list[str]:
     if mismatch_found:
         reasons.append("artifact_or_compression_mismatch")
 
-    repro = validation.get("reproducibility")
-    if isinstance(repro, dict):
-        promising = record.val_bpb is not None and record.val_bpb <= 1.10
-        attempts = coerce_int(repro.get("attempts"))
-        successful_runs = coerce_int(repro.get("successful_runs"))
-        status = normalize_text(repro.get("status"))
-        failed_status = status in {"failed", "unreproducible", "not_reproducible"}
-        insufficient_success = (
-            attempts is not None and successful_runs is not None and attempts >= 2 and successful_runs < 2
-        )
-        if promising and (failed_status or insufficient_success):
-            reasons.append("promising_result_not_reproducible")
+    if validation_data is not None:
+        repro = validation_data.get("reproducibility")
+        if isinstance(repro, dict):
+            promising = record.val_bpb is not None and record.val_bpb <= 1.10
+            attempts = coerce_int(repro.get("attempts"))
+            successful_runs = coerce_int(repro.get("successful_runs"))
+            status = normalize_text(repro.get("status"))
+            failed_status = status in {"failed", "unreproducible", "not_reproducible"}
+            insufficient_success = (
+                attempts is not None and successful_runs is not None and attempts >= 2 and successful_runs < 2
+            )
+            if promising and (failed_status or insufficient_success):
+                reasons.append("promising_result_not_reproducible")
 
     return reasons
 
