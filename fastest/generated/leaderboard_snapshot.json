@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-20T20:10:17Z",
+  "generated_at": "2026-04-21T19:02:01Z",
   "record_count": 34,
   "leaderboard_count": 7,
   "best_public_record": {
@@ -17,9 +17,144 @@
       "score_first_ttt",
       "sdclip",
       "sp8192"
-    ]
+    ],
+    "source": {
+      "kind": "submission_json",
+      "path": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+      "track_dir": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT"
+    }
   },
   "latest_record_date": "2026-04-09",
+  "top_scores": [
+    {
+      "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + QK-Gain 5.25 + Legal Score-First TTT",
+      "date": "2026-04-09",
+      "val_bpb": 1.081,
+      "path": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+      "tags": [
+        "ema",
+        "high_wd",
+        "legal_ttt",
+        "parallel_residuals",
+        "qk_gain",
+        "recurrence",
+        "score_first_ttt",
+        "sdclip",
+        "sp8192"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT"
+      }
+    },
+    {
+      "name": "SP8192 + Parallel Residuals + Score-First TTT",
+      "date": "2026-04-08",
+      "val_bpb": 1.08217956,
+      "path": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+      "tags": [
+        "gptq_embeddings",
+        "mlp4x",
+        "muoneq_r",
+        "parallel_residuals",
+        "qk_gain",
+        "recurrence",
+        "score_first_ttt",
+        "sdclip",
+        "sp8192"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT"
+      }
+    },
+    {
+      "name": "SP8192 + GPTQ Embeddings + Depth Recurrence + MuonEq-R + SD-Clip + Simplifications",
+      "date": "2026-04-05",
+      "val_bpb": 1.08563,
+      "path": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+      "tags": [
+        "gptq_embeddings",
+        "muoneq_r",
+        "recurrence",
+        "sdclip",
+        "sp8192"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2"
+      }
+    },
+    {
+      "name": "SP4096 + Depth Recurrence + Parallel Residuals + MuonEq-R + QK-Gain 5.0",
+      "date": "2026-04-04",
+      "val_bpb": 1.08971631,
+      "path": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+      "tags": [
+        "int6",
+        "mlp4x",
+        "muoneq_r",
+        "parallel_residuals",
+        "qk_gain",
+        "recurrence",
+        "sp4096"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR"
+      }
+    },
+    {
+      "name": "4096-Vocab + Larger Model + High WD + Simplifications",
+      "date": "2026-04-01",
+      "val_bpb": 1.09785,
+      "path": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
+      "tags": [
+        "high_wd",
+        "mlp4x",
+        "sp4096"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085"
+      }
+    },
+    {
+      "name": "Parallel Residuals + Mini Depth Recurrence",
+      "date": "2026-03-31",
+      "val_bpb": 1.10625353,
+      "path": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+      "tags": [
+        "parallel_residuals",
+        "recurrence"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence"
+      }
+    },
+    {
+      "name": "AR Self-Gen GPTQ + XSA-all + BigramHash 3072x112",
+      "date": "2026-03-25",
+      "val_bpb": 1.11473509,
+      "path": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+      "tags": [
+        "bigramhash",
+        "xsa"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072"
+      }
+    }
+  ],
   "motif_summary": [
     {
       "tag": "recurrence",
@@ -116,6 +251,143 @@
       "count": 1,
       "best_val_bpb": 1.11473509,
       "mean_val_bpb": 1.114735
+    }
+  ],
+  "recent_movement": [
+    {
+      "date": "2026-03-25",
+      "name": "AR Self-Gen GPTQ + XSA-all + BigramHash 3072x112",
+      "val_bpb": 1.11473509,
+      "delta_vs_previous_best": null,
+      "path": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+      "tags": [
+        "bigramhash",
+        "xsa"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072"
+      }
+    },
+    {
+      "date": "2026-03-31",
+      "name": "Parallel Residuals + Mini Depth Recurrence",
+      "val_bpb": 1.10625353,
+      "delta_vs_previous_best": 0.008482,
+      "path": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+      "tags": [
+        "parallel_residuals",
+        "recurrence"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence"
+      }
+    },
+    {
+      "date": "2026-04-01",
+      "name": "4096-Vocab + Larger Model + High WD + Simplifications",
+      "val_bpb": 1.09785,
+      "delta_vs_previous_best": 0.008404,
+      "path": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
+      "tags": [
+        "high_wd",
+        "mlp4x",
+        "sp4096"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085"
+      }
+    },
+    {
+      "date": "2026-04-04",
+      "name": "SP4096 + Depth Recurrence + Parallel Residuals + MuonEq-R + QK-Gain 5.0",
+      "val_bpb": 1.08971631,
+      "delta_vs_previous_best": 0.008134,
+      "path": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+      "tags": [
+        "int6",
+        "mlp4x",
+        "muoneq_r",
+        "parallel_residuals",
+        "qk_gain",
+        "recurrence",
+        "sp4096"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR"
+      }
+    },
+    {
+      "date": "2026-04-05",
+      "name": "SP8192 + GPTQ Embeddings + Depth Recurrence + MuonEq-R + SD-Clip + Simplifications",
+      "val_bpb": 1.08563,
+      "delta_vs_previous_best": 0.004086,
+      "path": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+      "tags": [
+        "gptq_embeddings",
+        "muoneq_r",
+        "recurrence",
+        "sdclip",
+        "sp8192"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2"
+      }
+    },
+    {
+      "date": "2026-04-08",
+      "name": "SP8192 + Parallel Residuals + Score-First TTT",
+      "val_bpb": 1.08217956,
+      "delta_vs_previous_best": 0.00345,
+      "path": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+      "tags": [
+        "gptq_embeddings",
+        "mlp4x",
+        "muoneq_r",
+        "parallel_residuals",
+        "qk_gain",
+        "recurrence",
+        "score_first_ttt",
+        "sdclip",
+        "sp8192"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT"
+      }
+    },
+    {
+      "date": "2026-04-09",
+      "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + QK-Gain 5.25 + Legal Score-First TTT",
+      "val_bpb": 1.081,
+      "delta_vs_previous_best": 0.00118,
+      "path": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+      "tags": [
+        "ema",
+        "high_wd",
+        "legal_ttt",
+        "parallel_residuals",
+        "qk_gain",
+        "recurrence",
+        "score_first_ttt",
+        "sdclip",
+        "sp8192"
+      ],
+      "source": {
+        "kind": "submission_json",
+        "path": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "track_dir": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT"
+      }
     }
   ]
 }

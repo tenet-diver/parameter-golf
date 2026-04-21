@@ -53,6 +53,7 @@ class Record:
     bytes_total: int | None
     summary: str
     tags: list[str]
+    source: dict[str, str]
 
 
 def parse_date(raw: str, fallback: str) -> str:
@@ -107,6 +108,11 @@ def load_records() -> list[Record]:
                 bytes_total=int(bytes_total) if isinstance(bytes_total, (int, float)) else None,
                 summary=summary,
                 tags=detect_tags(summary),
+                source={
+                    "kind": "submission_json",
+                    "path": str(path.relative_to(ROOT)),
+                    "track_dir": str(path.parent.relative_to(ROOT)),
+                },
             )
         )
     return records
@@ -226,6 +232,35 @@ def summarize(records: list[Record]) -> dict[str, Any]:
 
     latest = max(records, key=lambda record: record.date)
     best = leaderboard[0] if leaderboard else None
+    top_scores = [
+        {
+            "name": record.name,
+            "date": record.date,
+            "val_bpb": record.val_bpb,
+            "path": record.path,
+            "tags": record.tags,
+            "source": record.source,
+        }
+        for record in leaderboard[:10]
+    ]
+
+    movement_rows: list[dict[str, Any]] = []
+    best_so_far: float | None = None
+    for record in sorted(leaderboard, key=lambda item: (item.date, item.val_bpb)):
+        if best_so_far is None or record.val_bpb < best_so_far:
+            delta = None if best_so_far is None else round(best_so_far - record.val_bpb, 6)
+            movement_rows.append(
+                {
+                    "date": record.date,
+                    "name": record.name,
+                    "val_bpb": record.val_bpb,
+                    "delta_vs_previous_best": delta,
+                    "path": record.path,
+                    "tags": record.tags,
+                    "source": record.source,
+                }
+            )
+            best_so_far = record.val_bpb
 
     return {
         "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
@@ -239,9 +274,12 @@ def summarize(records: list[Record]) -> dict[str, Any]:
             "val_bpb": best.val_bpb,
             "path": best.path,
             "tags": best.tags,
+            "source": best.source,
         },
         "latest_record_date": latest.date,
+        "top_scores": top_scores,
         "motif_summary": motif_summary,
+        "recent_movement": movement_rows[-10:],
     }
 
 
@@ -264,6 +302,7 @@ def main() -> None:
             "val_bpb": record.val_bpb,
             "bytes_total": record.bytes_total,
             "tags": record.tags,
+            "source": record.source,
         }
         for record in sorted(records, key=lambda record: (record.date, record.path), reverse=True)
     ]
