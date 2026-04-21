@@ -15,6 +15,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 RECORDS_ROOT = ROOT / "records"
 GENERATED_ROOT = ROOT / "fastest" / "generated"
+LOCAL_EXPERIMENT_LOG_PATH = ROOT / "fastest" / "logs" / "experiment-log.jsonl"
 ARTIFACT_LIMIT_BYTES = 16_000_000
 
 
@@ -68,6 +69,29 @@ def parse_date(raw: str, fallback: str) -> str:
 
 def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text())
+
+
+def clamp01(value: float) -> float:
+    return max(0.0, min(1.0, value))
+
+
+def load_local_experiment_learnings(path: Path | None = None) -> list[dict[str, Any]]:
+    target = path or LOCAL_EXPERIMENT_LOG_PATH
+    if not target.exists():
+        return []
+    entries: list[dict[str, Any]] = []
+    with target.open(encoding="utf-8") as handle:
+        for line in handle:
+            stripped = line.strip()
+            if not stripped:
+                continue
+            try:
+                payload = json.loads(stripped)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(payload, dict):
+                entries.append(payload)
+    return entries
 
 
 def detect_tags(text: str) -> list[str]:
@@ -232,20 +256,109 @@ def classify_ideas(records: list[Record]) -> dict[str, dict[str, Any]]:
     return result
 
 
-def leaderboard_tasks(records: list[Record]) -> list[dict[str, Any]]:
+def summarize_local_learning(entries: list[dict[str, Any]]) -> dict[str, Any]:
+    per_idea: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"attempted": 0, "passed": 0, "failed": 0, "inconclusive": 0, "rejected": 0}
+    )
+    for entry in entries:
+        raw_ideas = entry.get("ideas")
+        ideas = [item for item in raw_ideas if isinstance(item, str)] if isinstance(raw_ideas, list) else []
+        status = str(entry.get("status") or "").lower()
+        for idea in ideas:
+            stats = per_idea[idea]
+            stats["attempted"] += 1
+            if status in {"passed", "failed", "inconclusive", "rejected"}:
+                stats[status] += 1
+
+    return {
+        "entry_count": len(entries),
+        "ideas": dict(sorted(per_idea.items())),
+    }
+
+
+def rank_task(
+    task: dict[str, Any],
+    *,
+    frequency: Counter[str],
+    top_count: int,
+    local_learning: dict[str, Any],
+) -> dict[str, float]:
+    ideas = [idea for idea in task.get("ideas", []) if isinstance(idea, str)]
+    idea_classification = task.get("idea_classification", {})
+    local_ideas = local_learning.get("ideas", {})
+
+    uncertainty_count = 0
+    legal_count = 0
+    attempt_count = 0
+    failure_count = 0
+    prevalence = 0.0
+    novelty_count = 0
+
+    for idea in ideas:
+        classification = idea_classification.get(idea, {}) if isinstance(idea_classification, dict) else {}
+        status = classification.get("status")
+        if status == "uncertain":
+            uncertainty_count += 1
+        elif status == "leaderboard-legal":
+            legal_count += 1
+
+        stats = local_ideas.get(idea, {}) if isinstance(local_ideas, dict) else {}
+        attempted = int(stats.get("attempted", 0))
+        failed = int(stats.get("failed", 0))
+        attempt_count += attempted
+        failure_count += failed
+        if attempted == 0:
+            novelty_count += 1
+
+        prevalence += frequency.get(idea, 0) / max(top_count, 1)
+
+    category = str(task.get("category") or "")
+    category_cost = {
+        "knowledge": 0.25,
+        "measurement": 0.35,
+        "validation": 0.45,
+        "baseline": 0.55,
+        "experiment": 0.60,
+    }.get(category, 0.50)
+
+    expected_info_gain = clamp01(
+        0.30
+        + 0.20 * (novelty_count / max(len(ideas), 1))
+        + 0.20 * (uncertainty_count / max(len(ideas), 1))
+        + 0.10 * (1.0 / (1 + attempt_count))
+    )
+    expected_upside = clamp01(
+        0.25 + 0.20 * (prevalence / max(len(ideas), 1)) + 0.20 * (legal_count / max(len(ideas), 1))
+    )
+    expected_cost = clamp01(
+        category_cost + 0.08 * max(len(ideas) - 1, 0) + 0.04 * failure_count - 0.06 * min(attempt_count, 3)
+    )
+    mergeability = clamp01(
+        0.40
+        + 0.30 * (legal_count / max(len(ideas), 1))
+        - 0.20 * (uncertainty_count / max(len(ideas), 1))
+        - 0.05 * max(len(ideas) - 2, 0)
+    )
+    composite_score = round(
+        0.35 * expected_info_gain + 0.35 * expected_upside + 0.30 * mergeability - 0.25 * expected_cost,
+        6,
+    )
+    return {
+        "expected_info_gain": round(expected_info_gain, 4),
+        "expected_upside": round(expected_upside, 4),
+        "expected_cost": round(expected_cost, 4),
+        "mergeability": round(mergeability, 4),
+        "composite_score": composite_score,
+    }
+
+
+def leaderboard_tasks(records: list[Record], local_learning: dict[str, Any]) -> list[dict[str, Any]]:
     ranked = [record for record in records if record.track == "10min_16mb" and record.val_bpb is not None]
     ranked.sort(key=lambda record: (record.val_bpb, record.date))
     top = ranked[:8]
     idea_legality = classify_ideas(records)
 
     frequency = Counter(tag for record in top for tag in record.tags)
-    best_by_tag: dict[str, float] = {}
-    for record in ranked:
-        for tag in record.tags:
-            current = best_by_tag.get(tag)
-            if current is None or (record.val_bpb is not None and record.val_bpb < current):
-                best_by_tag[tag] = record.val_bpb
-
     tasks: list[dict[str, Any]] = []
     priority = 1
 
@@ -323,6 +436,16 @@ def leaderboard_tasks(records: list[Record]) -> list[dict[str, Any]]:
             idea: idea_legality.get(idea, {"status": "uncertain", "evidence_paths": [], "uncertainty_reasons": ["no_supporting_records"]})
             for idea in task["ideas"]
         }
+        task["ranking"] = rank_task(
+            task,
+            frequency=frequency,
+            top_count=len(top),
+            local_learning=local_learning,
+        )
+
+    tasks.sort(key=lambda task: (-task["ranking"]["composite_score"], task["title"]))
+    for index, task in enumerate(tasks, start=1):
+        task["priority"] = index
     return tasks
 
 
@@ -406,8 +529,10 @@ def write_json(path: Path, payload: Any) -> None:
 
 def main() -> None:
     records = load_records()
+    local_learning_entries = load_local_experiment_learnings()
+    local_learning = summarize_local_learning(local_learning_entries)
     summary = summarize(records)
-    tasks = leaderboard_tasks(records)
+    tasks = leaderboard_tasks(records, local_learning)
 
     record_index = [
         {
@@ -428,7 +553,22 @@ def main() -> None:
 
     write_json(GENERATED_ROOT / "record_index.json", {"records": record_index})
     write_json(GENERATED_ROOT / "leaderboard_snapshot.json", summary)
-    write_json(GENERATED_ROOT / "candidate_backlog.json", {"tasks": tasks})
+    write_json(
+        GENERATED_ROOT / "candidate_backlog.json",
+        {
+            "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            "inputs": {
+                "imported_record_count": len(records),
+                "imported_record_source": str(RECORDS_ROOT.relative_to(ROOT)),
+                "local_learning": {
+                    "entry_count": local_learning["entry_count"],
+                    "log_path": str(LOCAL_EXPERIMENT_LOG_PATH.relative_to(ROOT)),
+                    "ideas": local_learning["ideas"],
+                },
+            },
+            "tasks": tasks,
+        },
+    )
 
     print(f"wrote {GENERATED_ROOT / 'record_index.json'}")
     print(f"wrote {GENERATED_ROOT / 'leaderboard_snapshot.json'}")

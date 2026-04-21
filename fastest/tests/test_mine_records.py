@@ -221,6 +221,94 @@ class MineRecordsKnowledgeTests(unittest.TestCase):
         self.assertEqual("uncertain", idea_status["shared_idea"]["status"])
         self.assertIn("missing_artifact_bytes", idea_status["shared_idea"]["uncertainty_reasons"])
 
+    def test_main_persists_ranked_queue_with_local_learning_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            records_root = root / "records" / "track_10min_16mb"
+            run_a = records_root / "2026-04-08_RunA"
+            run_b = records_root / "2026-04-09_RunB"
+            run_a.mkdir(parents=True)
+            run_b.mkdir(parents=True)
+            (run_a / "submission.json").write_text(
+                json.dumps(
+                    {
+                        "track": "10min_16mb",
+                        "name": "RunA",
+                        "date": "2026-04-08",
+                        "val_bpb": 1.10,
+                        "bytes_total": 15_500_000,
+                        "train_time_seconds": 590,
+                        "hardware": "8xH100 80GB SXM",
+                        "blurb": "SP8192 recurrence parallel residuals legal score-first TTT qk gain 5.0",
+                    }
+                )
+            )
+            (run_b / "submission.json").write_text(
+                json.dumps(
+                    {
+                        "track": "10min_16mb",
+                        "name": "RunB",
+                        "date": "2026-04-09",
+                        "val_bpb": 1.09,
+                        "bytes_total": 15_400_000,
+                        "train_time_seconds": 585,
+                        "hardware": "8xH100 80GB SXM",
+                        "blurb": "SP8192 recurrence parallel residuals legal score-first TTT qk gain 5.25",
+                    }
+                )
+            )
+
+            generated_root = root / "fastest" / "generated"
+            log_path = root / "fastest" / "logs" / "experiment-log.jsonl"
+            log_path.parent.mkdir(parents=True)
+            log_path.write_text(
+                "\n".join(
+                    [
+                        json.dumps(
+                            {
+                                "title": "Cheap qk gain local sweep",
+                                "status": "passed",
+                                "ideas": ["qk_gain"],
+                                "classification": "leaderboard-legal",
+                            }
+                        ),
+                        json.dumps(
+                            {
+                                "title": "Parallel residual local retry",
+                                "status": "failed",
+                                "ideas": ["parallel_residuals"],
+                                "classification": "unknown",
+                            }
+                        ),
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with patch.object(mine_records, "ROOT", root), patch.object(
+                mine_records, "RECORDS_ROOT", root / "records"
+            ), patch.object(mine_records, "GENERATED_ROOT", generated_root), patch.object(
+                mine_records, "LOCAL_EXPERIMENT_LOG_PATH", log_path
+            ):
+                mine_records.main()
+
+            payload = json.loads((generated_root / "candidate_backlog.json").read_text(encoding="utf-8"))
+
+        self.assertIn("generated_at", payload)
+        self.assertIn("inputs", payload)
+        self.assertEqual(2, payload["inputs"]["imported_record_count"])
+        self.assertEqual(2, payload["inputs"]["local_learning"]["entry_count"])
+        self.assertIn("tasks", payload)
+        self.assertGreater(len(payload["tasks"]), 0)
+        first = payload["tasks"][0]
+        self.assertIn("ranking", first)
+        self.assertIn("expected_info_gain", first["ranking"])
+        self.assertIn("expected_upside", first["ranking"])
+        self.assertIn("expected_cost", first["ranking"])
+        self.assertIn("mergeability", first["ranking"])
+        self.assertIn("composite_score", first["ranking"])
+
 
 if __name__ == "__main__":
     unittest.main()
