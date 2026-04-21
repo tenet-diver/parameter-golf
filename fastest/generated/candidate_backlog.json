@@ -66,7 +66,7 @@
           ]
         },
         "recurrence": {
-          "status": "non-record-only",
+          "status": "uncertain",
           "evidence_paths": [
             "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
             "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",

@@ -211,16 +211,21 @@ def classify_ideas(records: list[Record]) -> dict[str, dict[str, Any]]:
         for tag in record.tags:
             by_tag[tag].append((record, legality))
 
-    ranked_status = {"leaderboard-legal": 0, "non-record-only": 1, "uncertain": 2}
     result: dict[str, dict[str, Any]] = {}
     for tag, tagged_records in by_tag.items():
-        best = min(tagged_records, key=lambda item: ranked_status[item[1]["status"]])[1]
+        statuses = {legality["status"] for _, legality in tagged_records}
+        if "leaderboard-legal" in statuses:
+            tag_status = "leaderboard-legal"
+        elif "uncertain" in statuses:
+            tag_status = "uncertain"
+        else:
+            tag_status = "non-record-only"
         uncertainty_reasons: set[str] = set()
         for _, legality in tagged_records:
             if legality["status"] == "uncertain":
                 uncertainty_reasons.update(legality["uncertainty_reasons"])
         result[tag] = {
-            "status": best["status"],
+            "status": tag_status,
             "evidence_paths": [record.path for record, _ in tagged_records][:5],
             "uncertainty_reasons": sorted(uncertainty_reasons),
         }

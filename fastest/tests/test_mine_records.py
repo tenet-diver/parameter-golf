@@ -188,6 +188,39 @@ class MineRecordsKnowledgeTests(unittest.TestCase):
         self.assertEqual("uncertain", wrong_hardware_result["status"])
         self.assertIn("hardware_not_8xh100", wrong_hardware_result["uncertainty_reasons"])
 
+    def test_idea_classification_prefers_uncertain_over_non_record_only(self) -> None:
+        non_record = mine_records.Record(
+            path="records/track_non_record_16mb/2026-04-09_NonRecord/submission.json",
+            track="non-record",
+            name="NonRecord",
+            date="2026-04-09",
+            val_bpb=1.05,
+            bytes_total=15_800_000,
+            train_time_seconds=None,
+            hardware=None,
+            summary="unlimited compute",
+            tags=["shared_idea"],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+        )
+        uncertain = mine_records.Record(
+            path="records/track_10min_16mb/2026-04-09_Uncertain/submission.json",
+            track="10min_16mb",
+            name="Uncertain",
+            date="2026-04-09",
+            val_bpb=1.12,
+            bytes_total=None,
+            train_time_seconds=None,
+            hardware="8xH100 80GB SXM",
+            summary="missing artifact evidence",
+            tags=["shared_idea"],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+        )
+
+        idea_status = mine_records.classify_ideas([non_record, uncertain])
+
+        self.assertEqual("uncertain", idea_status["shared_idea"]["status"])
+        self.assertIn("missing_artifact_bytes", idea_status["shared_idea"]["uncertainty_reasons"])
+
 
 if __name__ == "__main__":
     unittest.main()
