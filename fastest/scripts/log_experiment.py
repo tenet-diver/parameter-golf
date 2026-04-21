@@ -45,23 +45,48 @@ def resolve_log_path() -> Path:
     return LOG_PATH
 
 
-def main() -> None:
-    args = parse_args()
-    log_path = resolve_log_path()
-    log_path.parent.mkdir(parents=True, exist_ok=True)
+def create_log_entry(
+    *,
+    title: str,
+    category: str,
+    status: str,
+    summary: str,
+    ideas: list[str] | None = None,
+    metrics: dict[str, str] | None = None,
+    classification: str = "unknown",
+    next_steps: list[str] | None = None,
+    log_path: Path | None = None,
+) -> Path:
+    target_path = log_path or resolve_log_path()
+    target_path.parent.mkdir(parents=True, exist_ok=True)
     entry = {
         "timestamp": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        "title": args.title,
-        "category": args.category,
-        "status": args.status,
-        "summary": args.summary,
-        "ideas": args.idea,
-        "metrics": parse_metrics(args.metric),
-        "classification": args.classification,
-        "next_steps": args.next_step,
+        "title": title,
+        "category": category,
+        "status": status,
+        "summary": summary,
+        "ideas": ideas or [],
+        "metrics": metrics or {},
+        "classification": classification,
+        "next_steps": next_steps or [],
     }
-    with log_path.open("a", encoding="utf-8") as handle:
+    with target_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, sort_keys=True) + "\n")
+    return target_path
+
+
+def main() -> None:
+    args = parse_args()
+    log_path = create_log_entry(
+        title=args.title,
+        category=args.category,
+        status=args.status,
+        summary=args.summary,
+        ideas=args.idea,
+        metrics=parse_metrics(args.metric),
+        classification=args.classification,
+        next_steps=args.next_step,
+    )
     print(f"appended {log_path}")
 
 

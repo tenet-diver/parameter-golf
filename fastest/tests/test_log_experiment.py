@@ -10,6 +10,29 @@ from fastest.scripts import log_experiment
 
 
 class LogExperimentSmokeTests(unittest.TestCase):
+    def test_programmatic_create_writes_log_entry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            log_path = Path(tmpdir) / "api" / "experiment-log.jsonl"
+
+            written_path = log_experiment.create_log_entry(
+                title="Programmatic create smoke",
+                category="smoke",
+                status="passed",
+                summary="create one entry via API",
+                metrics={"val_bpb": "1.1111"},
+                ideas=["programmatic"],
+                next_steps=["keep API for smoke validation"],
+                log_path=log_path,
+            )
+
+            self.assertEqual(log_path, written_path)
+            self.assertTrue(log_path.exists())
+            lines = log_path.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(1, len(lines))
+            entry = json.loads(lines[0])
+            self.assertEqual("Programmatic create smoke", entry["title"])
+            self.assertEqual({"val_bpb": "1.1111"}, entry["metrics"])
+
     def test_main_creates_log_entry_at_env_overridden_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             log_path = Path(tmpdir) / "custom" / "experiment-log.jsonl"
