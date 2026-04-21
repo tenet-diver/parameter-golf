@@ -188,6 +188,100 @@ class MineRecordsKnowledgeTests(unittest.TestCase):
         self.assertEqual("uncertain", wrong_hardware_result["status"])
         self.assertIn("hardware_not_8xh100", wrong_hardware_result["uncertainty_reasons"])
 
+    def test_legality_detects_eval_drift_against_trusted_control(self) -> None:
+        drifting_record = mine_records.Record(
+            path="records/track_10min_16mb/2026-04-09_Drift/submission.json",
+            track="10min_16mb",
+            name="Drift",
+            date="2026-04-09",
+            val_bpb=1.09,
+            bytes_total=15_500_000,
+            train_time_seconds=590,
+            hardware="8xH100 80GB SXM",
+            summary="control drift check",
+            tags=[],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+            payload={
+                "validation": {
+                    "trusted_controls": [
+                        {
+                            "name": "control-a",
+                            "expected_val_bpb": 1.1000,
+                            "observed_val_bpb": 1.1060,
+                            "max_drift_bpb": 0.0030,
+                        }
+                    ]
+                }
+            },
+        )
+
+        result = mine_records.classify_record_legality(drifting_record)
+
+        self.assertEqual("uncertain", result["status"])
+        self.assertIn("eval_drift_vs_trusted_control", result["uncertainty_reasons"])
+
+    def test_legality_detects_artifact_or_compression_mismatch(self) -> None:
+        mismatched_record = mine_records.Record(
+            path="records/track_10min_16mb/2026-04-09_Mismatch/submission.json",
+            track="10min_16mb",
+            name="Mismatch",
+            date="2026-04-09",
+            val_bpb=1.09,
+            bytes_total=15_995_000,
+            train_time_seconds=590,
+            hardware="8xH100 80GB SXM",
+            summary="artifact mismatch check",
+            tags=[],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+            payload={
+                "artifact_bytes_max": 15_995_000,
+                "seed_results": {
+                    "0": {"artifact_bytes": 15_990_000},
+                    "1": {"artifact_bytes": 16_050_000},
+                },
+                "compression": "zstd-22",
+                "validation": {
+                    "artifact_probe": {
+                        "compression": "brotli-11",
+                    }
+                },
+                "compliance": {"artifact_under_16mb": True},
+            },
+        )
+
+        result = mine_records.classify_record_legality(mismatched_record)
+
+        self.assertEqual("uncertain", result["status"])
+        self.assertIn("artifact_or_compression_mismatch", result["uncertainty_reasons"])
+
+    def test_legality_fails_promising_result_without_reproducibility(self) -> None:
+        unreproducible_record = mine_records.Record(
+            path="records/track_10min_16mb/2026-04-09_Unreproducible/submission.json",
+            track="10min_16mb",
+            name="Unreproducible",
+            date="2026-04-09",
+            val_bpb=1.085,
+            bytes_total=15_500_000,
+            train_time_seconds=590,
+            hardware="8xH100 80GB SXM",
+            summary="promising result with repro failure",
+            tags=[],
+            source={"kind": "submission_json", "path": "x", "track_dir": "y"},
+            payload={
+                "validation": {
+                    "reproducibility": {
+                        "attempts": 3,
+                        "successful_runs": 1,
+                    }
+                }
+            },
+        )
+
+        result = mine_records.classify_record_legality(unreproducible_record)
+
+        self.assertEqual("uncertain", result["status"])
+        self.assertIn("promising_result_not_reproducible", result["uncertainty_reasons"])
+
     def test_idea_classification_prefers_uncertain_over_non_record_only(self) -> None:
         non_record = mine_records.Record(
             path="records/track_non_record_16mb/2026-04-09_NonRecord/submission.json",

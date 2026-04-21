@@ -58,6 +58,7 @@ class Record:
     summary: str
     tags: list[str]
     source: dict[str, str]
+    payload: dict[str, Any] | None = None
 
 
 def parse_date(raw: str, fallback: str) -> str:
@@ -158,6 +159,7 @@ def load_records() -> list[Record]:
                     "path": str(path.relative_to(ROOT)),
                     "track_dir": str(path.parent.relative_to(ROOT)),
                 },
+                payload=payload,
             )
         )
     return records
@@ -201,6 +203,7 @@ def classify_record_legality(record: Record) -> dict[str, Any]:
             uncertainty_reasons.append("missing_hardware")
         elif hardware_is_8xh100 is False:
             uncertainty_reasons.append("hardware_not_8xh100")
+        uncertainty_reasons.extend(validation_uncertainty_reasons(record))
     elif not is_track_non_record and record.track != "non-record":
         uncertainty_reasons.append("unknown_track")
 
@@ -226,6 +229,104 @@ def classify_record_legality(record: Record) -> dict[str, Any]:
         "non_record_reasons": sorted(set(non_record_reasons)),
         "uncertainty_reasons": sorted(set(uncertainty_reasons)),
     }
+
+
+def coerce_float(value: Any) -> float | None:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return None
+
+
+def coerce_int(value: Any) -> int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        return int(value)
+    if isinstance(value, str):
+        try:
+            return int(float(value))
+        except ValueError:
+            return None
+    return None
+
+
+def normalize_text(value: Any) -> str | None:
+    return value.strip().lower() if isinstance(value, str) and value.strip() else None
+
+
+def validation_uncertainty_reasons(record: Record) -> list[str]:
+    payload = record.payload if isinstance(record.payload, dict) else {}
+    validation = payload.get("validation")
+    if not isinstance(validation, dict):
+        return []
+
+    reasons: list[str] = []
+
+    controls = validation.get("trusted_controls")
+    if isinstance(controls, list):
+        for control in controls:
+            if not isinstance(control, dict):
+                continue
+            expected = coerce_float(control.get("expected_val_bpb"))
+            observed = coerce_float(control.get("observed_val_bpb"))
+            max_drift = coerce_float(control.get("max_drift_bpb"))
+            if expected is None or observed is None or max_drift is None:
+                continue
+            if abs(observed - expected) > max_drift:
+                reasons.append("eval_drift_vs_trusted_control")
+                break
+
+    seed_results = payload.get("seed_results")
+    seed_artifact_bytes: list[int] = []
+    if isinstance(seed_results, dict):
+        for item in seed_results.values():
+            if not isinstance(item, dict):
+                continue
+            artifact_bytes = coerce_int(item.get("artifact_bytes") or item.get("bytes_total"))
+            if artifact_bytes is not None:
+                seed_artifact_bytes.append(artifact_bytes)
+
+    mismatch_found = False
+    if seed_artifact_bytes:
+        max_seed_artifact = max(seed_artifact_bytes)
+        claimed_max = coerce_int(payload.get("artifact_bytes_max") or record.bytes_total)
+        if claimed_max is not None and claimed_max < max_seed_artifact:
+            mismatch_found = True
+        compliance = payload.get("compliance")
+        artifact_under_16mb = compliance.get("artifact_under_16mb") if isinstance(compliance, dict) else None
+        if artifact_under_16mb is True and max_seed_artifact > ARTIFACT_LIMIT_BYTES:
+            mismatch_found = True
+
+    claimed_compression = normalize_text(payload.get("compression"))
+    artifact_probe = validation.get("artifact_probe")
+    observed_compression = normalize_text(artifact_probe.get("compression")) if isinstance(artifact_probe, dict) else None
+    if claimed_compression and observed_compression and claimed_compression != observed_compression:
+        mismatch_found = True
+
+    if mismatch_found:
+        reasons.append("artifact_or_compression_mismatch")
+
+    repro = validation.get("reproducibility")
+    if isinstance(repro, dict):
+        promising = record.val_bpb is not None and record.val_bpb <= 1.10
+        attempts = coerce_int(repro.get("attempts"))
+        successful_runs = coerce_int(repro.get("successful_runs"))
+        status = normalize_text(repro.get("status"))
+        failed_status = status in {"failed", "unreproducible", "not_reproducible"}
+        insufficient_success = (
+            attempts is not None and successful_runs is not None and attempts >= 2 and successful_runs < 2
+        )
+        if promising and (failed_status or insufficient_success):
+            reasons.append("promising_result_not_reproducible")
+
+    return reasons
 
 
 def classify_ideas(records: list[Record]) -> dict[str, dict[str, Any]]:
