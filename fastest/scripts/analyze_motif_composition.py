@@ -9,16 +9,29 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from mine_records import load_records
+try:
+    from .mine_records import load_local_experiment_learnings, load_records
+except ImportError:  # pragma: no cover - support direct script execution
+    from mine_records import load_local_experiment_learnings, load_records
 
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_PATH = ROOT / "fastest" / "generated" / "motif_composition_matrix.json"
 TARGET_TRACK = "10min_16mb"
+POSITIVE_DELTA_THRESHOLD = -0.001
+NEGATIVE_DELTA_THRESHOLD = 0.001
 
 
 def round_score(value: float) -> float:
     return round(value, 6)
+
+
+def classify_interaction(delta: float) -> str:
+    if delta <= POSITIVE_DELTA_THRESHOLD:
+        return "positive"
+    if delta >= NEGATIVE_DELTA_THRESHOLD:
+        return "negative"
+    return "neutral"
 
 
 def build_single_summary(records: list[Any]) -> dict[str, dict[str, float | int]]:
@@ -53,13 +66,15 @@ def build_pair_rows(records: list[Any], single_summary: dict[str, dict[str, floa
         right_mean = float(single_summary[right]["mean_val_bpb"])
         pair_mean = sum(scores) / len(scores)
         expected_mean = (left_mean + right_mean) / 2.0
+        synergy_delta = pair_mean - expected_mean
         rows.append(
             {
                 "pair": [left, right],
                 "count": len(scores),
                 "best_val_bpb": round_score(min(scores)),
                 "mean_val_bpb": round_score(pair_mean),
-                "synergy_delta_vs_single_mean": round_score(pair_mean - expected_mean),
+                "synergy_delta_vs_single_mean": round_score(synergy_delta),
+                "interaction": classify_interaction(synergy_delta),
                 "evidence_paths": pair_paths[(left, right)][:5],
             }
         )
@@ -75,20 +90,55 @@ def build_pair_rows(records: list[Any], single_summary: dict[str, dict[str, floa
     return rows
 
 
+def summarize_interactions(pair_rows: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
+    positive = [row for row in pair_rows if row["interaction"] == "positive"]
+    neutral = [row for row in pair_rows if row["interaction"] == "neutral"]
+    negative = [row for row in pair_rows if row["interaction"] == "negative"]
+    return {
+        "positive": sorted(positive, key=lambda row: (row["synergy_delta_vs_single_mean"], row["pair"]))[:12],
+        "neutral": sorted(neutral, key=lambda row: (-int(row["count"]), row["pair"]))[:12],
+        "negative": sorted(negative, key=lambda row: (row["synergy_delta_vs_single_mean"], row["pair"]))[:12],
+    }
+
+
 def build_recommendations(pair_rows: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
-    stable_pairs = [
+    combinations_to_try = [
         row
         for row in pair_rows
-        if int(row["count"]) >= 2 and float(row["synergy_delta_vs_single_mean"]) <= 0.001
+        if row["interaction"] == "positive" and int(row["count"]) >= 2
     ]
-    sharp_pairs = [
+    combinations_to_avoid = [
         row
         for row in pair_rows
-        if int(row["count"]) == 1 and float(row["best_val_bpb"]) <= 1.0825
+        if row["interaction"] == "negative" and int(row["count"]) >= 2
+    ]
+    neutral_controls = [row for row in pair_rows if row["interaction"] == "neutral" and int(row["count"]) >= 2]
+    return {
+        "combinations_to_try": combinations_to_try[:8],
+        "combinations_to_avoid": combinations_to_avoid[:8],
+        "neutral_controls": neutral_controls[:8],
+    }
+
+
+def summarize_mined_evidence() -> dict[str, object]:
+    entries = load_local_experiment_learnings()
+    status_counts: dict[str, int] = defaultdict(int)
+    idea_counts: dict[str, int] = defaultdict(int)
+    for entry in entries:
+        status = str(entry.get("status") or "unknown")
+        status_counts[status] += 1
+        for raw_idea in entry.get("ideas", []):
+            idea = str(raw_idea).strip().lower()
+            if idea:
+                idea_counts[idea] += 1
+    top_ideas = [
+        {"idea": idea, "mentions": count}
+        for idea, count in sorted(idea_counts.items(), key=lambda item: (-item[1], item[0]))[:8]
     ]
     return {
-        "repeat_offenders": stable_pairs[:8],
-        "single_record_watchlist": sharp_pairs[:6],
+        "entry_count": len(entries),
+        "status_counts": dict(sorted(status_counts.items())),
+        "top_ideas": top_ideas,
     }
 
 
@@ -117,6 +167,8 @@ def main() -> None:
             )
         ],
         "pair_summary": pair_rows,
+        "interaction_matrix": summarize_interactions(pair_rows),
+        "mined_evidence": summarize_mined_evidence(),
         "recommendations": build_recommendations(pair_rows),
     }
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)

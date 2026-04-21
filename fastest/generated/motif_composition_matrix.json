@@ -1,74 +1,74 @@
 {
-  "generated_at": "2026-04-20T21:46:55Z",
+  "generated_at": "2026-04-21T23:04:49Z",
   "track": "10min_16mb",
-  "record_count": 7,
+  "record_count": 23,
   "best_public_val_bpb": 1.081,
   "motif_summary": [
     {
       "tag": "recurrence",
-      "count": 5,
+      "count": 8,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.088956
-    },
-    {
-      "tag": "parallel_residuals",
-      "count": 4,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.089787
-    },
-    {
-      "tag": "qk_gain",
-      "count": 3,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.084299
-    },
-    {
-      "tag": "sdclip",
-      "count": 3,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.082937
-    },
-    {
-      "tag": "sp8192",
-      "count": 3,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.082937
+      "mean_val_bpb": 1.087789
     },
     {
       "tag": "high_wd",
-      "count": 2,
+      "count": 7,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.089425
-    },
-    {
-      "tag": "score_first_ttt",
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159
+      "mean_val_bpb": 1.114072
     },
     {
       "tag": "ema",
-      "count": 1,
+      "count": 5,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081
+      "mean_val_bpb": 1.107699
+    },
+    {
+      "tag": "parallel_residuals",
+      "count": 5,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.088538
+    },
+    {
+      "tag": "sdclip",
+      "count": 5,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.083029
+    },
+    {
+      "tag": "qk_gain",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.083922
+    },
+    {
+      "tag": "score_first_ttt",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.091343
+    },
+    {
+      "tag": "sp8192",
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.082901
     },
     {
       "tag": "legal_ttt",
-      "count": 1,
+      "count": 3,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081
+      "mean_val_bpb": 1.094398
     },
     {
       "tag": "mlp4x",
-      "count": 3,
+      "count": 4,
       "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.089915
+      "mean_val_bpb": 1.088135
     },
     {
       "tag": "muoneq_r",
-      "count": 3,
+      "count": 4,
       "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.085842
+      "mean_val_bpb": 1.087181
     },
     {
       "tag": "gptq_embeddings",
@@ -77,176 +77,61 @@
       "mean_val_bpb": 1.083905
     },
     {
+      "tag": "int6",
+      "count": 13,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.135301
+    },
+    {
+      "tag": "xsa",
+      "count": 6,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.117157
+    },
+    {
+      "tag": "partial_rope",
+      "count": 3,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.11014
+    },
+    {
       "tag": "sp4096",
       "count": 2,
       "best_val_bpb": 1.089716,
       "mean_val_bpb": 1.093783
     },
     {
-      "tag": "int6",
-      "count": 1,
-      "best_val_bpb": 1.089716,
-      "mean_val_bpb": 1.089716
-    },
-    {
       "tag": "bigramhash",
-      "count": 1,
+      "count": 7,
       "best_val_bpb": 1.114735,
-      "mean_val_bpb": 1.114735
+      "mean_val_bpb": 1.126481
     },
     {
-      "tag": "xsa",
-      "count": 1,
-      "best_val_bpb": 1.114735,
-      "mean_val_bpb": 1.114735
+      "tag": "smeargate",
+      "count": 6,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.134472
+    },
+    {
+      "tag": "qat",
+      "count": 4,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.139099
+    },
+    {
+      "tag": "sliding_window",
+      "count": 7,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.152758
+    },
+    {
+      "tag": "mlp3x",
+      "count": 5,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.1487
     }
   ],
   "pair_summary": [
-    {
-      "pair": [
-        "high_wd",
-        "parallel_residuals"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.008606,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "high_wd",
-        "recurrence"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.00819,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "high_wd",
-        "qk_gain"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.005862,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "high_wd",
-        "sdclip"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.005181,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "high_wd",
-        "sp8192"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.005181,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "parallel_residuals",
-        "sdclip"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.004772,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "parallel_residuals",
-        "sp8192"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.004772,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "high_wd",
-        "score_first_ttt"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.004508,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "ema",
-        "parallel_residuals"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.004393,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "legal_ttt",
-        "parallel_residuals"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.004393,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "ema",
-        "high_wd"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.004212,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
     {
       "pair": [
         "high_wd",
@@ -255,9 +140,228 @@
       "count": 1,
       "best_val_bpb": 1.081,
       "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.004212,
+      "synergy_delta_vs_single_mean": -0.023235,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.021707,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.020305,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "legal_ttt"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.019152,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "qk_gain"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.017997,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "score_first_ttt"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.017624,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "sdclip"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.017551,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "sp8192"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.017486,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.017119,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "recurrence"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.015847,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "recurrence"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.0861,
+      "synergy_delta_vs_single_mean": -0.01483,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "qk_gain"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.013914,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.013467,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.013403,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081,
+      "synergy_delta_vs_single_mean": -0.010468,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "recurrence"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.009197,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
       ]
     },
     {
@@ -268,36 +372,11 @@
       "count": 2,
       "best_val_bpb": 1.081,
       "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.004099,
+      "synergy_delta_vs_single_mean": -0.008351,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "ema",
-        "recurrence"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.003978,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "legal_ttt",
-        "recurrence"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.003978,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
       ]
     },
     {
@@ -305,10 +384,120 @@
         "recurrence",
         "score_first_ttt"
       ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081991,
+      "synergy_delta_vs_single_mean": -0.007575,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "qk_gain"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.007263,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.006817,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081897,
+      "synergy_delta_vs_single_mean": -0.006753,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "score_first_ttt"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081991,
+      "synergy_delta_vs_single_mean": -0.005641,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "score_first_ttt",
+        "sdclip"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081991,
+      "synergy_delta_vs_single_mean": -0.005195,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "score_first_ttt",
+        "sp8192"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.081991,
+      "synergy_delta_vs_single_mean": -0.005131,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "sp8192"
+      ],
       "count": 2,
       "best_val_bpb": 1.081,
       "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.003683,
+      "synergy_delta_vs_single_mean": -0.00413,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
@@ -316,17 +505,18 @@
     },
     {
       "pair": [
-        "recurrence",
+        "parallel_residuals",
         "sdclip"
       ],
       "count": 3,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.082937,
-      "synergy_delta_vs_single_mean": -0.00301,
+      "mean_val_bpb": 1.08224,
+      "synergy_delta_vs_single_mean": -0.003544,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json"
       ]
     },
     {
@@ -334,14 +524,51 @@
         "recurrence",
         "sp8192"
       ],
-      "count": 3,
+      "count": 4,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.082937,
-      "synergy_delta_vs_single_mean": -0.00301,
+      "mean_val_bpb": 1.082901,
+      "synergy_delta_vs_single_mean": -0.002444,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
         "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "recurrence",
+        "sdclip"
+      ],
+      "count": 5,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.083029,
+      "synergy_delta_vs_single_mean": -0.00238,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "recurrence"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.083922,
+      "synergy_delta_vs_single_mean": -0.001933,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ]
     },
     {
@@ -352,7 +579,8 @@
       "count": 3,
       "best_val_bpb": 1.081,
       "mean_val_bpb": 1.084299,
-      "synergy_delta_vs_single_mean": -0.002744,
+      "synergy_delta_vs_single_mean": -0.001931,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
@@ -362,30 +590,17 @@
     {
       "pair": [
         "qk_gain",
-        "recurrence"
+        "sdclip"
       ],
       "count": 3,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.084299,
-      "synergy_delta_vs_single_mean": -0.002329,
+      "mean_val_bpb": 1.081991,
+      "synergy_delta_vs_single_mean": -0.001484,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "qk_gain",
-        "sdclip"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.002028,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
       ]
     },
     {
@@ -393,159 +608,15 @@
         "qk_gain",
         "sp8192"
       ],
-      "count": 2,
+      "count": 3,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.002028,
+      "mean_val_bpb": 1.081991,
+      "synergy_delta_vs_single_mean": -0.00142,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "ema",
-        "qk_gain"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.00165,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "legal_ttt",
-        "qk_gain"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.00165,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "qk_gain",
-        "score_first_ttt"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.001355,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "ema",
-        "sdclip"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.000968,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "ema",
-        "sp8192"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.000968,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "legal_ttt",
-        "sdclip"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.000968,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "legal_ttt",
-        "sp8192"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.000968,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "score_first_ttt",
-        "sdclip"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.000674,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "score_first_ttt",
-        "sp8192"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.08159,
-      "synergy_delta_vs_single_mean": -0.000674,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "ema",
-        "score_first_ttt"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.000295,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "legal_ttt",
-        "score_first_ttt"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": -0.000295,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
       ]
     },
     {
@@ -553,27 +624,32 @@
         "sdclip",
         "sp8192"
       ],
-      "count": 3,
+      "count": 4,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.082937,
-      "synergy_delta_vs_single_mean": -0.0,
+      "mean_val_bpb": 1.082901,
+      "synergy_delta_vs_single_mean": -6.4e-05,
+      "interaction": "neutral",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
         "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
       ]
     },
     {
       "pair": [
         "ema",
-        "legal_ttt"
+        "high_wd"
       ],
-      "count": 1,
+      "count": 3,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.081,
-      "synergy_delta_vs_single_mean": 0.0,
+      "mean_val_bpb": 1.110973,
+      "synergy_delta_vs_single_mean": 8.8e-05,
+      "interaction": "neutral",
       "evidence_paths": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
       ]
     },
     {
@@ -581,15 +657,90 @@
         "parallel_residuals",
         "recurrence"
       ],
-      "count": 4,
+      "count": 5,
       "best_val_bpb": 1.081,
-      "mean_val_bpb": 1.089787,
-      "synergy_delta_vs_single_mean": 0.000416,
+      "mean_val_bpb": 1.088538,
+      "synergy_delta_vs_single_mean": 0.000374,
+      "interaction": "neutral",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
         "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "score_first_ttt"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.081,
+      "mean_val_bpb": 1.094398,
+      "synergy_delta_vs_single_mean": 0.001527,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "score_first_ttt"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.082487,
+      "synergy_delta_vs_single_mean": -0.007252,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "muoneq_r",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.007082,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.005444,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.08218,
+      "synergy_delta_vs_single_mean": -0.004042,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
       ]
     },
     {
@@ -600,20 +751,8 @@
       "count": 1,
       "best_val_bpb": 1.08218,
       "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.00473,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "gptq_embeddings",
-        "parallel_residuals"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.004666,
+      "synergy_delta_vs_single_mean": -0.00384,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
       ]
@@ -623,147 +762,102 @@
         "mlp4x",
         "sdclip"
       ],
-      "count": 1,
+      "count": 2,
       "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.004246,
+      "mean_val_bpb": 1.082487,
+      "synergy_delta_vs_single_mean": -0.003095,
+      "interaction": "positive",
       "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
       ]
     },
     {
       "pair": [
         "mlp4x",
-        "sp8192"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.004246,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "mlp4x",
-        "parallel_residuals"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.085948,
-      "synergy_delta_vs_single_mean": -0.003903,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "mlp4x",
-        "score_first_ttt"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.003573,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "mlp4x",
-        "recurrence"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.085948,
-      "synergy_delta_vs_single_mean": -0.003488,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "gptq_embeddings",
-        "recurrence"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.083905,
-      "synergy_delta_vs_single_mean": -0.002526,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "mlp4x",
-        "muoneq_r"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.085948,
-      "synergy_delta_vs_single_mean": -0.001931,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "gptq_embeddings",
-        "qk_gain"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.001922,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "muoneq_r",
-        "parallel_residuals"
-      ],
-      "count": 2,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.085948,
-      "synergy_delta_vs_single_mean": -0.001867,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "muoneq_r",
         "recurrence"
       ],
       "count": 3,
       "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.085842,
-      "synergy_delta_vs_single_mean": -0.001557,
+      "mean_val_bpb": 1.084897,
+      "synergy_delta_vs_single_mean": -0.003065,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ]
     },
     {
       "pair": [
+        "mlp4x",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.082487,
+      "synergy_delta_vs_single_mean": -0.003031,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "parallel_residuals"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": -0.002389,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "recurrence"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": -0.001942,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
         "muoneq_r",
-        "score_first_ttt"
+        "parallel_residuals"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.085948,
+      "synergy_delta_vs_single_mean": -0.001912,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "qk_gain"
       ],
       "count": 1,
       "best_val_bpb": 1.08218,
       "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.001536,
+      "synergy_delta_vs_single_mean": -0.001734,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
       ]
@@ -771,12 +865,13 @@
     {
       "pair": [
         "mlp4x",
-        "qk_gain"
+        "muoneq_r"
       ],
       "count": 2,
       "best_val_bpb": 1.08218,
       "mean_val_bpb": 1.085948,
-      "synergy_delta_vs_single_mean": -0.001159,
+      "synergy_delta_vs_single_mean": -0.00171,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
@@ -790,23 +885,11 @@
       "count": 2,
       "best_val_bpb": 1.08218,
       "mean_val_bpb": 1.083905,
-      "synergy_delta_vs_single_mean": -0.000969,
+      "synergy_delta_vs_single_mean": -0.001638,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
         "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "gptq_embeddings",
-        "score_first_ttt"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.08218,
-      "synergy_delta_vs_single_mean": -0.000568,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
       ]
     },
     {
@@ -817,7 +900,8 @@
       "count": 2,
       "best_val_bpb": 1.08218,
       "mean_val_bpb": 1.083905,
-      "synergy_delta_vs_single_mean": -0.000485,
+      "synergy_delta_vs_single_mean": -0.0012,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
         "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
@@ -831,7 +915,8 @@
       "count": 2,
       "best_val_bpb": 1.08218,
       "mean_val_bpb": 1.083905,
-      "synergy_delta_vs_single_mean": -0.000485,
+      "synergy_delta_vs_single_mean": -0.001136,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
         "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
@@ -839,30 +924,35 @@
     },
     {
       "pair": [
-        "gptq_embeddings",
-        "sdclip"
+        "mlp4x",
+        "qk_gain"
       ],
-      "count": 2,
+      "count": 3,
       "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.083905,
-      "synergy_delta_vs_single_mean": 0.000484,
+      "mean_val_bpb": 1.084897,
+      "synergy_delta_vs_single_mean": -0.001132,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ]
     },
     {
       "pair": [
-        "gptq_embeddings",
-        "sp8192"
+        "muoneq_r",
+        "recurrence"
       ],
-      "count": 2,
+      "count": 4,
       "best_val_bpb": 1.08218,
-      "mean_val_bpb": 1.083905,
-      "synergy_delta_vs_single_mean": 0.000484,
+      "mean_val_bpb": 1.087181,
+      "synergy_delta_vs_single_mean": -0.000304,
+      "interaction": "neutral",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
       ]
     },
     {
@@ -873,7 +963,8 @@
       "count": 2,
       "best_val_bpb": 1.08218,
       "mean_val_bpb": 1.085948,
-      "synergy_delta_vs_single_mean": 0.000877,
+      "synergy_delta_vs_single_mean": 0.000396,
+      "interaction": "neutral",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
@@ -881,15 +972,458 @@
     },
     {
       "pair": [
-        "parallel_residuals",
-        "sp4096"
+        "gptq_embeddings",
+        "sdclip"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": 0.000438,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "gptq_embeddings",
+        "sp8192"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.08218,
+      "mean_val_bpb": 1.083905,
+      "synergy_delta_vs_single_mean": 0.000502,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "legal_ttt"
       ],
       "count": 1,
-      "best_val_bpb": 1.089716,
-      "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": -0.002069,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.032056,
+      "interaction": "positive",
       "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.030528,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "sdclip"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.026371,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "sp8192"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.026307,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "mlp4x"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.086255,
+      "synergy_delta_vs_single_mean": -0.025463,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "recurrence"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.087903,
+      "synergy_delta_vs_single_mean": -0.023642,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "qk_gain"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.086255,
+      "synergy_delta_vs_single_mean": -0.023356,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.022984,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "score_first_ttt",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.021456,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.019852,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "recurrence",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.019679,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "partial_rope"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.019475,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.017948,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qk_gain",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.017746,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "sdclip",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.017299,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "sp8192",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.017235,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp4x",
+        "partial_rope"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.016344,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "recurrence"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.016171,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "mlp4x"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.015123,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "qk_gain"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.014237,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "sdclip"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.013791,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "sp8192"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.013727,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "partial_rope"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.11014,
+      "synergy_delta_vs_single_mean": -0.012581,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "xsa"
+      ],
+      "count": 5,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.117642,
+      "synergy_delta_vs_single_mean": -0.008587,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "legal_ttt",
+        "mlp4x"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.082794,
+      "synergy_delta_vs_single_mean": -0.008473,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "int6"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.114373,
+      "synergy_delta_vs_single_mean": -0.007127,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "xsa"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.11014,
+      "synergy_delta_vs_single_mean": -0.003509,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "partial_rope"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.11014,
+      "synergy_delta_vs_single_mean": 0.00122,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "xsa"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.082794,
+      "mean_val_bpb": 1.114373,
+      "synergy_delta_vs_single_mean": 0.001945,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
       ]
     },
     {
@@ -900,7 +1434,51 @@
       "count": 1,
       "best_val_bpb": 1.089716,
       "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": -0.002033,
+      "synergy_delta_vs_single_mean": -0.024826,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "parallel_residuals"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -0.022203,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "muoneq_r"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.090458,
+      "synergy_delta_vs_single_mean": -0.020783,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "parallel_residuals",
+        "sp4096"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.089716,
+      "mean_val_bpb": 1.089716,
+      "synergy_delta_vs_single_mean": -0.001444,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ]
@@ -913,20 +1491,8 @@
       "count": 1,
       "best_val_bpb": 1.089716,
       "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": -0.001653,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "int6",
-        "mlp4x"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.089716,
-      "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": -9.9e-05,
+      "synergy_delta_vs_single_mean": -0.00107,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ]
@@ -939,33 +1505,8 @@
       "count": 1,
       "best_val_bpb": 1.089716,
       "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": -9.6e-05,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "int6",
-        "parallel_residuals"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.089716,
-      "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": -3.5e-05,
-      "evidence_paths": [
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
-      ]
-    },
-    {
-      "pair": [
-        "int6",
-        "recurrence"
-      ],
-      "count": 1,
-      "best_val_bpb": 1.089716,
-      "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": 0.00038,
+      "synergy_delta_vs_single_mean": -0.000766,
+      "interaction": "neutral",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ]
@@ -978,7 +1519,8 @@
       "count": 1,
       "best_val_bpb": 1.089716,
       "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": 0.000675,
+      "synergy_delta_vs_single_mean": 0.000864,
+      "interaction": "neutral",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
       ]
@@ -991,7 +1533,8 @@
       "count": 2,
       "best_val_bpb": 1.089716,
       "mean_val_bpb": 1.093783,
-      "synergy_delta_vs_single_mean": 0.001934,
+      "synergy_delta_vs_single_mean": 0.002824,
+      "interaction": "negative",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
         "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
@@ -999,28 +1542,34 @@
     },
     {
       "pair": [
-        "int6",
+        "high_wd",
         "muoneq_r"
       ],
       "count": 1,
-      "best_val_bpb": 1.089716,
-      "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": 0.001937,
+      "best_val_bpb": 1.0912,
+      "mean_val_bpb": 1.0912,
+      "synergy_delta_vs_single_mean": -0.009427,
+      "interaction": "positive",
       "evidence_paths": [
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
       ]
     },
     {
       "pair": [
-        "int6",
-        "qk_gain"
+        "high_wd",
+        "int6"
       ],
-      "count": 1,
-      "best_val_bpb": 1.089716,
-      "mean_val_bpb": 1.089716,
-      "synergy_delta_vs_single_mean": 0.002709,
+      "count": 5,
+      "best_val_bpb": 1.0912,
+      "mean_val_bpb": 1.12393,
+      "synergy_delta_vs_single_mean": -0.000756,
+      "interaction": "neutral",
       "evidence_paths": [
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
       ]
     },
     {
@@ -1031,7 +1580,8 @@
       "count": 1,
       "best_val_bpb": 1.09785,
       "mean_val_bpb": 1.09785,
-      "synergy_delta_vs_single_mean": 0.006246,
+      "synergy_delta_vs_single_mean": -0.006077,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
       ]
@@ -1044,7 +1594,8 @@
       "count": 1,
       "best_val_bpb": 1.09785,
       "mean_val_bpb": 1.09785,
-      "synergy_delta_vs_single_mean": 0.00818,
+      "synergy_delta_vs_single_mean": -0.003254,
+      "interaction": "positive",
       "evidence_paths": [
         "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
       ]
@@ -1054,198 +1605,756 @@
         "bigramhash",
         "xsa"
       ],
-      "count": 1,
+      "count": 5,
       "best_val_bpb": 1.114735,
-      "mean_val_bpb": 1.114735,
-      "synergy_delta_vs_single_mean": 0.0,
+      "mean_val_bpb": 1.12403,
+      "synergy_delta_vs_single_mean": 0.002211,
+      "interaction": "negative",
       "evidence_paths": [
-        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json"
+        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "legal_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.1194,
+      "mean_val_bpb": 1.1194,
+      "synergy_delta_vs_single_mean": 0.00896,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "score_first_ttt"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.1194,
+      "mean_val_bpb": 1.1194,
+      "synergy_delta_vs_single_mean": 0.010488,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qat",
+        "smeargate"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.123813,
+      "synergy_delta_vs_single_mean": -0.012973,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "qat"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.123813,
+      "synergy_delta_vs_single_mean": -0.008977,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "smeargate"
+      ],
+      "count": 5,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.130246,
+      "synergy_delta_vs_single_mean": -0.00464,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qat",
+        "xsa"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.123813,
+      "synergy_delta_vs_single_mean": -0.004315,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "qat"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.123813,
+      "synergy_delta_vs_single_mean": -0.000807,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "int6"
+      ],
+      "count": 5,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.130246,
+      "synergy_delta_vs_single_mean": -0.000645,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "smeargate"
+      ],
+      "count": 5,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.130246,
+      "synergy_delta_vs_single_mean": -0.00023,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "qat"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.123813,
+      "synergy_delta_vs_single_mean": 0.000414,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "smeargate",
+        "xsa"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.126354,
+      "synergy_delta_vs_single_mean": 0.000539,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "smeargate"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.123813,
+      "synergy_delta_vs_single_mean": 0.001507,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "qat"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.139099,
+      "synergy_delta_vs_single_mean": 0.001899,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json",
+        "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "smeargate"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.1249,
+      "synergy_delta_vs_single_mean": 0.003814,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "partial_rope"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.123813,
+      "synergy_delta_vs_single_mean": 0.005502,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "ema"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.12278,
+      "mean_val_bpb": 1.1249,
+      "synergy_delta_vs_single_mean": 0.00781,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "sliding_window",
+        "smeargate"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.132579,
+      "synergy_delta_vs_single_mean": -0.011036,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "sliding_window",
+        "xsa"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.12596,
+      "synergy_delta_vs_single_mean": -0.008998,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "sliding_window"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.132579,
+      "synergy_delta_vs_single_mean": -0.007041,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "partial_rope",
+        "sliding_window"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.124845,
+      "synergy_delta_vs_single_mean": -0.006604,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "sliding_window"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.12596,
+      "synergy_delta_vs_single_mean": -0.004269,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "qat",
+        "sliding_window"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.141731,
+      "synergy_delta_vs_single_mean": -0.004198,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "qat"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.124845,
+      "synergy_delta_vs_single_mean": -0.00174,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "sliding_window"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.132579,
+      "synergy_delta_vs_single_mean": -0.000836,
+      "interaction": "neutral",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "sliding_window"
+      ],
+      "count": 6,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.146135,
+      "synergy_delta_vs_single_mean": 0.002105,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json",
+        "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json",
+        "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "smeargate"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.132113,
+      "synergy_delta_vs_single_mean": 0.007841,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "high_wd"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.132113,
+      "synergy_delta_vs_single_mean": 0.011836,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "xsa"
+      ],
+      "count": 3,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.127545,
+      "synergy_delta_vs_single_mean": 0.01193,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "partial_rope"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.124845,
+      "mean_val_bpb": 1.124845,
+      "synergy_delta_vs_single_mean": 0.012739,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp3x",
+        "xsa"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.127075,
+      "synergy_delta_vs_single_mean": -0.005854,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp3x",
+        "smeargate"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.136446,
+      "synergy_delta_vs_single_mean": -0.00514,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp3x",
+        "sliding_window"
+      ],
+      "count": 4,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.148337,
+      "synergy_delta_vs_single_mean": -0.002392,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json",
+        "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json",
+        "records/track_10min_16mb/2026-03-19_MixedQuant_Int6Int8_SlidingWindow/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "bigramhash",
+        "mlp3x"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.136446,
+      "synergy_delta_vs_single_mean": -0.001145,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "ema",
+        "mlp3x"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.127075,
+      "synergy_delta_vs_single_mean": -0.001125,
+      "interaction": "positive",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "high_wd",
+        "mlp3x"
+      ],
+      "count": 2,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.136446,
+      "synergy_delta_vs_single_mean": 0.00506,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "int6",
+        "mlp3x"
+      ],
+      "count": 5,
+      "best_val_bpb": 1.127075,
+      "mean_val_bpb": 1.1487,
+      "synergy_delta_vs_single_mean": 0.006699,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+        "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json",
+        "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json",
+        "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json",
+        "records/track_10min_16mb/2026-03-19_MixedQuant_Int6Int8_SlidingWindow/submission.json"
+      ]
+    },
+    {
+      "pair": [
+        "mlp3x",
+        "qat"
+      ],
+      "count": 1,
+      "best_val_bpb": 1.150154,
+      "mean_val_bpb": 1.150154,
+      "synergy_delta_vs_single_mean": 0.006254,
+      "interaction": "negative",
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json"
       ]
     }
   ],
-  "recommendations": {
-    "repeat_offenders": [
+  "interaction_matrix": {
+    "positive": [
       {
         "pair": [
-          "parallel_residuals",
-          "sdclip"
+          "int6",
+          "legal_ttt"
         ],
-        "count": 2,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.08159,
-        "synergy_delta_vs_single_mean": -0.004772,
+        "count": 1,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.082794,
+        "synergy_delta_vs_single_mean": -0.032056,
+        "interaction": "positive",
         "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
         ]
       },
       {
         "pair": [
-          "parallel_residuals",
-          "sp8192"
-        ],
-        "count": 2,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.08159,
-        "synergy_delta_vs_single_mean": -0.004772,
-        "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-        ]
-      },
-      {
-        "pair": [
-          "parallel_residuals",
+          "int6",
           "score_first_ttt"
         ],
-        "count": 2,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.08159,
-        "synergy_delta_vs_single_mean": -0.004099,
+        "count": 1,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.082794,
+        "synergy_delta_vs_single_mean": -0.030528,
+        "interaction": "positive",
         "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
         ]
       },
       {
         "pair": [
-          "recurrence",
-          "score_first_ttt"
-        ],
-        "count": 2,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.08159,
-        "synergy_delta_vs_single_mean": -0.003683,
-        "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
-        ]
-      },
-      {
-        "pair": [
-          "recurrence",
+          "int6",
           "sdclip"
         ],
-        "count": 3,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.082937,
-        "synergy_delta_vs_single_mean": -0.00301,
+        "count": 1,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.082794,
+        "synergy_delta_vs_single_mean": -0.026371,
+        "interaction": "positive",
         "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
         ]
       },
       {
         "pair": [
-          "recurrence",
+          "int6",
           "sp8192"
         ],
-        "count": 3,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.082937,
-        "synergy_delta_vs_single_mean": -0.00301,
+        "count": 1,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.082794,
+        "synergy_delta_vs_single_mean": -0.026307,
+        "interaction": "positive",
         "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
         ]
       },
       {
         "pair": [
-          "parallel_residuals",
-          "qk_gain"
+          "int6",
+          "mlp4x"
         ],
-        "count": 3,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.084299,
-        "synergy_delta_vs_single_mean": -0.002744,
+        "count": 2,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.086255,
+        "synergy_delta_vs_single_mean": -0.025463,
+        "interaction": "positive",
         "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
           "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
         ]
       },
       {
         "pair": [
-          "qk_gain",
+          "int6",
+          "sp4096"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.089716,
+        "mean_val_bpb": 1.089716,
+        "synergy_delta_vs_single_mean": -0.024826,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "int6",
           "recurrence"
         ],
         "count": 3,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.084299,
-        "synergy_delta_vs_single_mean": -0.002329,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.087903,
+        "synergy_delta_vs_single_mean": -0.023642,
+        "interaction": "positive",
         "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+          "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "int6",
+          "qk_gain"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.086255,
+        "synergy_delta_vs_single_mean": -0.023356,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
           "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
         ]
-      }
-    ],
-    "single_record_watchlist": [
+      },
       {
         "pair": [
           "high_wd",
+          "legal_ttt"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081,
+        "synergy_delta_vs_single_mean": -0.023235,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "legal_ttt",
+          "xsa"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.082794,
+        "synergy_delta_vs_single_mean": -0.022984,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "int6",
           "parallel_residuals"
         ],
         "count": 1,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.081,
-        "synergy_delta_vs_single_mean": -0.008606,
+        "best_val_bpb": 1.089716,
+        "mean_val_bpb": 1.089716,
+        "synergy_delta_vs_single_mean": -0.022203,
+        "interaction": "positive",
         "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-        ]
-      },
-      {
-        "pair": [
-          "high_wd",
-          "recurrence"
-        ],
-        "count": 1,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.081,
-        "synergy_delta_vs_single_mean": -0.00819,
-        "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-        ]
-      },
-      {
-        "pair": [
-          "high_wd",
-          "qk_gain"
-        ],
-        "count": 1,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.081,
-        "synergy_delta_vs_single_mean": -0.005862,
-        "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-        ]
-      },
-      {
-        "pair": [
-          "high_wd",
-          "sdclip"
-        ],
-        "count": 1,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.081,
-        "synergy_delta_vs_single_mean": -0.005181,
-        "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-        ]
-      },
-      {
-        "pair": [
-          "high_wd",
-          "sp8192"
-        ],
-        "count": 1,
-        "best_val_bpb": 1.081,
-        "mean_val_bpb": 1.081,
-        "synergy_delta_vs_single_mean": -0.005181,
-        "evidence_paths": [
-          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
         ]
       },
       {
@@ -1256,9 +2365,800 @@
         "count": 1,
         "best_val_bpb": 1.081,
         "mean_val_bpb": 1.081,
-        "synergy_delta_vs_single_mean": -0.004508,
+        "synergy_delta_vs_single_mean": -0.021707,
+        "interaction": "positive",
         "evidence_paths": [
           "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ]
+      }
+    ],
+    "neutral": [
+      {
+        "pair": [
+          "bigramhash",
+          "int6"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.130246,
+        "synergy_delta_vs_single_mean": -0.000645,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+          "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "bigramhash",
+          "smeargate"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.130246,
+        "synergy_delta_vs_single_mean": -0.00023,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+          "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "int6"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.0912,
+        "mean_val_bpb": 1.12393,
+        "synergy_delta_vs_single_mean": -0.000756,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+          "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "parallel_residuals",
+          "recurrence"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.088538,
+        "synergy_delta_vs_single_mean": 0.000374,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+          "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "muoneq_r",
+          "recurrence"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.08218,
+        "mean_val_bpb": 1.087181,
+        "synergy_delta_vs_single_mean": -0.000304,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+          "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "sdclip",
+          "sp8192"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.082901,
+        "synergy_delta_vs_single_mean": -6.4e-05,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "smeargate",
+          "xsa"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.126354,
+        "synergy_delta_vs_single_mean": 0.000539,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "high_wd"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.110973,
+        "synergy_delta_vs_single_mean": 8.8e-05,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "sliding_window"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.124845,
+        "mean_val_bpb": 1.132579,
+        "synergy_delta_vs_single_mean": -0.000836,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "qat"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.123813,
+        "synergy_delta_vs_single_mean": 0.000414,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "gptq_embeddings",
+          "sdclip"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.08218,
+        "mean_val_bpb": 1.083905,
+        "synergy_delta_vs_single_mean": 0.000438,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "gptq_embeddings",
+          "sp8192"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.08218,
+        "mean_val_bpb": 1.083905,
+        "synergy_delta_vs_single_mean": 0.000502,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      }
+    ],
+    "negative": [
+      {
+        "pair": [
+          "ema",
+          "partial_rope"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.11014,
+        "synergy_delta_vs_single_mean": 0.00122,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "partial_rope",
+          "smeargate"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.123813,
+        "synergy_delta_vs_single_mean": 0.001507,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "legal_ttt",
+          "score_first_ttt"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.094398,
+        "synergy_delta_vs_single_mean": 0.001527,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "int6",
+          "qat"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.139099,
+        "synergy_delta_vs_single_mean": 0.001899,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json",
+          "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "xsa"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.114373,
+        "synergy_delta_vs_single_mean": 0.001945,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "int6",
+          "sliding_window"
+        ],
+        "count": 6,
+        "best_val_bpb": 1.124845,
+        "mean_val_bpb": 1.146135,
+        "synergy_delta_vs_single_mean": 0.002105,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json",
+          "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json",
+          "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "bigramhash",
+          "xsa"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.114735,
+        "mean_val_bpb": 1.12403,
+        "synergy_delta_vs_single_mean": 0.002211,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "mlp4x",
+          "sp4096"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.089716,
+        "mean_val_bpb": 1.093783,
+        "synergy_delta_vs_single_mean": 0.002824,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+          "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "smeargate"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.1249,
+        "synergy_delta_vs_single_mean": 0.003814,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "mlp3x"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.127075,
+        "mean_val_bpb": 1.136446,
+        "synergy_delta_vs_single_mean": 0.00506,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "bigramhash",
+          "partial_rope"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.123813,
+        "synergy_delta_vs_single_mean": 0.005502,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "mlp3x",
+          "qat"
+        ],
+        "count": 1,
+        "best_val_bpb": 1.150154,
+        "mean_val_bpb": 1.150154,
+        "synergy_delta_vs_single_mean": 0.006254,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json"
+        ]
+      }
+    ]
+  },
+  "mined_evidence": {
+    "entry_count": 0,
+    "status_counts": {},
+    "top_ideas": []
+  },
+  "recommendations": {
+    "combinations_to_try": [
+      {
+        "pair": [
+          "ema",
+          "legal_ttt"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081897,
+        "synergy_delta_vs_single_mean": -0.019152,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "score_first_ttt"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081897,
+        "synergy_delta_vs_single_mean": -0.017624,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "recurrence"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081897,
+        "synergy_delta_vs_single_mean": -0.015847,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "recurrence"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.0861,
+        "synergy_delta_vs_single_mean": -0.01483,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "qk_gain"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081897,
+        "synergy_delta_vs_single_mean": -0.013914,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "sdclip"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081897,
+        "synergy_delta_vs_single_mean": -0.013467,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "sp8192"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081897,
+        "synergy_delta_vs_single_mean": -0.013403,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "legal_ttt",
+          "recurrence"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.081897,
+        "synergy_delta_vs_single_mean": -0.009197,
+        "interaction": "positive",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        ]
+      }
+    ],
+    "combinations_to_avoid": [
+      {
+        "pair": [
+          "legal_ttt",
+          "score_first_ttt"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.094398,
+        "synergy_delta_vs_single_mean": 0.001527,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "partial_rope"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.11014,
+        "synergy_delta_vs_single_mean": 0.00122,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "xsa"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.082794,
+        "mean_val_bpb": 1.114373,
+        "synergy_delta_vs_single_mean": 0.001945,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "mlp4x",
+          "sp4096"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.089716,
+        "mean_val_bpb": 1.093783,
+        "synergy_delta_vs_single_mean": 0.002824,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+          "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "bigramhash",
+          "xsa"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.114735,
+        "mean_val_bpb": 1.12403,
+        "synergy_delta_vs_single_mean": 0.002211,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "partial_rope",
+          "smeargate"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.123813,
+        "synergy_delta_vs_single_mean": 0.001507,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "int6",
+          "qat"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.139099,
+        "synergy_delta_vs_single_mean": 0.001899,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json",
+          "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "smeargate"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.12278,
+        "mean_val_bpb": 1.1249,
+        "synergy_delta_vs_single_mean": 0.003814,
+        "interaction": "negative",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+        ]
+      }
+    ],
+    "neutral_controls": [
+      {
+        "pair": [
+          "sdclip",
+          "sp8192"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.082901,
+        "synergy_delta_vs_single_mean": -6.4e-05,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "ema",
+          "high_wd"
+        ],
+        "count": 3,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.110973,
+        "synergy_delta_vs_single_mean": 8.8e-05,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "parallel_residuals",
+          "recurrence"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.081,
+        "mean_val_bpb": 1.088538,
+        "synergy_delta_vs_single_mean": 0.000374,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+          "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "muoneq_r",
+          "recurrence"
+        ],
+        "count": 4,
+        "best_val_bpb": 1.08218,
+        "mean_val_bpb": 1.087181,
+        "synergy_delta_vs_single_mean": -0.000304,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+          "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "muoneq_r",
+          "qk_gain"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.08218,
+        "mean_val_bpb": 1.085948,
+        "synergy_delta_vs_single_mean": 0.000396,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "gptq_embeddings",
+          "sdclip"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.08218,
+        "mean_val_bpb": 1.083905,
+        "synergy_delta_vs_single_mean": 0.000438,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "gptq_embeddings",
+          "sp8192"
+        ],
+        "count": 2,
+        "best_val_bpb": 1.08218,
+        "mean_val_bpb": 1.083905,
+        "synergy_delta_vs_single_mean": 0.000502,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        ]
+      },
+      {
+        "pair": [
+          "high_wd",
+          "int6"
+        ],
+        "count": 5,
+        "best_val_bpb": 1.0912,
+        "mean_val_bpb": 1.12393,
+        "synergy_delta_vs_single_mean": -0.000756,
+        "interaction": "neutral",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+          "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+          "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+          "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
         ]
       }
     ]
