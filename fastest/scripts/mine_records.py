@@ -44,6 +44,20 @@ KEYWORDS: dict[str, tuple[str, ...]] = {
     "ternary": ("ternary", "1 bit", "binary"),
 }
 
+CHECKLIST_IDEAS: tuple[str, ...] = ("score_first_ttt", "legal_ttt")
+CHECKLIST_CONSTRAINT_REASONS: tuple[str, ...] = (
+    "missing_artifact_bytes",
+    "missing_train_time_seconds",
+    "runtime_over_10min",
+    "missing_hardware",
+    "hardware_not_8xh100",
+)
+CHECKLIST_EVAL_REASONS: tuple[str, ...] = (
+    "eval_drift_vs_trusted_control",
+    "artifact_or_compression_mismatch",
+    "promising_result_not_reproducible",
+)
+
 
 @dataclass
 class Record:
@@ -378,6 +392,93 @@ def summarize_local_learning(entries: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def build_idea_checklist(records: list[Record]) -> dict[str, Any]:
+    idea_legality = classify_ideas(records)
+    records_by_idea: dict[str, list[tuple[Record, dict[str, Any]]]] = defaultdict(list)
+    for record in records:
+        legality = classify_record_legality(record)
+        for tag in record.tags:
+            if tag in CHECKLIST_IDEAS:
+                records_by_idea[tag].append((record, legality))
+
+    ideas_payload: dict[str, Any] = {}
+    for idea in CHECKLIST_IDEAS:
+        tagged_records = records_by_idea.get(idea, [])
+        evidence_paths = sorted({record.path for record, _ in tagged_records})
+        legal_paths = sorted({record.path for record, legality in tagged_records if legality["status"] == "leaderboard-legal"})
+
+        reason_counts = Counter(
+            reason for _, legality in tagged_records for reason in legality.get("uncertainty_reasons", [])
+        )
+        reason_paths: dict[str, list[str]] = defaultdict(list)
+        for record, legality in tagged_records:
+            for reason in legality.get("uncertainty_reasons", []):
+                reason_paths[reason].append(record.path)
+
+        for reason, paths in list(reason_paths.items()):
+            reason_paths[reason] = sorted(set(paths))
+
+        constraint_reason_counts = {reason: reason_counts[reason] for reason in CHECKLIST_CONSTRAINT_REASONS if reason_counts[reason] > 0}
+        eval_reason_counts = {reason: reason_counts[reason] for reason in CHECKLIST_EVAL_REASONS if reason_counts[reason] > 0}
+        constraint_evidence = sorted(
+            {
+                path
+                for reason in CHECKLIST_CONSTRAINT_REASONS
+                for path in reason_paths.get(reason, [])
+            }
+        )
+        eval_evidence = sorted(
+            {
+                path
+                for reason in CHECKLIST_EVAL_REASONS
+                for path in reason_paths.get(reason, [])
+            }
+        )
+
+        checklist = [
+            {
+                "rule_id": "record_leaderboard_legal_ttt_evidence",
+                "prompt": "Keep at least one leaderboard-legal imported record with this motif as a control anchor.",
+                "status": "pass" if legal_paths else ("missing-evidence" if not evidence_paths else "needs-review"),
+                "evidence_paths": legal_paths if legal_paths else evidence_paths[:5],
+            },
+            {
+                "rule_id": "require_runtime_hardware_artifact_disclosure",
+                "prompt": "Require runtime, artifact-size, and hardware signals to satisfy 10min/16MB legality constraints.",
+                "status": "needs-review" if constraint_reason_counts else ("pass" if evidence_paths else "missing-evidence"),
+                "triggered_legality_signals": constraint_reason_counts,
+                "evidence_paths": constraint_evidence if constraint_evidence else evidence_paths[:5],
+            },
+            {
+                "rule_id": "gate_on_eval_integrity_and_reproducibility",
+                "prompt": "Block claims until trusted-control drift, artifact consistency, and reproducibility checks remain clean.",
+                "status": "needs-review" if eval_reason_counts else ("pass" if evidence_paths else "missing-evidence"),
+                "triggered_legality_signals": eval_reason_counts,
+                "evidence_paths": eval_evidence if eval_evidence else evidence_paths[:5],
+            },
+        ]
+
+        ideas_payload[idea] = {
+            "legality_signal": idea_legality.get(
+                idea,
+                {"status": "uncertain", "evidence_paths": [], "uncertainty_reasons": ["no_supporting_records"]},
+            ),
+            "record_count": len(tagged_records),
+            "evidence_paths": evidence_paths,
+            "checklist": checklist,
+        }
+
+    return {
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        "source": {
+            "imported_record_count": len(records),
+            "imported_record_source": str(RECORDS_ROOT.relative_to(ROOT)),
+            "legality_signals_from": "classify_record_legality",
+        },
+        "ideas": ideas_payload,
+    }
+
+
 def rank_task(
     task: dict[str, Any],
     *,
@@ -634,6 +735,7 @@ def main() -> None:
     local_learning_entries = load_local_experiment_learnings()
     local_learning = summarize_local_learning(local_learning_entries)
     summary = summarize(records)
+    idea_checklist = build_idea_checklist(records)
     tasks = leaderboard_tasks(records, local_learning)
 
     record_index = [
@@ -655,6 +757,7 @@ def main() -> None:
 
     write_json(GENERATED_ROOT / "record_index.json", {"records": record_index})
     write_json(GENERATED_ROOT / "leaderboard_snapshot.json", summary)
+    write_json(GENERATED_ROOT / "idea_checklist.json", idea_checklist)
     write_json(
         GENERATED_ROOT / "candidate_backlog.json",
         {
@@ -674,6 +777,7 @@ def main() -> None:
 
     print(f"wrote {GENERATED_ROOT / 'record_index.json'}")
     print(f"wrote {GENERATED_ROOT / 'leaderboard_snapshot.json'}")
+    print(f"wrote {GENERATED_ROOT / 'idea_checklist.json'}")
     print(f"wrote {GENERATED_ROOT / 'candidate_backlog.json'}")
     if summary["best_public_record"] is not None:
         best = summary["best_public_record"]

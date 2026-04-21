@@ -1,0 +1,133 @@
+{
+  "generated_at": "2026-04-21T23:09:32Z",
+  "source": {
+    "imported_record_count": 34,
+    "imported_record_source": "records",
+    "legality_signals_from": "classify_record_legality"
+  },
+  "ideas": {
+    "score_first_ttt": {
+      "legality_signal": {
+        "status": "uncertain",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ],
+        "uncertainty_reasons": [
+          "missing_artifact_bytes",
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
+      },
+      "record_count": 4,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ],
+      "checklist": [
+        {
+          "rule_id": "record_leaderboard_legal_ttt_evidence",
+          "prompt": "Keep at least one leaderboard-legal imported record with this motif as a control anchor.",
+          "status": "needs-review",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ]
+        },
+        {
+          "rule_id": "require_runtime_hardware_artifact_disclosure",
+          "prompt": "Require runtime, artifact-size, and hardware signals to satisfy 10min/16MB legality constraints.",
+          "status": "needs-review",
+          "triggered_legality_signals": {
+            "missing_artifact_bytes": 2,
+            "missing_train_time_seconds": 4,
+            "missing_hardware": 2
+          },
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ]
+        },
+        {
+          "rule_id": "gate_on_eval_integrity_and_reproducibility",
+          "prompt": "Block claims until trusted-control drift, artifact consistency, and reproducibility checks remain clean.",
+          "status": "pass",
+          "triggered_legality_signals": {},
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ]
+        }
+      ]
+    },
+    "legal_ttt": {
+      "legality_signal": {
+        "status": "uncertain",
+        "evidence_paths": [
+          "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+          "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+          "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        ],
+        "uncertainty_reasons": [
+          "missing_artifact_bytes",
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
+      },
+      "record_count": 3,
+      "evidence_paths": [
+        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ],
+      "checklist": [
+        {
+          "rule_id": "record_leaderboard_legal_ttt_evidence",
+          "prompt": "Keep at least one leaderboard-legal imported record with this motif as a control anchor.",
+          "status": "needs-review",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ]
+        },
+        {
+          "rule_id": "require_runtime_hardware_artifact_disclosure",
+          "prompt": "Require runtime, artifact-size, and hardware signals to satisfy 10min/16MB legality constraints.",
+          "status": "needs-review",
+          "triggered_legality_signals": {
+            "missing_artifact_bytes": 1,
+            "missing_train_time_seconds": 3,
+            "missing_hardware": 2
+          },
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ]
+        },
+        {
+          "rule_id": "gate_on_eval_integrity_and_reproducibility",
+          "prompt": "Block claims until trusted-control drift, artifact consistency, and reproducibility checks remain clean.",
+          "status": "pass",
+          "triggered_legality_signals": {},
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ]
+        }
+      ]
+    }
+  }
+}
