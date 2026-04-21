@@ -162,6 +162,7 @@
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
+          "artifact_or_compression_mismatch",
           "missing_train_time_seconds"
         ]
       },
@@ -201,6 +202,7 @@
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
+          "artifact_or_compression_mismatch",
           "missing_train_time_seconds"
         ]
       },
@@ -319,6 +321,7 @@
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
+          "artifact_or_compression_mismatch",
           "missing_train_time_seconds"
         ]
       },

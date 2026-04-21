@@ -1,126 +1,111 @@
 {
+  "generated_at": "2026-04-21T22:57:11Z",
+  "inputs": {
+    "imported_record_count": 34,
+    "imported_record_source": "records",
+    "local_learning": {
+      "entry_count": 1,
+      "log_path": "fastest/logs/experiment-log.jsonl",
+      "ideas": {
+        "backlog-mining": {
+          "attempted": 1,
+          "passed": 1,
+          "failed": 0,
+          "inconclusive": 0,
+          "rejected": 0
+        },
+        "local-screening": {
+          "attempted": 1,
+          "passed": 1,
+          "failed": 0,
+          "inconclusive": 0,
+          "rejected": 0
+        }
+      }
+    }
+  },
   "tasks": [
     {
       "priority": 1,
-      "category": "baseline",
-      "title": "Reproduce the current internal baseline and top public control stack",
-      "rationale": "Autonomous work needs a trusted control before it can judge any new idea.",
+      "category": "knowledge",
+      "title": "Log negative or inconclusive local results immediately so the backlog stops rediscovering them",
+      "rationale": "The non-record single-GPU exploration path shows that cheap experiments are useful only when they generate durable learning.",
       "evidence": [
-        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
-        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        "records/track_non_record_16mb/2026-03-19_SwiGLU_WarmdownFix_QuarterBatch_1x5090/submission.json"
       ],
       "ideas": [
-        "baseline",
-        "reproducibility"
+        "learning",
+        "non_record"
       ],
       "idea_classification": {
-        "baseline": {
+        "learning": {
           "status": "uncertain",
           "evidence_paths": [],
           "uncertainty_reasons": [
             "no_supporting_records"
           ]
         },
-        "reproducibility": {
+        "non_record": {
           "status": "uncertain",
           "evidence_paths": [],
           "uncertainty_reasons": [
             "no_supporting_records"
           ]
         }
+      },
+      "ranking": {
+        "expected_info_gain": 0.8,
+        "expected_upside": 0.25,
+        "expected_cost": 0.33,
+        "mergeability": 0.2,
+        "composite_score": 0.345
       }
     },
     {
       "priority": 2,
-      "category": "experiment",
-      "title": "Prepare a local-to-remote experiment plan around the current dominant SP8192 stack",
-      "rationale": "Top entries as of 2026-04-09 converge on SP8192 + recurrence + parallel residuals + QK gain + legal score-first TTT.",
+      "category": "measurement",
+      "title": "Create a motif-composition matrix from prior records to avoid naive stack-everything experiments",
+      "rationale": "The repo contains enough historical records to learn which ideas compose and which ideas likely interfere.",
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
         "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
         "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
+        "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json"
       ],
       "ideas": [
-        "sp8192",
-        "recurrence",
-        "parallel_residuals",
-        "qk_gain",
-        "legal_ttt"
+        "analysis",
+        "composition"
       ],
       "idea_classification": {
-        "sp8192": {
+        "analysis": {
           "status": "uncertain",
-          "evidence_paths": [
-            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
-            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
-            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-          ],
+          "evidence_paths": [],
           "uncertainty_reasons": [
-            "missing_artifact_bytes",
-            "missing_hardware",
-            "missing_train_time_seconds"
+            "no_supporting_records"
           ]
         },
-        "recurrence": {
+        "composition": {
           "status": "uncertain",
-          "evidence_paths": [
-            "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
-            "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
-            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
-            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
-            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json"
-          ],
+          "evidence_paths": [],
           "uncertainty_reasons": [
-            "missing_artifact_bytes",
-            "missing_hardware",
-            "missing_train_time_seconds"
-          ]
-        },
-        "parallel_residuals": {
-          "status": "uncertain",
-          "evidence_paths": [
-            "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
-            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
-            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
-            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-          ],
-          "uncertainty_reasons": [
-            "missing_artifact_bytes",
-            "missing_train_time_seconds"
-          ]
-        },
-        "qk_gain": {
-          "status": "uncertain",
-          "evidence_paths": [
-            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
-            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
-            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
-            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-          ],
-          "uncertainty_reasons": [
-            "missing_artifact_bytes",
-            "missing_hardware",
-            "missing_train_time_seconds"
-          ]
-        },
-        "legal_ttt": {
-          "status": "uncertain",
-          "evidence_paths": [
-            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
-            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
-            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
-          ],
-          "uncertainty_reasons": [
-            "missing_artifact_bytes",
-            "missing_hardware",
-            "missing_train_time_seconds"
+            "no_supporting_records"
           ]
         }
+      },
+      "ranking": {
+        "expected_info_gain": 0.8,
+        "expected_upside": 0.25,
+        "expected_cost": 0.43,
+        "mergeability": 0.2,
+        "composite_score": 0.32
       }
     },
     {
@@ -166,6 +151,13 @@
             "missing_train_time_seconds"
           ]
         }
+      },
+      "ranking": {
+        "expected_info_gain": 0.8,
+        "expected_upside": 0.3125,
+        "expected_cost": 0.53,
+        "mergeability": 0.2,
+        "composite_score": 0.316875
       }
     },
     {
@@ -197,10 +189,55 @@
             "missing_train_time_seconds"
           ]
         }
+      },
+      "ranking": {
+        "expected_info_gain": 0.8,
+        "expected_upside": 0.35,
+        "expected_cost": 0.6,
+        "mergeability": 0.2,
+        "composite_score": 0.3125
       }
     },
     {
       "priority": 5,
+      "category": "baseline",
+      "title": "Reproduce the current internal baseline and top public control stack",
+      "rationale": "Autonomous work needs a trusted control before it can judge any new idea.",
+      "evidence": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ],
+      "ideas": [
+        "baseline",
+        "reproducibility"
+      ],
+      "idea_classification": {
+        "baseline": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        },
+        "reproducibility": {
+          "status": "uncertain",
+          "evidence_paths": [],
+          "uncertainty_reasons": [
+            "no_supporting_records"
+          ]
+        }
+      },
+      "ranking": {
+        "expected_info_gain": 0.8,
+        "expected_upside": 0.25,
+        "expected_cost": 0.63,
+        "mergeability": 0.2,
+        "composite_score": 0.27
+      }
+    },
+    {
+      "priority": 6,
       "category": "experiment",
       "title": "Probe whether Hessian-aware SDClip composes cleanly with the latest public winning stack",
       "rationale": "SDClip variants improved recent runs but are not obviously present in the very latest top entry.",
@@ -227,6 +264,7 @@
             "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
           ],
           "uncertainty_reasons": [
+            "artifact_or_compression_mismatch",
             "missing_artifact_bytes",
             "missing_hardware",
             "missing_train_time_seconds"
@@ -241,6 +279,7 @@
             "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
           ],
           "uncertainty_reasons": [
+            "artifact_or_compression_mismatch",
             "missing_artifact_bytes",
             "missing_hardware",
             "missing_train_time_seconds"
@@ -256,79 +295,120 @@
             "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
           ],
           "uncertainty_reasons": [
+            "artifact_or_compression_mismatch",
             "missing_artifact_bytes",
             "missing_train_time_seconds"
           ]
         }
+      },
+      "ranking": {
+        "expected_info_gain": 0.8,
+        "expected_upside": 0.3583,
+        "expected_cost": 0.76,
+        "mergeability": 0.15,
+        "composite_score": 0.260417
       }
     },
     {
-      "priority": 6,
-      "category": "measurement",
-      "title": "Create a motif-composition matrix from prior records to avoid naive stack-everything experiments",
-      "rationale": "The repo contains enough historical records to learn which ideas compose and which ideas likely interfere.",
+      "priority": 7,
+      "category": "experiment",
+      "title": "Prepare a local-to-remote experiment plan around the current dominant SP8192 stack",
+      "rationale": "Top entries as of 2026-04-09 converge on SP8192 + recurrence + parallel residuals + QK gain + legal score-first TTT.",
       "evidence": [
         "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
         "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
         "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
         "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
-        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
-        "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
-        "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
-        "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
-        "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
-        "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
-        "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
-        "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json"
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
       ],
       "ideas": [
-        "analysis",
-        "composition"
+        "sp8192",
+        "recurrence",
+        "parallel_residuals",
+        "qk_gain",
+        "legal_ttt"
       ],
       "idea_classification": {
-        "analysis": {
+        "sp8192": {
           "status": "uncertain",
-          "evidence_paths": [],
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
           "uncertainty_reasons": [
-            "no_supporting_records"
+            "artifact_or_compression_mismatch",
+            "missing_artifact_bytes",
+            "missing_hardware",
+            "missing_train_time_seconds"
           ]
         },
-        "composition": {
+        "recurrence": {
           "status": "uncertain",
-          "evidence_paths": [],
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json"
+          ],
           "uncertainty_reasons": [
-            "no_supporting_records"
-          ]
-        }
-      }
-    },
-    {
-      "priority": 7,
-      "category": "knowledge",
-      "title": "Log negative or inconclusive local results immediately so the backlog stops rediscovering them",
-      "rationale": "The non-record single-GPU exploration path shows that cheap experiments are useful only when they generate durable learning.",
-      "evidence": [
-        "records/track_non_record_16mb/2026-03-19_SwiGLU_WarmdownFix_QuarterBatch_1x5090/submission.json"
-      ],
-      "ideas": [
-        "learning",
-        "non_record"
-      ],
-      "idea_classification": {
-        "learning": {
-          "status": "uncertain",
-          "evidence_paths": [],
-          "uncertainty_reasons": [
-            "no_supporting_records"
+            "artifact_or_compression_mismatch",
+            "missing_artifact_bytes",
+            "missing_hardware",
+            "missing_train_time_seconds"
           ]
         },
-        "non_record": {
+        "parallel_residuals": {
           "status": "uncertain",
-          "evidence_paths": [],
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
           "uncertainty_reasons": [
-            "no_supporting_records"
+            "artifact_or_compression_mismatch",
+            "missing_artifact_bytes",
+            "missing_train_time_seconds"
+          ]
+        },
+        "qk_gain": {
+          "status": "uncertain",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes",
+            "missing_hardware",
+            "missing_train_time_seconds"
+          ]
+        },
+        "legal_ttt": {
+          "status": "uncertain",
+          "evidence_paths": [
+            "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+            "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+            "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+          ],
+          "uncertainty_reasons": [
+            "missing_artifact_bytes",
+            "missing_hardware",
+            "missing_train_time_seconds"
           ]
         }
+      },
+      "ranking": {
+        "expected_info_gain": 0.8,
+        "expected_upside": 0.355,
+        "expected_cost": 0.92,
+        "mergeability": 0.05,
+        "composite_score": 0.18925
       }
     }
   ]
