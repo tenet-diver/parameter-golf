@@ -5,12 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime
+import os
+from datetime import UTC, datetime
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
 LOG_PATH = ROOT / "fastest" / "logs" / "experiment-log.jsonl"
+LOG_PATH_ENV = "FASTEST_EXPERIMENT_LOG_PATH"
 
 
 def parse_args() -> argparse.Namespace:
@@ -36,11 +38,19 @@ def parse_metrics(raw_metrics: list[str]) -> dict[str, str]:
     return metrics
 
 
+def resolve_log_path() -> Path:
+    override = os.environ.get(LOG_PATH_ENV)
+    if override:
+        return Path(override)
+    return LOG_PATH
+
+
 def main() -> None:
     args = parse_args()
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    log_path = resolve_log_path()
+    log_path.parent.mkdir(parents=True, exist_ok=True)
     entry = {
-        "timestamp": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "timestamp": datetime.now(UTC).isoformat(timespec="seconds").replace("+00:00", "Z"),
         "title": args.title,
         "category": args.category,
         "status": args.status,
@@ -50,9 +60,9 @@ def main() -> None:
         "classification": args.classification,
         "next_steps": args.next_step,
     }
-    with LOG_PATH.open("a", encoding="utf-8") as handle:
+    with log_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, sort_keys=True) + "\n")
-    print(f"appended {LOG_PATH}")
+    print(f"appended {log_path}")
 
 
 if __name__ == "__main__":
