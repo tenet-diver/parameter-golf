@@ -7,6 +7,8 @@
       "date": "2026-04-09",
       "val_bpb": 1.081,
       "bytes_total": null,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "ema",
         "high_wd",
@@ -24,11 +26,16 @@
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": null,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
-          "missing_artifact_bytes"
+          "missing_artifact_bytes",
+          "missing_train_time_seconds"
         ]
       },
       "source": {
@@ -44,6 +51,8 @@
       "date": "2026-04-08",
       "val_bpb": 1.08217956,
       "bytes_total": null,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "gptq_embeddings",
         "mlp4x",
@@ -61,11 +70,16 @@
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": null,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
-          "missing_artifact_bytes"
+          "missing_artifact_bytes",
+          "missing_train_time_seconds"
         ]
       },
       "source": {
@@ -81,6 +95,8 @@
       "date": "2026-04-06",
       "val_bpb": 1.08279384,
       "bytes_total": 15992546,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "ema",
         "int6",
@@ -95,15 +111,22 @@
         "xsa"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -118,21 +141,29 @@
       "date": "2026-04-06",
       "val_bpb": 1.08354,
       "bytes_total": 15978121,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "parallel_residuals",
         "recurrence",
         "sdclip"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -147,6 +178,8 @@
       "date": "2026-04-05",
       "val_bpb": 1.08563,
       "bytes_total": 15985678,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "gptq_embeddings",
         "muoneq_r",
@@ -155,15 +188,21 @@
         "sp8192"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -178,6 +217,8 @@
       "date": "2026-04-04",
       "val_bpb": 1.08971631,
       "bytes_total": null,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "int6",
         "mlp4x",
@@ -193,11 +234,16 @@
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": null,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
-          "missing_artifact_bytes"
+          "missing_artifact_bytes",
+          "missing_train_time_seconds"
         ]
       },
       "source": {
@@ -213,6 +259,8 @@
       "date": "2026-04-03",
       "val_bpb": 1.0912,
       "bytes_total": 15967483,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "high_wd",
         "int6",
@@ -220,15 +268,22 @@
         "recurrence"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -243,21 +298,29 @@
       "date": "2026-04-01",
       "val_bpb": 1.09785,
       "bytes_total": 15916170,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "high_wd",
         "mlp4x",
         "sp4096"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -272,20 +335,28 @@
       "date": "2026-03-31",
       "val_bpb": 1.10625353,
       "bytes_total": 15946657,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "parallel_residuals",
         "recurrence"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -300,20 +371,28 @@
       "date": "2026-03-25",
       "val_bpb": 1.11473509,
       "bytes_total": 15984850,
+      "train_time_seconds": null,
+      "hardware": "8xH100 80GB SXM",
       "tags": [
         "bigramhash",
         "xsa"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -328,21 +407,30 @@
       "date": "2026-03-23",
       "val_bpb": 1.1194,
       "bytes_total": 15990006,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "bigramhash",
         "legal_ttt",
         "score_first_ttt"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -357,6 +445,8 @@
       "date": "2026-03-22",
       "val_bpb": 1.12278022,
       "bytes_total": 15555017,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "bigramhash",
         "ema",
@@ -367,15 +457,22 @@
         "xsa"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -390,6 +487,8 @@
       "date": "2026-03-21",
       "val_bpb": 2.3876,
       "bytes_total": 1461542,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "recurrence"
       ],
@@ -399,7 +498,11 @@
           "track": "non_record_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [
           "track_marked_non_record"
@@ -419,6 +522,8 @@
       "date": "2026-03-21",
       "val_bpb": 1.12484502,
       "bytes_total": 15612308,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "bigramhash",
         "ema",
@@ -431,15 +536,22 @@
         "xsa"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -454,6 +566,8 @@
       "date": "2026-03-21",
       "val_bpb": 1.12707468,
       "bytes_total": 15534645,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "bigramhash",
         "ema",
@@ -465,15 +579,22 @@
         "xsa"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -488,6 +609,8 @@
       "date": "2026-03-20",
       "val_bpb": 1.14581692,
       "bytes_total": 15862650,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "bigramhash",
         "high_wd",
@@ -497,15 +620,22 @@
         "smeargate"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -520,6 +650,8 @@
       "date": "2026-03-20",
       "val_bpb": 1.13071416,
       "bytes_total": 15892986,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "bigramhash",
         "high_wd",
@@ -528,15 +660,22 @@
         "xsa"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -551,6 +690,8 @@
       "date": "2026-03-20",
       "val_bpb": null,
       "bytes_total": 15900000,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "bigramhash",
         "int6",
@@ -562,10 +703,16 @@
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": false
+          "has_val_bpb": false,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds",
           "missing_val_bpb"
         ]
       },
@@ -582,21 +729,30 @@
       "date": "2026-03-20",
       "val_bpb": 1.1574404,
       "bytes_total": 15977717,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "int6",
         "mlp3x",
         "sliding_window"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -611,6 +767,8 @@
       "date": "2026-03-20",
       "val_bpb": 1.15015359,
       "bytes_total": 15427455,
+      "train_time_seconds": 600,
+      "hardware": "8xH100 SXM (RunPod)",
       "tags": [
         "int6",
         "mlp3x",
@@ -622,7 +780,11 @@
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": true,
+          "train_within_10min": true,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
         "uncertainty_reasons": []
@@ -640,6 +802,8 @@
       "date": "2026-03-19",
       "val_bpb": 1.32814313,
       "bytes_total": 15327112,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
         "status": "non-record-only",
@@ -647,7 +811,11 @@
           "track": "non-record-16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [
           "track_marked_non_record"
@@ -667,6 +835,8 @@
       "date": "2026-03-19",
       "val_bpb": 1.1556,
       "bytes_total": null,
+      "train_time_seconds": 600,
+      "hardware": "8xH100-80GB-SXM",
       "tags": [
         "smeargate"
       ],
@@ -676,7 +846,11 @@
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": null,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": true,
+          "train_within_10min": true,
+          "has_hardware": true,
+          "hardware_is_8xh100": true
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
@@ -696,17 +870,26 @@
       "date": "2026-03-19",
       "val_bpb": 1.20143417,
       "bytes_total": 15868326,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -721,6 +904,8 @@
       "date": "2026-03-19",
       "val_bpb": null,
       "bytes_total": null,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "sliding_window"
       ],
@@ -730,11 +915,17 @@
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": null,
-          "has_val_bpb": false
+          "has_val_bpb": false,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
         "uncertainty_reasons": [
           "missing_artifact_bytes",
+          "missing_hardware",
+          "missing_train_time_seconds",
           "missing_val_bpb"
         ]
       },
@@ -751,19 +942,28 @@
       "date": "2026-03-19",
       "val_bpb": 1.19250007,
       "bytes_total": 15874829,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "sliding_window"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -778,21 +978,30 @@
       "date": "2026-03-19",
       "val_bpb": 1.15861696,
       "bytes_total": 15558319,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "int6",
         "qat",
         "sliding_window"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -807,21 +1016,30 @@
       "date": "2026-03-19",
       "val_bpb": 1.16301431,
       "bytes_total": 15353490,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "int6",
         "mlp3x",
         "sliding_window"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -836,19 +1054,28 @@
       "date": "2026-03-19",
       "val_bpb": 1.214745,
       "bytes_total": 15928974,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [
         "int6"
       ],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -863,17 +1090,26 @@
       "date": "2026-03-19",
       "val_bpb": 1.20576485,
       "bytes_total": 15867270,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -888,17 +1124,26 @@
       "date": "2026-03-19",
       "val_bpb": 1.1929,
       "bytes_total": 15882446,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -913,6 +1158,8 @@
       "date": "2026-03-18",
       "val_bpb": 1.20737944,
       "bytes_total": 15810161,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
         "status": "non-record-only",
@@ -920,7 +1167,11 @@
           "track": "non-record-unlimited-compute-16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [
           "declared_unlimited_compute",
@@ -941,17 +1192,26 @@
       "date": "2026-03-18",
       "val_bpb": 1.22296644,
       "bytes_total": 15854246,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -966,17 +1226,26 @@
       "date": "2026-03-18",
       "val_bpb": 1.21972502,
       "bytes_total": 15896222,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",
@@ -991,17 +1260,26 @@
       "date": "2026-03-18",
       "val_bpb": 1.2243657,
       "bytes_total": 15863489,
+      "train_time_seconds": null,
+      "hardware": null,
       "tags": [],
       "legality": {
-        "status": "leaderboard-legal",
+        "status": "uncertain",
         "rules": {
           "track": "10min_16mb",
           "artifact_limit_bytes": 16000000,
           "artifact_within_limit": true,
-          "has_val_bpb": true
+          "has_val_bpb": true,
+          "has_train_time_seconds": false,
+          "train_within_10min": null,
+          "has_hardware": false,
+          "hardware_is_8xh100": null
         },
         "non_record_reasons": [],
-        "uncertainty_reasons": []
+        "uncertainty_reasons": [
+          "missing_hardware",
+          "missing_train_time_seconds"
+        ]
       },
       "source": {
         "kind": "submission_json",

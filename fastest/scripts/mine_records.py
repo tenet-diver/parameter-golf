@@ -52,6 +52,8 @@ class Record:
     date: str
     val_bpb: float | None
     bytes_total: int | None
+    train_time_seconds: int | None
+    hardware: str | None
     summary: str
     tags: list[str]
     source: dict[str, str]
@@ -102,6 +104,19 @@ def load_records() -> list[Record]:
                 bytes_total = int(bytes_total)
             except ValueError:
                 bytes_total = None
+        train_time_seconds = payload.get("train_time_seconds")
+        if isinstance(train_time_seconds, str):
+            try:
+                train_time_seconds = int(float(train_time_seconds))
+            except ValueError:
+                train_time_seconds = None
+        elif isinstance(train_time_seconds, float):
+            train_time_seconds = int(train_time_seconds)
+        elif not isinstance(train_time_seconds, int):
+            train_time_seconds = None
+        hardware = payload.get("hardware")
+        if not isinstance(hardware, str):
+            hardware = None
         records.append(
             Record(
                 path=str(path.relative_to(ROOT)),
@@ -110,6 +125,8 @@ def load_records() -> list[Record]:
                 date=date,
                 val_bpb=float(val_bpb) if isinstance(val_bpb, (int, float)) else None,
                 bytes_total=int(bytes_total) if isinstance(bytes_total, (int, float)) else None,
+                train_time_seconds=train_time_seconds,
+                hardware=hardware,
                 summary=summary,
                 tags=detect_tags(summary),
                 source={
@@ -124,6 +141,13 @@ def load_records() -> list[Record]:
 
 def iso_to_ordinal(value: str) -> int:
     return datetime.strptime(value, "%Y-%m-%d").toordinal()
+
+
+def is_8xh100_hardware(hardware: str | None) -> bool | None:
+    if hardware is None:
+        return None
+    normalized = re.sub(r"\s+", "", hardware.lower())
+    return "8xh100" in normalized
 
 
 def classify_record_legality(record: Record) -> dict[str, Any]:
@@ -144,6 +168,15 @@ def classify_record_legality(record: Record) -> dict[str, Any]:
             uncertainty_reasons.append("missing_val_bpb")
         if record.bytes_total is None:
             uncertainty_reasons.append("missing_artifact_bytes")
+        if record.train_time_seconds is None:
+            uncertainty_reasons.append("missing_train_time_seconds")
+        elif record.train_time_seconds > 600:
+            uncertainty_reasons.append("runtime_over_10min")
+        hardware_is_8xh100 = is_8xh100_hardware(record.hardware)
+        if record.hardware is None:
+            uncertainty_reasons.append("missing_hardware")
+        elif hardware_is_8xh100 is False:
+            uncertainty_reasons.append("hardware_not_8xh100")
     elif not is_track_non_record and record.track != "non-record":
         uncertainty_reasons.append("unknown_track")
 
@@ -161,6 +194,10 @@ def classify_record_legality(record: Record) -> dict[str, Any]:
             "artifact_limit_bytes": ARTIFACT_LIMIT_BYTES,
             "artifact_within_limit": None if record.bytes_total is None else record.bytes_total <= ARTIFACT_LIMIT_BYTES,
             "has_val_bpb": record.val_bpb is not None,
+            "has_train_time_seconds": record.train_time_seconds is not None,
+            "train_within_10min": None if record.train_time_seconds is None else record.train_time_seconds <= 600,
+            "has_hardware": record.hardware is not None,
+            "hardware_is_8xh100": is_8xh100_hardware(record.hardware),
         },
         "non_record_reasons": sorted(set(non_record_reasons)),
         "uncertainty_reasons": sorted(set(uncertainty_reasons)),
@@ -375,6 +412,8 @@ def main() -> None:
             "date": record.date,
             "val_bpb": record.val_bpb,
             "bytes_total": record.bytes_total,
+            "train_time_seconds": record.train_time_seconds,
+            "hardware": record.hardware,
             "tags": record.tags,
             "legality": classify_record_legality(record),
             "source": record.source,
