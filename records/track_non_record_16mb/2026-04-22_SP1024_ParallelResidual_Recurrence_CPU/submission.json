@@ -1,0 +1,18 @@
+{
+  "author": "tenet-diver",
+  "github_id": "tenet-diver",
+  "name": "SP1024 Parallel Residual + Recurrence CPU Control",
+  "blurb": "Non-record CPU control run exercising parallel residual execution and recurrent layer ordering on the public SP1024 assets. Evaluated on the first 1,048,576 validation tokens only via VAL_TOKEN_LIMIT=1048576. Intended as a reproducible negative-result control, not a leaderboard claim.",
+  "date": "2026-04-22T00:00:00Z",
+  "track": "non-record-16mb",
+  "val_loss": 6.92837095,
+  "val_bpb": 4.15111081,
+  "pre_quant_val_loss": null,
+  "pre_quant_val_bpb": null,
+  "step_stop": 2,
+  "wallclock_seconds": 59.453,
+  "bytes_total": 465227,
+  "bytes_model_int8_zlib": 413652,
+  "bytes_code": 51575,
+  "gpu": "CPU"
+}

@@ -1,0 +1,3 @@
+loaded_tokens:1048576
+model_loaded:1
+final_int8_zlib_roundtrip_exact val_loss:6.92837095 val_bpb:4.15111081 eval_time_ms:53280
