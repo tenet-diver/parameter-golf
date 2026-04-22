@@ -1,7 +1,10 @@
 {
   "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
+  "track": "10min_16mb",
   "val_bpb": 1.08279384,
   "bytes_total": 15992546,
+  "train_time_seconds": 588,
+  "hardware": "8xH100 80GB SXM",
   "blurb": "PR #1394 sp8192 stack + QK_GAIN_INIT=5.0 + legal score-first TTT (TTT_LR=0.005, freeze 0 blocks, 3 epochs). 3-seed mean 1.08279 across seeds 0/42/1234. No SLOT, no ETLB, no pre-quant TTT. Beats PR #1394 by 0.00283 bpb = 0.00731 nats/token.",
   "author": "dexhunter",
   "github_id": "dexhunter",
