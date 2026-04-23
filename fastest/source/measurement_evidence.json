@@ -40,7 +40,18 @@
       "status": "accepted",
       "completedAt": "2026-04-23T20:21:00.000Z",
       "objectiveMetricName": "benchmark-score",
-      "objectiveValue": 1.0
+      "objectiveValue": 1.0,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-1:measurement:exp-fast1-control-20260423-001",
+      "taskId": "FAST-1",
+      "traceId": "trace-fast1-control-001",
+      "runConfig": {
+        "seed": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30
+      }
     },
     {
       "experimentId": "exp-fast4-cheap-screen-20260423-attempt2-001",
