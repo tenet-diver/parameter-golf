@@ -15,9 +15,9 @@
   "validationChecklist": [
     {
       "checkId": "open-task-check",
-      "command": "TASK_STORE_DIR=\"/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks\" python -c 'import os, sqlite3, sys; task_store_dir=os.environ[\"TASK_STORE_DIR\"]; sqlite_override=os.environ.get(\"TASK_STORE_SQLITE_FILE\", \"\").strip(); sqlite_file=(sqlite_override if os.path.isabs(sqlite_override) else os.path.join(task_store_dir, sqlite_override)) if sqlite_override else os.path.join(task_store_dir, \"task-store.sqlite\");\nif not os.path.isfile(sqlite_file):\n print(f\"Open FAST tasks checked: unavailable (task-store binding invalid: {sqlite_file})\");\n sys.exit(2)\nconn=sqlite3.connect(sqlite_file); cur=conn.cursor(); cur.execute(\"select count(*) from sqlite_master where type = ? and name = ?\", (\"table\", \"task_store_tasks\")); has_table=cur.fetchone()[0];\nif has_table == 0:\n print(\"Open FAST tasks checked: unavailable (task-store binding invalid: task_store_tasks table missing)\");\n conn.close();\n sys.exit(2)\ncur.execute(\"select count(*) from task_store_tasks where status = ? and id like ?\", (\"open\", \"FAST-%\")); count=cur.fetchone()[0]; conn.close();\nprint(\"Open FAST tasks checked (0): none\" if count == 0 else f\"Open FAST tasks checked ({count}): collision\")'",
+      "command": "TASK_STORE_DIR=\"/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks\" python -c 'import os, sqlite3, sys; task_store_dir=os.environ[\"TASK_STORE_DIR\"]; task_store_root=os.path.realpath(task_store_dir); default_sqlite_file=os.path.join(task_store_dir, \"task-store.sqlite\"); sqlite_override=os.environ.get(\"TASK_STORE_SQLITE_FILE\", \"\").strip();\nif sqlite_override:\n candidate=(sqlite_override if os.path.isabs(sqlite_override) else os.path.join(task_store_dir, sqlite_override)); candidate=os.path.realpath(candidate); sqlite_file=(candidate if candidate == os.path.realpath(default_sqlite_file) or candidate.startswith(task_store_root + os.sep) else default_sqlite_file)\nelse:\n sqlite_file=default_sqlite_file\nif not os.path.isfile(sqlite_file) or not os.access(sqlite_file, os.R_OK):\n print(f\"Open FAST tasks checked: unavailable (task-store binding invalid: {sqlite_file})\");\n sys.exit(2)\ntry:\n conn=sqlite3.connect(f\"file:{sqlite_file}?mode=ro\", uri=True)\nexcept sqlite3.OperationalError as exc:\n print(f\"Open FAST tasks checked: unavailable (task-store binding invalid: {exc})\");\n sys.exit(2)\ncur=conn.cursor(); cur.execute(\"select count(*) from sqlite_master where type = ? and name = ?\", (\"table\", \"task_store_tasks\")); has_table=cur.fetchone()[0];\nif has_table == 0:\n print(\"Open FAST tasks checked: unavailable (task-store binding invalid: task_store_tasks table missing)\");\n conn.close();\n sys.exit(2)\ncur.execute(\"select count(*) from task_store_tasks where status = ? and id like ?\", (\"open\", \"FAST-%\")); count=cur.fetchone()[0]; conn.close();\nprint(\"Open FAST tasks checked (0): none\" if count == 0 else f\"Open FAST tasks checked ({count}): collision\")'",
       "observedResult": "Open FAST tasks checked (0): none",
-      "timestamp": "2026-04-23T23:40:05.832Z",
+      "timestamp": "2026-04-23T23:50:18.876Z",
       "outputRecordFields": [
         "checkId",
         "command",
@@ -29,7 +29,7 @@
       "checkId": "recent-run-fingerprint-collision-check",
       "command": "python -c 'import json, pathlib; fp=\"backlog-under-threshold-restore-10\"; artifacts=pathlib.Path(\"planning/backlog-triggers\").glob(\"*.json\"); seen=[p for p in artifacts if json.loads(p.read_text()).get(\"triggerFingerprint\")==fp]; print(\"Recent planning runs checked (0): none\" if len(seen)==1 else f\"Recent planning runs checked ({max(len(seen)-1, 0)}): collision\")'",
       "observedResult": "Recent planning runs checked (0): none",
-      "timestamp": "2026-04-23T23:40:05.832Z",
+      "timestamp": "2026-04-23T23:50:18.876Z",
       "outputRecordFields": [
         "checkId",
         "command",
@@ -41,7 +41,7 @@
       "checkId": "artifact-lineage-check",
       "command": "python -c 'import json, sys; path=\"planning/backlog-triggers/planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z.json\"; d=json.loads(open(path).read()); missing=[k for k in (\"triggerFingerprint\",\"triggerArtifactId\",\"dedupeEvidence\") if k not in d];\nif missing:\n print(\"Lineage check failed: missing \"+\",\".join(missing));\n sys.exit(2)\nprint(\"Lineage fields present: triggerFingerprint, triggerArtifactId, dedupeEvidence\")'",
       "observedResult": "Lineage fields present: triggerFingerprint, triggerArtifactId, dedupeEvidence",
-      "timestamp": "2026-04-23T23:40:05.832Z",
+      "timestamp": "2026-04-23T23:50:18.876Z",
       "outputRecordFields": [
         "checkId",
         "command",

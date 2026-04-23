@@ -51,6 +51,14 @@ class Fast10BacklogValidationGateContractTest(unittest.TestCase):
             "sqlite_override if os.path.isabs(sqlite_override)",
             open_task_check["command"],
         )
+        self.assertIn(
+            "os.access(sqlite_file, os.R_OK)",
+            open_task_check["command"],
+        )
+        self.assertIn(
+            "except sqlite3.OperationalError as exc",
+            open_task_check["command"],
+        )
 
         for check in checks:
             record_fields = check["outputRecordFields"]
