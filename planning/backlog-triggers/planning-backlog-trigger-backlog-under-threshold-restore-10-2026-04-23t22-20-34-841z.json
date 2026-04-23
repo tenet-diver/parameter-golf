@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "triggerKind": "backlog-depletion-product-owner-planning",
+  "status": "created",
+  "triggeredAt": "2026-04-23T22:20:34.841Z",
+  "triggerFingerprint": "backlog-under-threshold-restore-10",
+  "triggerArtifactId": "planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z",
+  "repoRoot": "/workspaces/parameter-golf-fastest-run/.fastest-self-run/worktrees/fast-9-2ecde6ec",
+  "goal": {
+    "objective": "Restore guarded queue coverage toward 10 planned tasks after backlog depletion.",
+    "coverageTarget": 10,
+    "mode": "approved-slices-only"
+  },
+  "dedupeEvidence": {
+    "openFastTasksChecked": 0,
+    "recentPlanningRunsChecked": 0,
+    "notes": "No open FAST tasks or recent planning run collisions were detected at trigger time."
+  }
+}

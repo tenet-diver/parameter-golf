@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "guarded-replenishment-policy",
+  "taskId": "FAST-9",
+  "title": "FAST-7B: Guarded Replenishment Policy and Queue Coverage Contract",
+  "trigger": {
+    "fingerprint": "backlog-under-threshold-restore-10",
+    "artifactId": "planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z",
+    "artifactPath": "planning/backlog-triggers/planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z.json"
+  },
+  "sourcePlanning": {
+    "taskId": "FAST-7",
+    "title": "Plan backlog replenishment after major backlog depletion alert",
+    "triggerArtifact": "planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z"
+  },
+  "triggerPolicy": {
+    "thresholds": {
+      "criticalQueueDepth": 0,
+      "underThresholdQueueDepth": 4,
+      "recoveryTargetQueueDepth": 10
+    },
+    "cooldownMinutes": 240,
+    "maxTicketsPerCycle": 3,
+    "cycleRule": "A replenishment cycle can issue at most 3 approved slices, then must honor 240-minute cooldown unless an explicit override checkpoint is approved."
+  },
+  "queueCoverageObjective": {
+    "targetPlannedTasks": 10,
+    "approach": "Restore planned coverage toward 10 tasks via approved slices that are independently executable and dedupe-safe.",
+    "measuredBy": {
+      "primaryMetric": "planned_queue_depth",
+      "successCondition": "Depth trend returns toward 10 without violating issuance or dedupe guardrails.",
+      "samplingWindowMinutes": 240
+    }
+  },
+  "explicitNonGoals": [
+    "Do not create filler tasks solely to inflate queue counts.",
+    "Do not bypass implementation, review, or validator gates to accelerate issuance.",
+    "Do not issue unbounded or speculative slices outside approved replenishment scope."
+  ],
+  "approvalAndGovernance": {
+    "checkpoints": [
+      {
+        "name": "slice-scope-approval",
+        "requiredBefore": "ticket issuance",
+        "evidence": "Each candidate slice maps to objective-tree branch and defines acceptance signal."
+      },
+      {
+        "name": "post-cycle-safety-review",
+        "requiredAfter": "each issuance cycle",
+        "evidence": "Cooldown compliance, dedupe outcomes, and queue-depth movement are recorded."
+      }
+    ],
+    "roles": {
+      "policyOwner": "product-owner-planning",
+      "executionOwner": "coding-and-qa",
+      "approver": "workflow-orchestration",
+      "observer": "incident-response"
+    },
+    "revisitTriggersForIrreversibleDecisions": [
+      "Two consecutive cycles fail to improve queue depth toward target.",
+      "A requested irreversible workflow change alters dedupe or approval boundaries.",
+      "Any override request that changes cooldown or issuance bounds."
+    ]
+  },
+  "dedupeConflictHandling": {
+    "onOpenTaskConflict": {
+      "action": "skip-issuance-and-escalate",
+      "requiredEscalation": "Open FAST task collision must be resolved or superseded before new issuance."
+    },
+    "onRecentRunCollision": {
+      "action": "pause-and-request-review",
+      "requiredEscalation": "Recent planning run collision requires owner review before retries."
+    },
+    "auditRequirements": [
+      "Record conflict type, blocking artifact ID, and decision owner.",
+      "Persist a no-op cycle outcome when issuance is blocked by dedupe safeguards."
+    ]
+  },
+  "architectureHandoff": {
+    "boundaries": [
+      "Trigger ingestion and dedupe checks are preconditions and cannot be bypassed by issuance logic.",
+      "Issuance logic operates only on approved slices and bounded cycle rules.",
+      "Queue coverage measurement is read-only and informs next-cycle approvals."
+    ],
+    "interfaces": [
+      "Input: backlog depletion trigger artifact with dedupe evidence.",
+      "Output: bounded issuance decisions, checkpoint records, and queue coverage telemetry."
+    ],
+    "risks": [
+      "Over-issuance during unstable periods can mask root-cause failures.",
+      "False-positive dedupe collisions can stall recovery if escalation ownership is unclear."
+    ],
+    "implementationReadyDecisions": [
+      "Cooldown fixed at 240 minutes per cycle.",
+      "Maximum issuance fixed at 3 tickets per cycle.",
+      "Coverage objective fixed at restoring planned queue depth toward 10 tasks."
+    ]
+  }
+}
