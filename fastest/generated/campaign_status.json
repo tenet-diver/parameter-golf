@@ -1,0 +1,52 @@
+{
+  "campaignId": "campaign-parameter-golf-49bd735409",
+  "benchmarkAdapterId": "parameter-golf",
+  "targetRepositoryRoot": "/workspaces/parameter-golf-fastest-run",
+  "updatedAt": "2026-04-23T19:53:41.909Z",
+  "campaignState": "active",
+  "environmentClass": "cpu-smoke",
+  "trustedControlState": "missing",
+  "queueHealth": {
+    "pendingTaskCount": 6,
+    "inFlightTaskCount": 0,
+    "stalledSince": null
+  },
+  "queueDepthByLane": {
+    "measurement": 3,
+    "constraint-clarity": 1,
+    "cheap-screen": 1,
+    "ablation": 1,
+    "combination": 0,
+    "scale-check": 0,
+    "benchmark-rehearsal": 0,
+    "non-record-exploration": 0,
+    "unassigned": 0
+  },
+  "progress": {
+    "totalExperiments": 0,
+    "acceptedExperiments": 0,
+    "mostRecentEvidenceId": null
+  },
+  "recentCompletedExperiments": [],
+  "progressTrend": "unknown",
+  "bestKnownResult": null,
+  "lastControllerTickAt": "2026-04-23T19:53:21.085Z",
+  "lastProgressAt": null,
+  "stalledProgress": false,
+  "blockers": [
+    "No verified benchmark evidence exists yet."
+  ],
+  "adapterStatus": {
+    "summary": "Trusted control baseline missing; keep Parameter Golf work centered on measurement and cheap-screen validation.",
+    "details": {
+      "environmentClass": "cpu-smoke",
+      "trustedControlState": "missing",
+      "pendingTaskCount": "6",
+      "inFlightTaskCount": "0",
+      "progressTrend": "unknown",
+      "stalledProgress": "false",
+      "benchmarkTrack": "parameter-golf",
+      "readiness": "baseline-missing"
+    }
+  }
+}
