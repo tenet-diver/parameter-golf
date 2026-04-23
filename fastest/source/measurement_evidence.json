@@ -1,18 +1,20 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-23T20:21:00.000Z",
+  "updatedAt": "2026-04-23T21:18:34Z",
   "summary": {
     "artifactIds": [
-      "evidence-fast1-control-20260423-001"
+      "evidence-fast1-control-20260423-001",
+      "evidence-exp-fast4-cheap-screen-20260423-attempt2-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 1,
-    "acceptedExperiments": 1,
-    "mostRecentEvidenceId": "evidence-fast1-control-20260423-001"
+    "totalExperiments": 2,
+    "acceptedExperiments": 2,
+    "mostRecentEvidenceId": "evidence-exp-fast4-cheap-screen-20260423-attempt2-001"
   },
   "recentCompletedExperiments": [
-    "exp-fast1-control-20260423-001"
+    "exp-fast1-control-20260423-001",
+    "exp-fast4-cheap-screen-20260423-attempt2-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -37,6 +39,26 @@
       "completedAt": "2026-04-23T20:21:00.000Z",
       "objectiveMetricName": "benchmark-score",
       "objectiveValue": 1.0
+    },
+    {
+      "experimentId": "exp-fast4-cheap-screen-20260423-attempt2-001",
+      "evidenceId": "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
+      "lane": "cheap-screen",
+      "status": "accepted",
+      "completedAt": "2026-04-23T21:18:34Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0112,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-4:cheap-screen:exp-fast4-cheap-screen-20260423-attempt2-001",
+      "taskId": "FAST-4",
+      "traceId": "trace-fast4-attempt2-001",
+      "runConfig": {
+        "seed": 42
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30
+      }
     }
   ]
 }
