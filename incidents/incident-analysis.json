@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "incident-analysis",
+  "taskId": "FAST-8",
+  "title": "FAST-7A: Backlog Depletion RCA and Risk Register Refresh",
+  "trigger": {
+    "fingerprint": "backlog-under-threshold-restore-10",
+    "artifactId": "planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z",
+    "artifactPath": "planning/backlog-triggers/planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z.json"
+  },
+  "sourcePlanning": {
+    "taskId": "FAST-7",
+    "title": "Plan backlog replenishment after major backlog depletion alert",
+    "artifactId": "planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z",
+    "createdAt": "2026-04-23T22:20:34.841Z"
+  },
+  "timeline": {
+    "windowStart": "2026-04-23T22:20:15.000Z",
+    "windowEnd": "2026-04-23T22:20:34.841Z",
+    "events": [
+      {
+        "timestamp": "2026-04-23T22:20:15.000Z",
+        "eventType": "alert-fired",
+        "summary": "Backlog depletion alert fired when queue depth reached 0 for trigger fingerprint backlog-under-threshold-restore-10."
+      },
+      {
+        "timestamp": "2026-04-23T22:20:20.000Z",
+        "eventType": "dedupe-check-completed",
+        "summary": "Open FAST tasks checked (0) and recent planning runs checked (0)."
+      },
+      {
+        "timestamp": "2026-04-23T22:20:34.841Z",
+        "eventType": "planning-artifact-created",
+        "summary": "Planning trigger artifact created for backlog restoration workflow."
+      }
+    ]
+  },
+  "incidentSummary": {
+    "whatHappened": "Queue depth depleted to zero before replenishment actions started, forcing reactive planning artifact creation.",
+    "whyItMattered": "Zero runnable depth blocked steady campaign execution and increased dependence on manual intervention.",
+    "causalConfidence": "medium"
+  },
+  "rankedRecurrenceRisks": [
+    {
+      "rank": 1,
+      "riskId": "R1",
+      "name": "Replenishment trigger latency or automation gap",
+      "impact": "critical",
+      "confidence": "high",
+      "validationPlan": "Replay trigger events and verify auto-replenishment starts within agreed trigger-to-refill SLA.",
+      "owner": "planning-platform"
+    },
+    {
+      "rank": 2,
+      "riskId": "R2",
+      "name": "Observability blind spot on queue-depth trend and lead indicators",
+      "impact": "high",
+      "confidence": "medium",
+      "validationPlan": "Run synthetic depletion test and confirm pre-zero warning plus complete timeline event capture.",
+      "owner": "monitoring"
+    },
+    {
+      "rank": 3,
+      "riskId": "R3",
+      "name": "Single-path recovery dependency on manual planning run",
+      "impact": "high",
+      "confidence": "medium",
+      "validationPlan": "Execute failover simulation proving a backup path can create an actionable replenishment plan without manual bottleneck.",
+      "owner": "workflow-orchestration"
+    }
+  ],
+  "mitigationRequirements": [
+    {
+      "mitigationId": "M1",
+      "relatedRiskId": "R1",
+      "riskLevel": "high",
+      "behavior": "When queue depth crosses the configured depletion threshold, the system must initiate replenishment automatically and emit an immutable start marker.",
+      "constraints": "Must be idempotent per incident correlation key; must not require manual operator action for initial replenishment start; must preserve existing queue safety guardrails.",
+      "outcomes": "Trigger-to-replenishment start meets agreed SLA for validated replay scenarios.",
+      "rollbackExpectations": "Rollback mitigation if replenishment-start error rate or start latency exceeds baseline guardrails for two consecutive validation windows.",
+      "degradationExpectations": "Under rollback or partial outage, switch to safe minimum queue refill behavior and present explicit degraded-mode operator status."
+    },
+    {
+      "mitigationId": "M2",
+      "relatedRiskId": "R2",
+      "riskLevel": "medium",
+      "behavior": "The incident artifact pipeline must record queue-depth snapshots and lead-indicator signals across the depletion window with ordered timestamps.",
+      "constraints": "If telemetry is missing or delayed, artifact publication must remain partial until assumptions and validation owner are explicitly recorded.",
+      "outcomes": "Each incident includes an auditable, end-to-end timeline that supports RCA confidence scoring and replay validation."
+    },
+    {
+      "mitigationId": "M3",
+      "relatedRiskId": "R3",
+      "riskLevel": "high",
+      "behavior": "Recovery flow must provide a backup planning path that can produce an actionable replenishment plan when the primary manual path is unavailable.",
+      "constraints": "Backup path must preserve trigger fingerprint/artifact audit links and must not bypass dedupe checks.",
+      "outcomes": "Failover simulation confirms planning continuity without single-operator dependency.",
+      "rollbackExpectations": "Rollback backup path activation if generated plans violate baseline quality or increase restoration latency beyond baseline guardrails.",
+      "degradationExpectations": "In degraded mode, use the primary path with operator escalation while preserving minimum safe queue refill and status visibility."
+    }
+  ],
+  "dedupeEvidence": {
+    "openFastTasksChecked": 0,
+    "recentPlanningRunsChecked": 0,
+    "notes": "Dedupe evidence retained as context input and not treated as direct causal proof."
+  },
+  "assumptionsAndValidation": {
+    "assumptions": [
+      "Alert timestamp and planning artifact timestamp are authoritative for the required timeline window.",
+      "SLA threshold value is defined externally and enforced during validation execution."
+    ],
+    "validationOwner": "coding-and-qa",
+    "status": "ready-for-implementation"
+  }
+}
