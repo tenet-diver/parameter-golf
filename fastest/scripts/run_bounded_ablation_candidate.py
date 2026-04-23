@@ -183,7 +183,6 @@ def execute_bounded_ablation_candidate(
         for record in experiment_records
         if isinstance(record, dict)
         and record.get("lane") == "ablation"
-        and record.get("status") == "accepted"
     )
     if used_ablation_experiments >= max_ablation_experiments:
         return _outcome(
