@@ -86,13 +86,9 @@ We'd love to see weird & creative ideas in the challenge, since you never know w
 
 ## Getting Started
 
-### Training Your First Model (Mac with Apple Silicon)
+### Training Your First Model
 
-If you have an Apple laptop or desktop with Apple Silicon, we've set up a simple MLX training script to help you start iterating locally.
-
-If you don't have a Mac with Apple Silicon, you can run an adapted version of this script without MLX support. Just ask [Codex](https://openai.com/codex/) to refactor it; the change is straightforward. It may still be fairly slow, so we recommend jumping straight to cloud GPUs with Runpod.
-
-First, clone the repository, create a fresh Python environment, and install the packages needed for the MLX path plus dataset download:
+Start with a fresh clone and Python environment:
 
 ```bash
 git clone https://github.com/openai/parameter-golf.git
@@ -100,6 +96,17 @@ cd parameter-golf
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
+```
+
+Then choose the local path that matches your machine.
+
+#### Apple Silicon (MLX)
+
+If you have an Apple laptop or desktop with Apple Silicon, we've set up a simple MLX training script to help you start iterating locally.
+
+Install the packages needed for the MLX path plus dataset download:
+
+```bash
 pip install mlx numpy sentencepiece huggingface-hub datasets tqdm
 ```
 
@@ -124,6 +131,43 @@ python3 train_gpt_mlx.py
 ```
 
 Validation always runs on the full `fineweb_val_*` split, which is the fixed first-50k-document set. The smoke command above skips periodic validation and just prints the final `val_loss` and `val_bpb` once at the end.
+
+#### Linux / CPU-only smoke
+
+If you're on Linux, x86_64, or any machine without Apple Silicon, use the PyTorch baseline script directly instead of the MLX path.
+
+Install the CPU-friendly starter dependencies:
+
+```bash
+pip install torch numpy sentencepiece huggingface-hub datasets tqdm
+```
+
+Download the tokenizer plus a single training shard for a local smoke run:
+
+```bash
+python3 data/cached_challenge_fineweb.py --variant sp1024 --train-shards 1
+```
+
+Then run a small CPU-only smoke job:
+
+```bash
+RUN_ID=cpu_smoke \
+ITERATIONS=2 \
+WARMUP_STEPS=0 \
+NUM_LAYERS=2 \
+MODEL_DIM=128 \
+NUM_HEADS=4 \
+NUM_KV_HEADS=2 \
+TRAIN_BATCH_TOKENS=8192 \
+TRAIN_LOG_EVERY=1 \
+VAL_LOSS_EVERY=0 \
+VAL_BATCH_SIZE=1024 \
+VAL_TOKEN_LIMIT=4096 \
+MAX_WALLCLOCK_SECONDS=0 \
+python3 train_gpt.py
+```
+
+This is a smoke-only Linux/CPU command: it exercises the PyTorch training path, shrinks the model so it is practical on CPU, and limits the final validation pass to a short token slice. Keep `TRAIN_BATCH_TOKENS` at `8192` or higher unless you also reduce `TRAIN_SEQ_LEN`.
 
 ### Scaling Up to a Remote Machine
 
