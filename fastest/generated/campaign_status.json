@@ -5,7 +5,7 @@
   "updatedAt": "2026-04-23T21:29:46.366Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
-  "trustedControlState": "verified",
+  "trustedControlState": "established",
   "queueHealth": {
     "pendingTaskCount": 4,
     "inFlightTaskCount": 2,
@@ -28,27 +28,9 @@
     "mostRecentEvidenceId": "evidence-exp-fast4-qa-smoke-20260423-001"
   },
   "recentCompletedExperiments": [
-    {
-      "evidenceId": "evidence-exp-fast4-qa-smoke-20260423-001",
-      "candidateId": "exp-fast4-qa-smoke-20260423-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0197,
-      "observedAt": "2026-04-23T21:22:01Z"
-    },
-    {
-      "evidenceId": "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
-      "candidateId": "exp-fast4-cheap-screen-20260423-attempt2-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0112,
-      "observedAt": "2026-04-23T21:18:34Z"
-    },
-    {
-      "evidenceId": "evidence-fast1-control-20260423-001",
-      "candidateId": "exp-fast1-control-20260423-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1,
-      "observedAt": "2026-04-23T20:21:00.000Z"
-    }
+    "exp-fast1-control-20260423-001",
+    "exp-fast4-cheap-screen-20260423-attempt2-001",
+    "exp-fast4-qa-smoke-20260423-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -62,16 +44,27 @@
   "stalledProgress": false,
   "blockers": [],
   "adapterStatus": {
-    "summary": "Parameter Golf campaign healthy enough for continued benchmark-directed search.",
+    "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
     "details": {
       "environmentClass": "cpu-smoke",
-      "trustedControlState": "verified",
+      "trustedControlState": "established",
       "pendingTaskCount": "4",
       "inFlightTaskCount": "2",
       "progressTrend": "unknown",
       "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
-      "readiness": "advancing"
+      "readiness": "baseline-established"
     }
+  },
+  "promotionAdjudication": {
+    "candidateId": "evidence-exp-fast4-qa-smoke-20260423-001",
+    "policyVersion": "pg-constraint-clarity-v1",
+    "decision": "hold",
+    "violatedRules": [],
+    "missingEvidence": [
+      "reproducibility-manifest"
+    ],
+    "ambiguityReasons": [],
+    "promotableStateChange": false
   }
 }
