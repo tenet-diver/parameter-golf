@@ -2,10 +2,10 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf-fastest-run",
-  "updatedAt": "2026-04-23T19:53:41.909Z",
+  "updatedAt": "2026-04-23T20:16:54.473Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
-  "trustedControlState": "established",
+  "trustedControlState": "missing",
   "queueHealth": {
     "pendingTaskCount": 6,
     "inFlightTaskCount": 0,
@@ -23,30 +23,30 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 1,
-    "acceptedExperiments": 1,
-    "mostRecentEvidenceId": "evidence-fast1-control-20260423-001"
+    "totalExperiments": 0,
+    "acceptedExperiments": 0,
+    "mostRecentEvidenceId": null
   },
-  "recentCompletedExperiments": [
-    "exp-fast1-control-20260423-001"
-  ],
-  "progressTrend": "stable",
+  "recentCompletedExperiments": [],
+  "progressTrend": "unknown",
   "bestKnownResult": null,
-  "lastControllerTickAt": "2026-04-23T19:53:21.085Z",
+  "lastControllerTickAt": "2026-04-23T20:16:54.473Z",
   "lastProgressAt": "2026-04-23T20:21:00.000Z",
   "stalledProgress": false,
-  "blockers": [],
+  "blockers": [
+    "No verified benchmark evidence exists yet."
+  ],
   "adapterStatus": {
-    "summary": "Trusted control baseline established; continue Parameter Golf work with measurement and cheap-screen validation.",
+    "summary": "Trusted control baseline missing; keep Parameter Golf work centered on measurement and cheap-screen validation.",
     "details": {
       "environmentClass": "cpu-smoke",
-      "trustedControlState": "established",
+      "trustedControlState": "missing",
       "pendingTaskCount": "6",
       "inFlightTaskCount": "0",
-      "progressTrend": "stable",
+      "progressTrend": "unknown",
       "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
-      "readiness": "baseline-established"
+      "readiness": "baseline-missing"
     }
   }
 }

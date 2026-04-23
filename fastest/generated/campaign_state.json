@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-23T19:53:41.909Z",
+    "updatedAt": "2026-04-23T20:16:54.473Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -51,23 +51,19 @@
     }
   },
   "environmentClass": "cpu-smoke",
-  "lastControllerTickAt": "2026-04-23T19:53:21.085Z",
+  "lastControllerTickAt": "2026-04-23T20:16:54.473Z",
   "lastProgressAt": "2026-04-23T20:21:00.000Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
-    "artifactIds": [
-      "evidence-fast1-control-20260423-001"
-    ],
+    "artifactIds": [],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
-    "trustedControlState": "established",
+    "trustedControlState": "missing",
     "bestKnownResult": null,
-    "progressTrend": "stable",
-    "recentCompletedExperiments": [
-      "exp-fast1-control-20260423-001"
-    ],
-    "acceptedExperiments": 1,
-    "totalExperiments": 1,
+    "progressTrend": "unknown",
+    "recentCompletedExperiments": [],
+    "acceptedExperiments": 0,
+    "totalExperiments": 0,
     "promotionGateRejectionCount": 0
   }
 }
