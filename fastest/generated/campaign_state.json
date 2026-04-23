@@ -52,18 +52,22 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-23T19:53:21.085Z",
-  "lastProgressAt": null,
+  "lastProgressAt": "2026-04-23T20:21:00.000Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
-    "artifactIds": [],
+    "artifactIds": [
+      "evidence-fast1-control-20260423-001"
+    ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
-    "trustedControlState": "missing",
+    "trustedControlState": "established",
     "bestKnownResult": null,
-    "progressTrend": "unknown",
-    "recentCompletedExperiments": [],
-    "acceptedExperiments": 0,
-    "totalExperiments": 0,
+    "progressTrend": "stable",
+    "recentCompletedExperiments": [
+      "exp-fast1-control-20260423-001"
+    ],
+    "acceptedExperiments": 1,
+    "totalExperiments": 1,
     "promotionGateRejectionCount": 0
   }
 }
