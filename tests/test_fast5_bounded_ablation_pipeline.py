@@ -164,6 +164,46 @@ class Fast5BoundedAblationPipelineContractTest(unittest.TestCase):
             ]
             self.assertEqual(len(ablation_records), 1)
 
+    def test_failed_first_ablation_still_exhausts_budget_when_cap_is_one(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            evidence_path, status_path, state_path = self._seed_files(tmp_root)
+
+            first = execute_bounded_ablation_candidate(
+                self._task("exp-fast5-ablation-001"),
+                runner=lambda _: {
+                    "status": "failed-terminal",
+                    "objectiveMetricName": "benchmark-score",
+                    "objectiveValue": 0.98,
+                    "completedAt": "2026-04-23T21:00:00.000Z",
+                    "failureCode": "benchmark-regression",
+                    "failureMessage": "did not meet baseline",
+                    "artifacts": {},
+                },
+                evidence_path=evidence_path,
+                status_path=status_path,
+                state_path=state_path,
+            )
+            second = execute_bounded_ablation_candidate(
+                self._task("exp-fast5-ablation-002"),
+                runner=lambda _: self._successful_runner_result("evidence-fast5-ablation-002"),
+                evidence_path=evidence_path,
+                status_path=status_path,
+                state_path=state_path,
+            )
+
+            self.assertEqual(first["status"], "error")
+            self.assertEqual(first["reasonCode"], "no-results-produced")
+            self.assertEqual(second["status"], "error")
+            self.assertEqual(second["reasonCode"], "ablation-budget-exhausted")
+
+            evidence = json.loads(evidence_path.read_text())
+            ablation_records = [
+                record for record in evidence["experimentRecords"] if record.get("lane") == "ablation"
+            ]
+            self.assertEqual(len(ablation_records), 1)
+            self.assertEqual(ablation_records[0]["status"], "failed-terminal")
+
 
 if __name__ == "__main__":
     unittest.main()
