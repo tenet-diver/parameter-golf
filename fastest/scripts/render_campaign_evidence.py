@@ -32,6 +32,14 @@ def _normalized_string_list(values: object) -> list[str]:
     return sorted(normalized)
 
 
+def _normalized_non_negative_int(value: object, default: int) -> int:
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, int) and value >= 0:
+        return value
+    return default
+
+
 def adjudicate_promotion(candidate: dict) -> dict:
     policy_version = candidate.get("policyVersion", DEFAULT_POLICY_VERSION)
     required_evidence = _normalized_string_list(candidate.get("requiredEvidence"))
@@ -79,6 +87,7 @@ def adjudicate_promotion(candidate: dict) -> dict:
 def apply_measurement_evidence(source: dict, status: dict, state: dict) -> tuple[dict, dict]:
     summary = source["summary"]
     recent_completed = source["recentCompletedExperiments"]
+    promotion_policy = source.get("promotionPolicy", {})
 
     status["trustedControlState"] = summary["trustedControlState"]
     status["lastProgressAt"] = source.get("updatedAt", status.get("lastProgressAt"))
@@ -128,18 +137,32 @@ def apply_measurement_evidence(source: dict, status: dict, state: dict) -> tuple
     if summary.get("mostRecentEvidenceId"):
         provided_evidence.append("benchmark-measurement-evidence")
 
-    promotion_candidate = {
-        "candidateId": summary.get("mostRecentEvidenceId"),
-        "policyVersion": DEFAULT_POLICY_VERSION,
-        "artifactBudgetPolicy": state.get("campaign", {}).get("metadata", {}).get("artifactBudgetPolicy"),
-        "requiredEvidence": DEFAULT_REQUIRED_EVIDENCE,
-        "providedEvidence": provided_evidence,
-        "legalitySignals": {
+    policy_version = promotion_policy.get("policyVersion", DEFAULT_POLICY_VERSION)
+    required_evidence = _normalized_string_list(promotion_policy.get("requiredEvidence"))
+    if not required_evidence:
+        required_evidence = list(DEFAULT_REQUIRED_EVIDENCE)
+
+    legality_signals = promotion_policy.get("legalitySignals")
+    if not isinstance(legality_signals, dict):
+        legality_signals = {
             "status": "legal" if summary.get("trustedControlState") in {"verified", "established"} else "ambiguous",
             "violations": [],
             "conflicts": [],
-        },
-        "promotionGatesSatisfied": summary.get("acceptedExperiments", 0) > 0,
+        }
+
+    minimum_accepted_experiments = _normalized_non_negative_int(
+        promotion_policy.get("minimumAcceptedExperiments"),
+        1,
+    )
+
+    promotion_candidate = {
+        "candidateId": summary.get("mostRecentEvidenceId"),
+        "policyVersion": policy_version,
+        "artifactBudgetPolicy": state.get("campaign", {}).get("metadata", {}).get("artifactBudgetPolicy"),
+        "requiredEvidence": required_evidence,
+        "providedEvidence": provided_evidence,
+        "legalitySignals": legality_signals,
+        "promotionGatesSatisfied": summary.get("acceptedExperiments", 0) >= minimum_accepted_experiments,
     }
     adjudication = adjudicate_promotion(promotion_candidate)
     status["promotionAdjudication"] = adjudication

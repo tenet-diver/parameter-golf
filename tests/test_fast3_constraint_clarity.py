@@ -2,7 +2,7 @@ import copy
 import json
 import unittest
 
-from fastest.scripts.render_campaign_evidence import adjudicate_promotion
+from fastest.scripts.render_campaign_evidence import apply_measurement_evidence, adjudicate_promotion
 
 
 POLICY_VERSION = "pg-constraint-clarity-v1"
@@ -93,6 +93,73 @@ class Fast3ConstraintClarityContractTest(unittest.TestCase):
         first_bytes = json.dumps(first, sort_keys=True, separators=(",", ":")).encode("utf-8")
         second_bytes = json.dumps(second, sort_keys=True, separators=(",", ":")).encode("utf-8")
         self.assertEqual(first_bytes, second_bytes)
+
+    def test_apply_measurement_evidence_uses_authoritative_policy_contract(self) -> None:
+        source = {
+            "updatedAt": "2026-04-23T20:21:00.000Z",
+            "summary": {
+                "artifactIds": [
+                    "evidence-fast3-policy-contract-001",
+                ],
+                "trustedControlState": "established",
+                "totalExperiments": 2,
+                "acceptedExperiments": 1,
+                "mostRecentEvidenceId": "evidence-fast3-policy-contract-001",
+            },
+            "recentCompletedExperiments": [
+                "exp-fast3-policy-contract-001",
+            ],
+            "promotionPolicy": {
+                "policyVersion": "pg-constraint-clarity-v2",
+                "requiredEvidence": [
+                    "trusted-baseline-evidence",
+                    "benchmark-measurement-evidence",
+                    "reproducibility-manifest",
+                    "legality-attestation",
+                ],
+                "legalitySignals": {
+                    "status": "ambiguous",
+                    "violations": [],
+                    "conflicts": ["judge-disagreement"],
+                },
+                "minimumAcceptedExperiments": 2,
+            },
+        }
+        status = {
+            "progress": {
+                "totalExperiments": 0,
+                "acceptedExperiments": 0,
+                "mostRecentEvidenceId": None,
+            },
+            "blockers": [],
+            "adapterStatus": {"details": {}},
+        }
+        state = {
+            "campaign": {"metadata": {"artifactBudgetPolicy": "required-before-promotion"}},
+            "evidenceSummaryCache": {},
+        }
+
+        rendered_status, rendered_state = apply_measurement_evidence(source, status, state)
+        adjudication = rendered_status["promotionAdjudication"]
+
+        self.assertEqual(adjudication["policyVersion"], "pg-constraint-clarity-v2")
+        self.assertEqual(adjudication["decision"], "reject")
+        self.assertEqual(
+            adjudication["missingEvidence"],
+            ["legality-attestation", "reproducibility-manifest"],
+        )
+        self.assertIn(
+            "pg-constraint-clarity-v2:ambiguity:judge-disagreement",
+            adjudication["ambiguityReasons"],
+        )
+        self.assertIn(
+            "pg-constraint-clarity-v2:promotion-gates-not-satisfied",
+            adjudication["violatedRules"],
+        )
+        self.assertEqual(
+            rendered_state["evidenceSummaryCache"]["latestPromotionAdjudication"],
+            adjudication,
+        )
 
 
 if __name__ == "__main__":

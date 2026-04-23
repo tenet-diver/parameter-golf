@@ -14,6 +14,20 @@
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001"
   ],
+  "promotionPolicy": {
+    "policyVersion": "pg-constraint-clarity-v1",
+    "requiredEvidence": [
+      "trusted-baseline-evidence",
+      "benchmark-measurement-evidence",
+      "reproducibility-manifest"
+    ],
+    "legalitySignals": {
+      "status": "legal",
+      "violations": [],
+      "conflicts": []
+    },
+    "minimumAcceptedExperiments": 1
+  },
   "experimentRecords": [
     {
       "experimentId": "exp-fast1-control-20260423-001",
