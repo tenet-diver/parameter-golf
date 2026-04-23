@@ -154,6 +154,33 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
             STATUS_PATH.write_text(original_status)
             STATE_PATH.write_text(original_state)
 
+    def test_controller_tick_check_fails_when_generated_views_are_stale(self) -> None:
+        original_status = STATUS_PATH.read_text()
+        original_state = STATE_PATH.read_text()
+
+        try:
+            status = json.loads(original_status)
+            state = json.loads(original_state)
+
+            status["trustedControlState"] = "verified"
+            status["recentCompletedExperiments"] = ["exp-stale-view"]
+            state["evidenceSummaryCache"]["trustedControlState"] = "verified"
+            state["evidenceSummaryCache"]["recentCompletedExperiments"] = ["exp-stale-view"]
+
+            STATUS_PATH.write_text(f"{json.dumps(status, indent=2)}\n")
+            STATE_PATH.write_text(f"{json.dumps(state, indent=2)}\n")
+
+            tick = subprocess.run(
+                [sys.executable, str(CONTROLLER_TICK_PATH), "--check"],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertNotEqual(tick.returncode, 0)
+        finally:
+            STATUS_PATH.write_text(original_status)
+            STATE_PATH.write_text(original_state)
+
 
 if __name__ == "__main__":
     unittest.main()

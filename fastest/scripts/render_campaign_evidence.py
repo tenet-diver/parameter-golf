@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 
@@ -171,15 +172,39 @@ def apply_measurement_evidence(source: dict, status: dict, state: dict) -> tuple
     return status, state
 
 
-def main() -> None:
+def _check_projection_is_fresh(source: dict, status: dict, state: dict) -> bool:
+    expected_status, expected_state = apply_measurement_evidence(
+        source,
+        json.loads(json.dumps(status)),
+        json.loads(json.dumps(state)),
+    )
+    return expected_status == status and expected_state == state
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Render campaign views from authoritative evidence.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit non-zero when generated views are stale instead of rewriting them.",
+    )
+    args = parser.parse_args(argv)
+
     source = _load_json(SOURCE_PATH)
     status = _load_json(STATUS_PATH)
     state = _load_json(STATE_PATH)
 
+    if args.check:
+        if _check_projection_is_fresh(source, status, state):
+            return 0
+        print("Generated campaign views are stale; run controller tick to refresh projections.")
+        return 1
+
     rendered_status, rendered_state = apply_measurement_evidence(source, status, state)
     _write_json(STATUS_PATH, rendered_status)
     _write_json(STATE_PATH, rendered_state)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
