@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "kind": "backlog-validation-gate",
+  "taskId": "FAST-10",
+  "title": "FAST-7C: Dedupe and Lineage Validation Gate for Backlog Planning Runs",
+  "sourcePlanning": {
+    "taskId": "FAST-7",
+    "title": "Plan backlog replenishment after major backlog depletion alert"
+  },
+  "trigger": {
+    "fingerprint": "backlog-under-threshold-restore-10",
+    "artifactId": "planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z",
+    "artifactPath": "planning/backlog-triggers/planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z.json"
+  },
+  "validationChecklist": [
+    {
+      "checkId": "open-task-check",
+      "command": "TASK_STORE_DIR=\"/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks\" python -c 'import os, sqlite3, sys; task_store_dir=os.environ[\"TASK_STORE_DIR\"]; sqlite_file=os.environ.get(\"TASK_STORE_SQLITE_FILE\", f\"{task_store_dir}/task-store.sqlite\");\nif not os.path.isfile(sqlite_file):\n print(f\"Open FAST tasks checked: unavailable (task-store binding invalid: {sqlite_file})\");\n sys.exit(2)\nconn=sqlite3.connect(sqlite_file); cur=conn.cursor(); cur.execute(\"select count(*) from tasks where status = ? and task_id like ?\", (\"open\", \"FAST-%\")); count=cur.fetchone()[0]; conn.close();\nprint(\"Open FAST tasks checked (0): none\" if count == 0 else f\"Open FAST tasks checked ({count}): collision\")'",
+      "observedResult": "Open FAST tasks checked (0): none",
+      "timestamp": "2026-04-23T23:26:20.995Z",
+      "outputRecordFields": [
+        "checkId",
+        "command",
+        "observedResult",
+        "timestamp"
+      ]
+    },
+    {
+      "checkId": "recent-run-fingerprint-collision-check",
+      "command": "python -c 'import json, pathlib; fp=\"backlog-under-threshold-restore-10\"; artifacts=pathlib.Path(\"planning/backlog-triggers\").glob(\"*.json\"); seen=[p for p in artifacts if json.loads(p.read_text()).get(\"triggerFingerprint\")==fp]; print(\"Recent planning runs checked (0): none\" if len(seen)==1 else f\"Recent planning runs checked ({max(len(seen)-1, 0)}): collision\")'",
+      "observedResult": "Recent planning runs checked (0): none",
+      "timestamp": "2026-04-23T23:26:20.995Z",
+      "outputRecordFields": [
+        "checkId",
+        "command",
+        "observedResult",
+        "timestamp"
+      ]
+    },
+    {
+      "checkId": "artifact-lineage-check",
+      "command": "python -c 'import json, sys; path=\"planning/backlog-triggers/planning-backlog-trigger-backlog-under-threshold-restore-10-2026-04-23t22-20-34-841z.json\"; d=json.loads(open(path).read()); missing=[k for k in (\"triggerFingerprint\",\"triggerArtifactId\",\"dedupeEvidence\") if k not in d];\nif missing:\n print(\"Lineage check failed: missing \"+\",\".join(missing));\n sys.exit(2)\nprint(\"Lineage fields present: triggerFingerprint, triggerArtifactId, dedupeEvidence\")'",
+      "observedResult": "Lineage fields present: triggerFingerprint, triggerArtifactId, dedupeEvidence",
+      "timestamp": "2026-04-23T23:26:20.995Z",
+      "outputRecordFields": [
+        "checkId",
+        "command",
+        "observedResult",
+        "timestamp"
+      ]
+    }
+  ],
+  "rejectionCriteria": {
+    "missingLineageFields": [
+      "triggerFingerprint",
+      "triggerArtifactId",
+      "dedupeEvidence"
+    ],
+    "action": "Gate rejects ticket issuance when candidate handoff is missing any required lineage field, including dedupeEvidence lines."
+  },
+  "qaHandoff": {
+    "validationRule": "QA must perform verbatim replay of each listed command and confirm observedResult matches the recorded output with no additional interpretation.",
+    "expectedEvidence": [
+      "open-task-check output",
+      "recent-run-fingerprint-collision-check output",
+      "artifact-lineage-check output"
+    ]
+  },
+  "gateBehavior": {
+    "passPath": "When all checklist commands replay with exact observedResult matches, backlog-replenishment ticket emission is allowed.",
+    "failPath": "If any checklist command fails, output mismatches, or required lineage fields are missing, issuance is rejected and operator escalation is required."
+  },
+  "architectureHandoff": {
+    "boundaries": [
+      "Validation gate executes before any backlog-replenishment ticket emission.",
+      "Task-store binding and lineage evidence are treated as hard preconditions.",
+      "Ticket emission remains blocked on any dedupe or lineage validation failure."
+    ],
+    "interfaces": [
+      "Input: trigger artifact and task-store backing data.",
+      "Output: reproducible checklist records and binary pass/fail gate decision."
+    ],
+    "risks": [
+      "Mis-bound task-store paths can make open-task checks non-replayable.",
+      "Missing lineage fields can allow untraceable downstream handoffs."
+    ],
+    "implementationReadyDecisions": [
+      "Open-task check is bound to the authoritative FAST task-store root.",
+      "Lineage fields triggerFingerprint, triggerArtifactId, and dedupeEvidence are mandatory.",
+      "Gate fails closed when replay output diverges from recorded evidence."
+    ]
+  }
+}
