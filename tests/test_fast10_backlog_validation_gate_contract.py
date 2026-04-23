@@ -39,6 +39,18 @@ class Fast10BacklogValidationGateContractTest(unittest.TestCase):
             f'TASK_STORE_DIR="{AUTHORITATIVE_TASK_STORE_DIR}"',
             open_task_check["command"],
         )
+        self.assertIn(
+            'sqlite_override=os.environ.get("TASK_STORE_SQLITE_FILE", "").strip()',
+            open_task_check["command"],
+        )
+        self.assertIn(
+            "os.path.join(task_store_dir, sqlite_override)",
+            open_task_check["command"],
+        )
+        self.assertIn(
+            "sqlite_override if os.path.isabs(sqlite_override)",
+            open_task_check["command"],
+        )
 
         for check in checks:
             record_fields = check["outputRecordFields"]
