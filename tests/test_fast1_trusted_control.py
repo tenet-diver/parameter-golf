@@ -13,6 +13,36 @@ CONTROLLER_TICK_PATH = REPO_ROOT / "fastest/scripts/controller_tick.py"
 
 
 class Fast1TrustedControlContractTest(unittest.TestCase):
+    def test_authoritative_evidence_contains_reproducible_fast1_trusted_control_record(self) -> None:
+        evidence = json.loads(AUTHORITATIVE_EVIDENCE_PATH.read_text())
+        records = evidence["experimentRecords"]
+
+        trusted_control_records = [
+            record
+            for record in records
+            if record.get("taskId") == "FAST-1"
+            and record.get("lane") == "measurement"
+            and record.get("status") == "accepted"
+        ]
+        self.assertTrue(
+            trusted_control_records,
+            "Expected at least one accepted FAST-1 measurement record in authoritative evidence.",
+        )
+
+        record = trusted_control_records[-1]
+        self.assertTrue(record.get("experimentId"))
+        self.assertTrue(record.get("evidenceId"))
+        self.assertTrue(record.get("idempotencyKey"))
+        self.assertTrue(record.get("traceId"))
+
+        run_config = record.get("runConfig")
+        self.assertIsInstance(run_config, dict)
+        self.assertIn("seed", run_config)
+
+        budget_caps = record.get("budgetCaps")
+        self.assertIsInstance(budget_caps, dict)
+        self.assertIn("maxRuntimeSeconds", budget_caps)
+
     def test_trusted_control_baseline_established(self) -> None:
         status = json.loads(STATUS_PATH.read_text())
         state = json.loads(STATE_PATH.read_text())
