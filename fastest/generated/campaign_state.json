@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-23T20:16:54.473Z",
+    "updatedAt": "2026-04-23T20:40:50.114Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -51,20 +51,31 @@
     }
   },
   "environmentClass": "cpu-smoke",
-  "lastControllerTickAt": "2026-04-23T20:16:54.473Z",
+  "lastControllerTickAt": "2026-04-23T20:40:50.114Z",
   "lastProgressAt": "2026-04-23T20:21:00.000Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
-      "evidence-fast1-control-20260423-001"
+      "target-source:2026-04-23T20:21:00.000Z"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
-    "trustedControlState": "established",
-    "bestKnownResult": null,
+    "trustedControlState": "verified",
+    "bestKnownResult": {
+      "candidateId": "exp-fast1-control-20260423-001",
+      "metricName": "benchmark-score",
+      "metricValue": 1,
+      "observedAt": "2026-04-23T20:21:00.000Z"
+    },
     "progressTrend": "unknown",
     "recentCompletedExperiments": [
-      "exp-fast1-control-20260423-001"
+      {
+        "evidenceId": "evidence-fast1-control-20260423-001",
+        "candidateId": "exp-fast1-control-20260423-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1,
+        "observedAt": "2026-04-23T20:21:00.000Z"
+      }
     ],
     "acceptedExperiments": 1,
     "totalExperiments": 1,

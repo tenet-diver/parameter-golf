@@ -2,24 +2,24 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf-fastest-run",
-  "updatedAt": "2026-04-23T20:16:54.473Z",
+  "updatedAt": "2026-04-23T20:40:50.114Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
-  "trustedControlState": "established",
+  "trustedControlState": "verified",
   "queueHealth": {
-    "pendingTaskCount": 6,
+    "pendingTaskCount": 11,
     "inFlightTaskCount": 0,
     "stalledSince": null
   },
   "queueDepthByLane": {
-    "measurement": 3,
+    "measurement": 4,
     "constraint-clarity": 1,
-    "cheap-screen": 1,
-    "ablation": 1,
-    "combination": 0,
+    "cheap-screen": 2,
+    "ablation": 2,
+    "combination": 1,
     "scale-check": 0,
     "benchmark-rehearsal": 0,
-    "non-record-exploration": 0,
+    "non-record-exploration": 1,
     "unassigned": 0
   },
   "progress": {
@@ -28,25 +28,36 @@
     "mostRecentEvidenceId": "evidence-fast1-control-20260423-001"
   },
   "recentCompletedExperiments": [
-    "exp-fast1-control-20260423-001"
+    {
+      "evidenceId": "evidence-fast1-control-20260423-001",
+      "candidateId": "exp-fast1-control-20260423-001",
+      "metricName": "benchmark-score",
+      "metricValue": 1,
+      "observedAt": "2026-04-23T20:21:00.000Z"
+    }
   ],
   "progressTrend": "unknown",
-  "bestKnownResult": null,
-  "lastControllerTickAt": "2026-04-23T20:16:54.473Z",
+  "bestKnownResult": {
+    "candidateId": "exp-fast1-control-20260423-001",
+    "metricName": "benchmark-score",
+    "metricValue": 1,
+    "observedAt": "2026-04-23T20:21:00.000Z"
+  },
+  "lastControllerTickAt": "2026-04-23T20:40:50.114Z",
   "lastProgressAt": "2026-04-23T20:21:00.000Z",
   "stalledProgress": false,
   "blockers": [],
   "adapterStatus": {
-    "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
+    "summary": "Parameter Golf campaign healthy enough for continued benchmark-directed search.",
     "details": {
       "environmentClass": "cpu-smoke",
-      "trustedControlState": "established",
-      "pendingTaskCount": "6",
+      "trustedControlState": "verified",
+      "pendingTaskCount": "11",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
       "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
-      "readiness": "baseline-established"
+      "readiness": "advancing"
     }
   }
 }
