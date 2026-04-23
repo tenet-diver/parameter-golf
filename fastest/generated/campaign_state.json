@@ -52,11 +52,12 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-23T20:40:50.114Z",
-  "lastProgressAt": "2026-04-23T20:21:00.000Z",
+  "lastProgressAt": "2026-04-23T21:18:34Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
-      "evidence-fast1-control-20260423-001"
+      "evidence-fast1-control-20260423-001",
+      "evidence-exp-fast4-cheap-screen-20260423-attempt2-001"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
@@ -69,13 +70,14 @@
     },
     "progressTrend": "unknown",
     "recentCompletedExperiments": [
-      "exp-fast1-control-20260423-001"
+      "exp-fast1-control-20260423-001",
+      "exp-fast4-cheap-screen-20260423-attempt2-001"
     ],
-    "acceptedExperiments": 1,
-    "totalExperiments": 1,
+    "acceptedExperiments": 2,
+    "totalExperiments": 2,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
-      "candidateId": "evidence-fast1-control-20260423-001",
+      "candidateId": "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
       "policyVersion": "pg-constraint-clarity-v1",
       "decision": "hold",
       "violatedRules": [],

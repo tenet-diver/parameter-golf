@@ -1,4 +1,5 @@
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -275,6 +276,70 @@ class Fast4CheapScreenPipelineContractTest(unittest.TestCase):
             self.assertEqual(evidence["summary"]["totalExperiments"], 2)
             self.assertEqual(evidence["summary"]["acceptedExperiments"], 1)
             self.assertEqual(evidence["experimentRecords"][-1]["status"], "failed-terminal")
+
+    def test_runner_exception_is_structured_error_outcome(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            evidence_path, status_path, state_path = self._seed_files(tmp_root)
+
+            def raising_runner(_: dict) -> dict:
+                raise RuntimeError("simulated-runner-failure")
+
+            result = execute_cheap_screen_candidate(
+                self._task(),
+                runner=raising_runner,
+                evidence_path=evidence_path,
+                status_path=status_path,
+                state_path=state_path,
+            )
+
+            self.assertEqual(result["status"], "error")
+            self.assertEqual(result["reasonCode"], "runner-execution-failed")
+            self.assertIn("RuntimeError", result["message"])
+
+            evidence = json.loads(evidence_path.read_text())
+            self.assertEqual(len(evidence["experimentRecords"]), 1)
+
+    def test_cli_task_execution_path_is_operational(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            evidence_path, status_path, state_path = self._seed_files(tmp_root)
+            task_path = tmp_root / "task.json"
+            output_path = tmp_root / "outcome.json"
+            task_path.write_text(json.dumps(self._task(), indent=2) + "\n")
+
+            repo_root = Path(__file__).resolve().parents[1]
+            command = [
+                "python",
+                "fastest/scripts/run_cheap_screen_candidate.py",
+                "--task",
+                str(task_path),
+                "--output",
+                str(output_path),
+                "--evidence-path",
+                str(evidence_path),
+                "--status-path",
+                str(status_path),
+                "--state-path",
+                str(state_path),
+            ]
+
+            completed = subprocess.run(
+                command,
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            outcome = json.loads(output_path.read_text())
+            self.assertEqual(outcome["status"], "success")
+            self.assertEqual(outcome["reasonCode"], "cheap-screen-success")
+
+            evidence = json.loads(evidence_path.read_text())
+            self.assertEqual(evidence["summary"]["totalExperiments"], 2)
+            self.assertEqual(evidence["experimentRecords"][-1]["lane"], "cheap-screen")
 
 
 if __name__ == "__main__":
