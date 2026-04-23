@@ -2,25 +2,25 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf-fastest-run",
-  "updatedAt": "2026-04-23T22:20:12.420Z",
+  "updatedAt": "2026-04-23T22:35:05.833Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "verified",
   "queueHealth": {
-    "pendingTaskCount": 5,
+    "pendingTaskCount": 3,
     "inFlightTaskCount": 0,
     "stalledSince": null
   },
   "queueDepthByLane": {
-    "measurement": 1,
+    "measurement": 0,
     "constraint-clarity": 0,
-    "cheap-screen": 1,
-    "ablation": 1,
-    "combination": 1,
+    "cheap-screen": 0,
+    "ablation": 0,
+    "combination": 0,
     "scale-check": 0,
     "benchmark-rehearsal": 0,
-    "non-record-exploration": 1,
-    "unassigned": 0
+    "non-record-exploration": 0,
+    "unassigned": 3
   },
   "progress": {
     "totalExperiments": 3,
@@ -60,13 +60,15 @@
   "lastControllerTickAt": "2026-04-23T22:20:12.420Z",
   "lastProgressAt": "2026-04-23T21:22:01Z",
   "stalledProgress": false,
-  "blockers": [],
+  "blockers": [
+    "Open campaign tasks are not lane-attributed yet, so lane-floor accounting is still approximate."
+  ],
   "adapterStatus": {
     "summary": "Parameter Golf campaign healthy enough for continued benchmark-directed search.",
     "details": {
       "environmentClass": "cpu-smoke",
       "trustedControlState": "verified",
-      "pendingTaskCount": "5",
+      "pendingTaskCount": "3",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
       "stalledProgress": "false",
