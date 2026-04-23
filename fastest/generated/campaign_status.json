@@ -5,7 +5,7 @@
   "updatedAt": "2026-04-23T20:40:50.114Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
-  "trustedControlState": "verified",
+  "trustedControlState": "established",
   "queueHealth": {
     "pendingTaskCount": 11,
     "inFlightTaskCount": 0,
@@ -28,13 +28,7 @@
     "mostRecentEvidenceId": "evidence-fast1-control-20260423-001"
   },
   "recentCompletedExperiments": [
-    {
-      "evidenceId": "evidence-fast1-control-20260423-001",
-      "candidateId": "exp-fast1-control-20260423-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1,
-      "observedAt": "2026-04-23T20:21:00.000Z"
-    }
+    "exp-fast1-control-20260423-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -48,16 +42,27 @@
   "stalledProgress": false,
   "blockers": [],
   "adapterStatus": {
-    "summary": "Parameter Golf campaign healthy enough for continued benchmark-directed search.",
+    "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
     "details": {
       "environmentClass": "cpu-smoke",
-      "trustedControlState": "verified",
+      "trustedControlState": "established",
       "pendingTaskCount": "11",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
       "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
-      "readiness": "advancing"
+      "readiness": "baseline-established"
     }
+  },
+  "promotionAdjudication": {
+    "candidateId": "evidence-fast1-control-20260423-001",
+    "policyVersion": "pg-constraint-clarity-v1",
+    "decision": "hold",
+    "violatedRules": [],
+    "missingEvidence": [
+      "reproducibility-manifest"
+    ],
+    "ambiguityReasons": [],
+    "promotableStateChange": false
   }
 }
