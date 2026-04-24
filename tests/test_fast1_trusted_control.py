@@ -16,6 +16,8 @@ CONTROLLER_TICK_PATH = REPO_ROOT / "fastest/scripts/controller_tick.py"
 
 class Fast1TrustedControlContractTest(unittest.TestCase):
     def test_authoritative_evidence_contains_reproducible_fast1_trusted_control_record(self) -> None:
+        self.assertEqual(AUTHORITATIVE_EVIDENCE_PATH.stat().st_mode & 0o002, 0)
+
         evidence = json.loads(AUTHORITATIVE_EVIDENCE_PATH.read_text())
         records = evidence["experimentRecords"]
 
