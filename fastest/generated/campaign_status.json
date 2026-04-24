@@ -2,7 +2,7 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T17:16:37.520Z",
+  "updatedAt": "2026-04-24T17:28:59.415Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
@@ -12,7 +12,7 @@
     "stalledSince": "2026-04-24T16:42:28.156Z"
   },
   "queueDepthByLane": {
-    "measurement": 1,
+    "measurement": 0,
     "constraint-clarity": 0,
     "cheap-screen": 0,
     "ablation": 0,
@@ -61,7 +61,7 @@
   "lastProgressAt": "2026-04-24T16:59:56Z",
   "stalledProgress": true,
   "blockers": [
-    "1 task(s) are blocked and need repair before the controller can sustain progress.",
+    "Campaign is active but the queue is empty.",
     "Campaign progress is stalled and needs investigation or measurement repair."
   ],
   "adapterStatus": {
