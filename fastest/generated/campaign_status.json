@@ -5,7 +5,7 @@
   "updatedAt": "2026-04-24T09:41:34.480Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
-  "trustedControlState": "verified",
+  "trustedControlState": "established",
   "queueHealth": {
     "pendingTaskCount": 4,
     "inFlightTaskCount": 1,
@@ -23,46 +23,21 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 9,
-    "acceptedExperiments": 9,
-    "mostRecentEvidenceId": "evidence-exp-fast29-combination-001"
+    "totalExperiments": 10,
+    "acceptedExperiments": 10,
+    "mostRecentEvidenceId": "evidence-exp-fast32-cheap-screen-001"
   },
   "recentCompletedExperiments": [
-    {
-      "evidenceId": "evidence-exp-fast29-combination-001",
-      "candidateId": "exp-fast29-combination-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0205,
-      "observedAt": "2026-04-24T09:20:07Z"
-    },
-    {
-      "evidenceId": "evidence-exp-fast28-ablation-001",
-      "candidateId": "exp-fast28-ablation-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0551,
-      "observedAt": "2026-04-24T08:59:20Z"
-    },
-    {
-      "evidenceId": "evidence-exp-fast26-measurement-20260424-001",
-      "candidateId": "exp-fast26-measurement-20260424-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0231,
-      "observedAt": "2026-04-24T02:47:00Z"
-    },
-    {
-      "evidenceId": "evidence-exp-fast21-measurement-20260424-001",
-      "candidateId": "exp-fast21-measurement-20260424-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0223,
-      "observedAt": "2026-04-24T02:05:00Z"
-    },
-    {
-      "evidenceId": "evidence-exp-fast16-measurement-20260424-001",
-      "candidateId": "exp-fast16-measurement-20260424-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0211,
-      "observedAt": "2026-04-24T01:20:00Z"
-    }
+    "exp-fast1-control-20260423-001",
+    "exp-fast4-cheap-screen-20260423-attempt2-001",
+    "exp-fast4-qa-smoke-20260423-001",
+    "exp-fast11-measurement-20260424-001",
+    "exp-fast16-measurement-20260424-001",
+    "exp-fast21-measurement-20260424-001",
+    "exp-fast26-measurement-20260424-001",
+    "exp-fast28-ablation-001",
+    "exp-fast29-combination-001",
+    "exp-fast32-cheap-screen-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -72,20 +47,31 @@
     "observedAt": "2026-04-24T08:59:20Z"
   },
   "lastControllerTickAt": "2026-04-24T09:33:49.148Z",
-  "lastProgressAt": "2026-04-24T08:59:20Z",
+  "lastProgressAt": "2026-04-24T10:11:54Z",
   "stalledProgress": false,
   "blockers": [],
   "adapterStatus": {
-    "summary": "Parameter Golf campaign healthy enough for continued benchmark-directed search.",
+    "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
     "details": {
       "environmentClass": "cpu-smoke",
-      "trustedControlState": "verified",
+      "trustedControlState": "established",
       "pendingTaskCount": "4",
       "inFlightTaskCount": "1",
       "progressTrend": "unknown",
       "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
-      "readiness": "advancing"
+      "readiness": "baseline-established"
     }
+  },
+  "promotionAdjudication": {
+    "candidateId": "evidence-exp-fast32-cheap-screen-001",
+    "policyVersion": "pg-constraint-clarity-v1",
+    "decision": "hold",
+    "violatedRules": [],
+    "missingEvidence": [
+      "reproducibility-manifest"
+    ],
+    "ambiguityReasons": [],
+    "promotableStateChange": false
   }
 }
