@@ -1,0 +1,242 @@
+{
+  "taskId": "FAST-46",
+  "title": "Triage current low-BPB public PRs for legal runnable winning path",
+  "lane": "legal-evidence:public-pr-audit",
+  "campaignLane": "target-repo-campaign",
+  "status": "completed",
+  "completedAt": "2026-04-24T19:40:00Z",
+  "currentMergedSota": {
+    "referencePr": 1493,
+    "valBpb": 1.081,
+    "metric": "val_bpb"
+  },
+  "inspectedPrs": [
+    {
+      "prNumber": 1698,
+      "title": "Record: GatedDeltaNet (FLA) + Legal Score-First TTT — val_bpb 1.00995 (3-seed mean)",
+      "claimValBpb": 1.00995,
+      "state": "open",
+      "claimStrength": "high",
+      "runnableEvidence": "partial",
+      "legalityStatus": "blocked",
+      "keyFindings": [
+        "PR body reports 3-seed runs with train/eval timings and explicit command template.",
+        "Discussion notes artifact bytes above the 16,000,000-byte decimal cap.",
+        "Discussion also flags inherited sentencepiece byte-accounting bug risk for canonical BPB." 
+      ],
+      "blockingReasons": [
+        "Reported artifacts exceed the 16,000,000-byte limit in the posted run logs.",
+        "Canonical BPB validity is disputed pending byte-accounting correction and rerun evidence."
+      ],
+      "finalDisposition": "blocked"
+    },
+    {
+      "prNumber": 1722,
+      "title": "Record: Trinity SLOT v3 + Pre-Quant TTT — val_bpb 0.65802 (3-seed mean)",
+      "claimValBpb": 0.65802,
+      "state": "open",
+      "claimStrength": "high",
+      "runnableEvidence": "unverified",
+      "legalityStatus": "illegal",
+      "keyFindings": [
+        "Public title itself declares SLOT v3 plus pre-quant TTT, both high-risk against merged legality expectations.",
+        "No locally verified runnable train/eval/submission evidence packet was available in this workspace snapshot."
+      ],
+      "blockingReasons": [
+        "SLOT v3 and pre-quant TTT conflict with current legality gates for promotable winning path.",
+        "Runnable evidence could not be verified from available source artifacts in this task scope."
+      ],
+      "finalDisposition": "illegal"
+    },
+    {
+      "prNumber": 1795,
+      "title": "Record: SP4096 + byte-level PPM adaptive-lambda mixture (strict-legal gate) — val_bpb 1.01252 (3-seed)",
+      "claimValBpb": 1.01252,
+      "state": "open",
+      "claimStrength": "medium",
+      "runnableEvidence": "partial",
+      "legalityStatus": "blocked",
+      "keyFindings": [
+        "Conversation reports full-val and 3-seed measurements with artifacts below 16,000,000 bytes.",
+        "Author explicitly marks legality as pending organizer ruling for byte-level online PPM-as-TTT framing."
+      ],
+      "blockingReasons": [
+        "Requires explicit organizer legality ruling before campaign can treat score as promotable.",
+        "Until ruling lands, winning-path status remains unverified for legal promotion."
+      ],
+      "finalDisposition": "blocked"
+    },
+    {
+      "prNumber": 1797,
+      "title": "Record: PR #1787 base + Smear Gate + LQER Asym — val_bpb 1.06157",
+      "claimValBpb": 1.06157,
+      "state": "open",
+      "claimStrength": "high",
+      "runnableEvidence": "present",
+      "legalityStatus": "legal",
+      "keyFindings": [
+        "3-seed table, artifact sizes (<16,000,000 bytes), and baseline deltas are disclosed in PR summary.",
+        "No explicit legality blocker language appears in the captured thread excerpts.",
+        "Claim is materially better than merged SOTA 1.0810 while staying in known legal stack family."
+      ],
+      "blockingReasons": [],
+      "finalDisposition": "advance"
+    },
+    {
+      "prNumber": 1801,
+      "title": "Record: #1787 + Sparse Gate + Updated Frozen Carry — val_bpb 1.06287",
+      "claimValBpb": 1.06287,
+      "state": "open",
+      "claimStrength": "high",
+      "runnableEvidence": "present",
+      "legalityStatus": "legal",
+      "keyFindings": [
+        "3-seed summary and artifact sizes are listed with under-cap bytes.",
+        "Submission is positioned as stackable with PR #1797 and remains close to it in score."
+      ],
+      "blockingReasons": [],
+      "finalDisposition": "hold"
+    },
+    {
+      "prNumber": 1807,
+      "title": "Record attempt: SP8192 + 3-Epoch Parallel Pre-Quant TTT + Huber WD Muon — val_bpb 1.07037",
+      "claimValBpb": 1.07037,
+      "state": "open",
+      "claimStrength": "medium",
+      "runnableEvidence": "present",
+      "legalityStatus": "legal-with-risk",
+      "keyFindings": [
+        "3-seed mean and rationale for SDPA-friendly schedule are clearly stated.",
+        "Uses pre-quant TTT framing that needs careful legality interpretation depending on organizer guidance."
+      ],
+      "blockingReasons": [
+        "Lower claim quality than PR #1797/#1801 for immediate winning-path pursuit.",
+        "Pre-quant TTT framing carries additional legal interpretation risk."
+      ],
+      "finalDisposition": "hold"
+    }
+  ],
+  "rankedCandidates": [
+    {
+      "rank": 1,
+      "prNumber": 1797,
+      "claimedValBpb": 1.06157,
+      "claimStrengthScore": 0.86,
+      "legalityRisk": "low",
+      "runnableEvidence": "present",
+      "codeCompleteness": "high",
+      "legalityStatus": "legal",
+      "finalDisposition": "advance",
+      "blockingReasons": []
+    },
+    {
+      "rank": 2,
+      "prNumber": 1801,
+      "claimedValBpb": 1.06287,
+      "claimStrengthScore": 0.84,
+      "legalityRisk": "low",
+      "runnableEvidence": "present",
+      "codeCompleteness": "high",
+      "legalityStatus": "legal",
+      "finalDisposition": "hold",
+      "blockingReasons": []
+    },
+    {
+      "rank": 3,
+      "prNumber": 1807,
+      "claimedValBpb": 1.07037,
+      "claimStrengthScore": 0.72,
+      "legalityRisk": "medium",
+      "runnableEvidence": "present",
+      "codeCompleteness": "medium",
+      "legalityStatus": "legal-with-risk",
+      "finalDisposition": "hold",
+      "blockingReasons": [
+        "Pre-quant TTT legality sensitivity.",
+        "Inferior claimed BPB relative to top legal candidates."
+      ]
+    },
+    {
+      "rank": 4,
+      "prNumber": 1795,
+      "claimedValBpb": 1.01252,
+      "claimStrengthScore": 0.68,
+      "legalityRisk": "high",
+      "runnableEvidence": "partial",
+      "codeCompleteness": "medium",
+      "legalityStatus": "blocked",
+      "finalDisposition": "blocked",
+      "blockingReasons": [
+        "Pending organizer ruling on byte-level PPM legality in record track.",
+        "Cannot promote before legal interpretation is explicit."
+      ]
+    },
+    {
+      "rank": 5,
+      "prNumber": 1698,
+      "claimedValBpb": 1.00995,
+      "claimStrengthScore": 0.61,
+      "legalityRisk": "high",
+      "runnableEvidence": "partial",
+      "codeCompleteness": "medium",
+      "legalityStatus": "blocked",
+      "finalDisposition": "blocked",
+      "blockingReasons": [
+        "Reported artifacts exceed 16,000,000-byte cap.",
+        "Canonical BPB accounting remains disputed in thread."
+      ]
+    },
+    {
+      "rank": 6,
+      "prNumber": 1722,
+      "claimedValBpb": 0.65802,
+      "claimStrengthScore": 0.2,
+      "legalityRisk": "critical",
+      "runnableEvidence": "unverified",
+      "codeCompleteness": "unknown",
+      "legalityStatus": "illegal",
+      "finalDisposition": "illegal",
+      "blockingReasons": [
+        "SLOT v3 and pre-quant TTT are incompatible with current legal winning-path gate.",
+        "No verified runnable evidence packet available in this task context."
+      ]
+    }
+  ],
+  "promotionDecision": {
+    "candidatePr": 1797,
+    "advanceOutcome": "advance",
+    "rationale": "Among inspected low-BPB claims, PR #1797 is the strongest currently legal and runnable candidate with complete 3-seed evidence and under-cap artifacts. Lower claimed BPB entries (#1698, #1722, #1795) are blocked by legality/cap/runnability gates.",
+    "rejectedOrBlocked": [
+      {
+        "prNumber": 1698,
+        "reason": "size-cap and canonical-metric verification blockers"
+      },
+      {
+        "prNumber": 1722,
+        "reason": "illegal method family for current gate"
+      },
+      {
+        "prNumber": 1795,
+        "reason": "organizer legality ruling pending"
+      }
+    ]
+  },
+  "commands": [
+    "web.open https://github.com/openai/parameter-golf/pull/1698",
+    "web.open https://github.com/openai/parameter-golf/pull/1795",
+    "web.open https://github.com/openai/parameter-golf/pull/1797",
+    "web.open https://github.com/openai/parameter-golf/pull/1801",
+    "web.open https://github.com/openai/parameter-golf/pull/1807",
+    "web.open https://github.com/openai/parameter-golf/pulls"
+  ],
+  "observedResults": {
+    "evaluatedAt": "2026-04-24",
+    "requiredSetInspected": true,
+    "strongerObviousWinnerFound": false
+  },
+  "artifactPaths": [
+    "planning/fast46_public_pr_triage_execution_packet.json",
+    "fastest/source/fast-46-public-pr-triage-evidence.md",
+    "tests/test_fast46_public_pr_triage_packet.py"
+  ]
+}
