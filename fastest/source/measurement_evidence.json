@@ -252,6 +252,24 @@
       "budgetCaps": {
         "maxRuntimeSeconds": 180,
         "maxCostUsd": 0.25
+      },
+      "executionCommands": [
+        "python fastest/scripts/run_cheap_screen_candidate.py --task fastest/generated/fast32_cheap_screen_task.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json --output fastest/generated/fast32_cheap_screen_outcome.json"
+      ],
+      "artifactPaths": [
+        "fastest/generated/fast32_cheap_screen_task.json",
+        "fastest/generated/fast32_cheap_screen_outcome.json",
+        "fastest/source/measurement_evidence.json",
+        "fastest/generated/campaign_status.json",
+        "fastest/generated/campaign_state.json"
+      ],
+      "promotionRationale": {
+        "decision": "hold",
+        "reason": "Promotion remains on hold until required reproducibility evidence is present.",
+        "policyVersion": "pg-constraint-clarity-v1",
+        "missingEvidence": [
+          "reproducibility-manifest"
+        ]
       }
     }
   ]
