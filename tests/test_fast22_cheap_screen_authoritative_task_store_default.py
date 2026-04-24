@@ -88,6 +88,49 @@ class Fast22CheapScreenAuthoritativeTaskStoreDefaultTest(unittest.TestCase):
             self.assertIsInstance(observed.get("database"), str)
             self.assertIn("mode=ro", observed["database"])
 
+    def test_todo_campaign_lane_task_without_pipeline_gets_candidate_payload(self) -> None:
+        import fastest.scripts.run_cheap_screen_candidate as cheap_screen_module
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            task_store_dir = Path(tmp_dir)
+            sqlite_path = task_store_dir / "task-store.sqlite"
+            with sqlite3.connect(sqlite_path) as conn:
+                conn.execute(
+                    """
+                    CREATE TABLE task_store_tasks (
+                        id TEXT PRIMARY KEY,
+                        status TEXT NOT NULL,
+                        status_order INTEGER NOT NULL,
+                        created_at TEXT NOT NULL,
+                        pipeline_json TEXT,
+                        expected_affected_modules_json TEXT
+                    )
+                    """
+                )
+                conn.execute(
+                    """
+                    INSERT INTO task_store_tasks (
+                        id, status, status_order, created_at, pipeline_json, expected_affected_modules_json
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        "FAST-39",
+                        "todo",
+                        0,
+                        "2026-04-24T00:00:00Z",
+                        None,
+                        json.dumps(["campaign-lane:cheap-screen"]),
+                    ),
+                )
+                conn.commit()
+
+            tasks = cheap_screen_module._load_tasks_from_task_store(task_store_dir)
+
+            self.assertEqual(tasks[0]["lane"], "cheap-screen")
+            self.assertEqual(tasks[0]["candidateId"], "exp-fast39-cheap-screen-001")
+            self.assertEqual(tasks[0]["traceId"], "trace-fast39-cheap-screen-001")
+
 
 if __name__ == "__main__":
     unittest.main()

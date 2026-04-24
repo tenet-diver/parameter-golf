@@ -24,7 +24,8 @@ except ModuleNotFoundError:
 
 
 Runner = Callable[[dict], dict]
-RUNNABLE_TASK_STATUSES = {"queued", "ready"}
+RUNNABLE_TASK_STATUSES = {"queued", "ready", "todo"}
+LANE_MODULE_PREFIX = "campaign-lane:"
 DEFAULT_TASK_STORE_DIR = Path(
     os.environ.get(
         "TASK_STORE_DIR",
@@ -98,6 +99,51 @@ def _status_order(task: dict) -> int:
     return 2**31 - 1
 
 
+def _parse_json_object(value: object) -> dict:
+    if not isinstance(value, str) or not value.strip():
+        return {}
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _parse_json_list(value: object) -> list:
+    if not isinstance(value, str) or not value.strip():
+        return []
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError:
+        return []
+    return payload if isinstance(payload, list) else []
+
+
+def _task_number(task_id: str) -> int:
+    digits = "".join(char for char in task_id if char.isdigit())
+    return int(digits) if digits else 0
+
+
+def _lane_from_modules(modules: list) -> str | None:
+    for module in modules:
+        if isinstance(module, str) and module.startswith(LANE_MODULE_PREFIX):
+            return module[len(LANE_MODULE_PREFIX):]
+    return None
+
+
+def _synthesize_candidate_payload(task_id: str, lane: str, modules: list) -> dict:
+    if lane != _lane_from_modules(modules):
+        return {}
+    task_fragment = task_id.lower().replace("-", "")
+    return {
+        "lane": lane,
+        "candidateId": f"exp-{task_fragment}-ablation-001",
+        "traceId": f"trace-{task_fragment}-ablation-001",
+        "runConfig": {"seed": _task_number(task_id), "sourceTaskId": task_id},
+        "budgetCaps": {"maxRuntimeSeconds": 30, "maxAblationExperiments": 100},
+    }
+
+
 def select_next_ablation_candidate(tasks: list[dict], lane: str = "ablation") -> dict | None:
     eligible: list[dict] = []
     for task in tasks:
@@ -147,27 +193,41 @@ def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
     sqlite_uri = f"file:{quote(str(sqlite_path.resolve()))}?mode=ro"
 
     query = """
-        SELECT id, status, status_order, created_at, pipeline_json
+        SELECT id, status, status_order, created_at, pipeline_json, expected_affected_modules_json
         FROM task_store_tasks
-        WHERE status IN ('queued', 'ready')
+        WHERE status IN ('queued', 'ready', 'todo')
         ORDER BY status_order ASC, created_at ASC, id ASC
     """
     with sqlite3.connect(sqlite_uri, uri=True) as conn:
-        rows = conn.execute(query).fetchall()
+        try:
+            rows = conn.execute(query).fetchall()
+        except sqlite3.OperationalError:
+            rows = [
+                (*row, None)
+                for row in conn.execute(
+                    """
+                    SELECT id, status, status_order, created_at, pipeline_json
+                    FROM task_store_tasks
+                    WHERE status IN ('queued', 'ready', 'todo')
+                    ORDER BY status_order ASC, created_at ASC, id ASC
+                    """
+                ).fetchall()
+            ]
 
     tasks: list[dict] = []
     for row in rows:
-        task_id, status, status_order, created_at, pipeline_json = row
+        task_id, status, status_order, created_at, pipeline_json, modules_json = row
+        modules = _parse_json_list(modules_json)
+        payload = _parse_json_object(pipeline_json)
+        if not payload:
+            payload = _synthesize_candidate_payload(task_id, "ablation", modules)
         task = {
             "taskId": task_id,
             "status": status,
             "statusOrder": status_order,
             "createdAt": created_at,
         }
-        if isinstance(pipeline_json, str) and pipeline_json.strip():
-            payload = json.loads(pipeline_json)
-            if isinstance(payload, dict):
-                task.update(payload)
+        task.update(payload)
         task["taskId"] = task_id
         task["status"] = status
         task["statusOrder"] = status_order
