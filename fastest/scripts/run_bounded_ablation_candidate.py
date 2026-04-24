@@ -1,5 +1,7 @@
 import hashlib
 import json
+import os
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
@@ -21,6 +23,14 @@ except ModuleNotFoundError:
 
 
 Runner = Callable[[dict], dict]
+RUNNABLE_TASK_STATUSES = {"queued", "ready"}
+DEFAULT_TASK_STORE_DIR = Path(
+    os.environ.get(
+        "TASK_STORE_DIR",
+        "/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks",
+    )
+)
+TASK_STORE_SQLITE_FILE_ENV = "TASK_STORE_SQLITE_FILE"
 
 
 def _utc_now_iso() -> str:
@@ -78,6 +88,84 @@ def _coerce_seed(value: object) -> str:
     return str(value)
 
 
+def _status_order(task: dict) -> int:
+    status_order = task.get("statusOrder")
+    if isinstance(status_order, bool):
+        return 2**31 - 1
+    if isinstance(status_order, int):
+        return status_order
+    return 2**31 - 1
+
+
+def select_next_ablation_candidate(tasks: list[dict], lane: str = "ablation") -> dict | None:
+    eligible: list[dict] = []
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+        if task.get("lane") != lane:
+            continue
+        if task.get("status") not in RUNNABLE_TASK_STATUSES:
+            continue
+        eligible.append(task)
+
+    if not eligible:
+        return None
+
+    return sorted(
+        eligible,
+        key=lambda task: (
+            _status_order(task),
+            str(task.get("createdAt", "")),
+            str(task.get("taskId", "")),
+        ),
+    )[0]
+
+
+def _resolve_task_store_sqlite(task_store_dir: Path) -> Path:
+    sqlite_override = os.environ.get(TASK_STORE_SQLITE_FILE_ENV, "").strip()
+    if sqlite_override:
+        override_path = Path(sqlite_override)
+        if override_path.is_absolute():
+            return override_path
+        return task_store_dir / override_path
+    return task_store_dir / "task-store.sqlite"
+
+
+def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
+    sqlite_path = _resolve_task_store_sqlite(task_store_dir)
+    if not sqlite_path.exists():
+        raise FileNotFoundError(f"task store sqlite not found: {sqlite_path}")
+
+    query = """
+        SELECT id, status, status_order, created_at, pipeline_json
+        FROM task_store_tasks
+        WHERE status IN ('queued', 'ready')
+        ORDER BY status_order ASC, created_at ASC, id ASC
+    """
+    with sqlite3.connect(sqlite_path) as conn:
+        rows = conn.execute(query).fetchall()
+
+    tasks: list[dict] = []
+    for row in rows:
+        task_id, status, status_order, created_at, pipeline_json = row
+        task = {
+            "taskId": task_id,
+            "status": status,
+            "statusOrder": status_order,
+            "createdAt": created_at,
+        }
+        if isinstance(pipeline_json, str) and pipeline_json.strip():
+            payload = json.loads(pipeline_json)
+            if isinstance(payload, dict):
+                task.update(payload)
+        task["taskId"] = task_id
+        task["status"] = status
+        task["statusOrder"] = status_order
+        task["createdAt"] = created_at
+        tasks.append(task)
+    return tasks
+
+
 def _max_ablation_experiments(task: dict) -> int:
     budget_caps = task.get("budgetCaps")
     if not isinstance(budget_caps, dict):
@@ -97,6 +185,56 @@ def _regenerate_views(*, evidence_path: Path, status_path: Path, state_path: Pat
     rendered_status, rendered_state = apply_measurement_evidence(source, status, state)
     _write_json(status_path, rendered_status)
     _write_json(state_path, rendered_state)
+
+
+def run_next_ablation_candidate(
+    tasks: list[dict],
+    *,
+    runner: Runner,
+    lane: str = "ablation",
+    evidence_path: Path = DEFAULT_EVIDENCE_PATH,
+    status_path: Path = DEFAULT_STATUS_PATH,
+    state_path: Path = DEFAULT_STATE_PATH,
+) -> dict:
+    if lane != "ablation":
+        return _outcome(
+            task={"lane": lane},
+            status="error",
+            reason_code="invalid-lane",
+            message="Task lane must be ablation.",
+        )
+
+    selected = select_next_ablation_candidate(tasks, lane=lane)
+    if selected is None:
+        return _outcome(
+            task={"lane": lane},
+            status="success",
+            reason_code="no-task-available",
+            message="No runnable ablation candidate is available.",
+        )
+
+    if not isinstance(selected.get("taskId"), str) or not selected.get("taskId"):
+        return _outcome(
+            task=selected,
+            status="error",
+            reason_code="task-io-invalid",
+            message="Selected ablation task is missing taskId.",
+        )
+    if not isinstance(selected.get("candidateId"), str) or not selected.get("candidateId"):
+        return _outcome(
+            task=selected,
+            status="error",
+            reason_code="task-io-invalid",
+            message="Selected ablation task is missing candidateId.",
+        )
+
+    return execute_bounded_ablation_candidate(
+        selected,
+        runner=runner,
+        evidence_path=evidence_path,
+        status_path=status_path,
+        state_path=state_path,
+    )
 
 
 def execute_bounded_ablation_candidate(
@@ -349,7 +487,12 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="Execute one bounded ablation benchmark candidate.")
-    parser.add_argument("--task", required=True, help="Path to ablation task JSON file.")
+    parser.add_argument("--task", help="Path to ablation task JSON file.")
+    parser.add_argument(
+        "--task-store-dir",
+        default=str(DEFAULT_TASK_STORE_DIR),
+        help="Authoritative task-store directory used for next-candidate mode.",
+    )
     parser.add_argument(
         "--output",
         help="Optional path to write the execution outcome JSON.",
@@ -371,23 +514,43 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    try:
-        task_payload = _load_json(Path(args.task))
-    except Exception as exc:
-        outcome = _outcome(
-            task={},
-            status="error",
-            reason_code="task-io-invalid",
-            message=f"Failed to load task payload: {exc.__class__.__name__}: {exc}",
-        )
+    if args.task:
+        try:
+            task_payload = _load_json(Path(args.task))
+        except Exception as exc:
+            outcome = _outcome(
+                task={},
+                status="error",
+                reason_code="task-io-invalid",
+                message=f"Failed to load task payload: {exc.__class__.__name__}: {exc}",
+            )
+        else:
+            outcome = execute_bounded_ablation_candidate(
+                task_payload,
+                runner=_default_runner,
+                evidence_path=Path(args.evidence_path),
+                status_path=Path(args.status_path),
+                state_path=Path(args.state_path),
+            )
     else:
-        outcome = execute_bounded_ablation_candidate(
-            task_payload,
-            runner=_default_runner,
-            evidence_path=Path(args.evidence_path),
-            status_path=Path(args.status_path),
-            state_path=Path(args.state_path),
-        )
+        try:
+            tasks = _load_tasks_from_task_store(Path(args.task_store_dir))
+        except Exception as exc:
+            outcome = _outcome(
+                task={"lane": "ablation"},
+                status="error",
+                reason_code="task-io-invalid",
+                message=f"Failed to load runnable tasks from task store: {exc.__class__.__name__}: {exc}",
+            )
+        else:
+            outcome = run_next_ablation_candidate(
+                tasks,
+                runner=_default_runner,
+                lane="ablation",
+                evidence_path=Path(args.evidence_path),
+                status_path=Path(args.status_path),
+                state_path=Path(args.state_path),
+            )
 
     rendered = f"{json.dumps(outcome, indent=2)}\n"
     if args.output:
