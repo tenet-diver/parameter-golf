@@ -52,7 +52,7 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-24T16:59:56Z",
+  "lastProgressAt": "2026-04-24T18:29:47Z",
   "stalledSince": "2026-04-24T16:42:28.156Z",
   "evidenceSummaryCache": {
     "artifactIds": [
@@ -77,7 +77,8 @@
       "evidence-exp-fast40-combination-001",
       "evidence-exp-fast41-non-record-001",
       "evidence-exp-fast39-cheap-screen-001",
-      "evidence-exp-fast33-ablation-001"
+      "evidence-exp-fast33-ablation-001",
+      "evidence-exp-fast42-combination-001"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
@@ -110,10 +111,11 @@
       "exp-fast40-combination-001",
       "exp-fast41-non-record-001",
       "exp-fast39-cheap-screen-001",
-      "exp-fast33-ablation-001"
+      "exp-fast33-ablation-001",
+      "exp-fast42-combination-001"
     ],
-    "acceptedExperiments": 21,
-    "totalExperiments": 21,
+    "acceptedExperiments": 22,
+    "totalExperiments": 22,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
       "candidateId": "evidence-exp-fast37-combination-001",

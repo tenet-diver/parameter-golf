@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T16:59:56Z",
+  "updatedAt": "2026-04-24T18:29:47Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -25,12 +25,13 @@
       "evidence-exp-fast40-combination-001",
       "evidence-exp-fast41-non-record-001",
       "evidence-exp-fast39-cheap-screen-001",
-      "evidence-exp-fast33-ablation-001"
+      "evidence-exp-fast33-ablation-001",
+      "evidence-exp-fast42-combination-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 21,
-    "acceptedExperiments": 21,
-    "mostRecentEvidenceId": "evidence-exp-fast33-ablation-001"
+    "totalExperiments": 22,
+    "acceptedExperiments": 22,
+    "mostRecentEvidenceId": "evidence-exp-fast42-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -53,7 +54,8 @@
     "exp-fast40-combination-001",
     "exp-fast41-non-record-001",
     "exp-fast39-cheap-screen-001",
-    "exp-fast33-ablation-001"
+    "exp-fast33-ablation-001",
+    "exp-fast42-combination-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -194,7 +196,7 @@
       ],
       "evidenceBundle": {
         "bundleId": "f3021d0efe9499ff2b12",
-      "localPath": "fastest/source/control-evidence/bundles/f3021d0efe9499ff2b12.json",
+        "localPath": "fastest/source/control-evidence/bundles/f3021d0efe9499ff2b12.json",
         "trustState": "trusted",
         "envIssues": []
       }
@@ -742,6 +744,47 @@
       "observedMetricOutput": {
         "name": "benchmark-score",
         "value": 1.025
+      },
+      "promotionRationale": {
+        "decision": "reject",
+        "reason": "Candidate did not beat the best-known benchmark-score of 1.0999 from exp-fast37-combination-001."
+      }
+    },
+    {
+      "experimentId": "exp-fast42-combination-001",
+      "evidenceId": "evidence-exp-fast42-combination-001",
+      "lane": "combination",
+      "status": "accepted",
+      "completedAt": "2026-04-24T18:29:47Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0819,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-42:combination:exp-fast42-combination-001",
+      "taskId": "FAST-42",
+      "traceId": "trace-fast42-combination-001",
+      "runConfig": {
+        "seed": 42,
+        "sourceTaskId": "FAST-42"
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30,
+        "maxCombinationExperiments": 100
+      },
+      "executionCommands": [
+        "python fastest/scripts/run_combination_candidate.py --task fastest/generated/fast42_combination_task.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json --output fastest/generated/fast42_combination_outcome.json"
+      ],
+      "artifactPaths": [
+        "fastest/generated/fast42_combination_task.json",
+        "fastest/generated/fast42_combination_outcome.json",
+        "fastest/source/measurement_evidence.json",
+        "fastest/generated/campaign_status.json",
+        "fastest/generated/campaign_state.json",
+        "planning/fast42_combination_execution_packet.json"
+      ],
+      "observedMetricOutput": {
+        "name": "benchmark-score",
+        "value": 1.0819
       },
       "promotionRationale": {
         "decision": "reject",
