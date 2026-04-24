@@ -1,5 +1,7 @@
 import json
 import hashlib
+import os
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
@@ -22,6 +24,13 @@ except ModuleNotFoundError:
 
 Runner = Callable[[dict], dict]
 RUNNABLE_TASK_STATUSES = {"queued", "ready"}
+DEFAULT_TASK_STORE_DIR = Path(
+    os.environ.get(
+        "TASK_STORE_DIR",
+        "/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks",
+    )
+)
+TASK_STORE_SQLITE_FILE_ENV = "TASK_STORE_SQLITE_FILE"
 
 
 def _utc_now_iso() -> str:
@@ -160,6 +169,51 @@ def _coerce_seed(value: object) -> str:
     if value is None:
         return "0"
     return str(value)
+
+
+def _resolve_task_store_sqlite(task_store_dir: Path) -> Path:
+    sqlite_override = os.environ.get(TASK_STORE_SQLITE_FILE_ENV, "").strip()
+    if sqlite_override:
+        override_path = Path(sqlite_override)
+        if override_path.is_absolute():
+            return override_path
+        return task_store_dir / override_path
+    return task_store_dir / "task-store.sqlite"
+
+
+def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
+    sqlite_path = _resolve_task_store_sqlite(task_store_dir)
+    if not sqlite_path.exists():
+        raise FileNotFoundError(f"task store sqlite not found: {sqlite_path}")
+
+    query = """
+        SELECT id, status, status_order, created_at, pipeline_json
+        FROM task_store_tasks
+        WHERE status IN ('queued', 'ready')
+        ORDER BY status_order ASC, created_at ASC, id ASC
+    """
+    with sqlite3.connect(sqlite_path) as conn:
+        rows = conn.execute(query).fetchall()
+
+    tasks: list[dict] = []
+    for row in rows:
+        task_id, status, status_order, created_at, pipeline_json = row
+        task = {
+            "taskId": task_id,
+            "status": status,
+            "statusOrder": status_order,
+            "createdAt": created_at,
+        }
+        if isinstance(pipeline_json, str) and pipeline_json.strip():
+            payload = json.loads(pipeline_json)
+            if isinstance(payload, dict):
+                task.update(payload)
+        task["taskId"] = task_id
+        task["status"] = status
+        task["statusOrder"] = status_order
+        task["createdAt"] = created_at
+        tasks.append(task)
+    return tasks
 
 
 def _regenerate_views(*, evidence_path: Path, status_path: Path, state_path: Path) -> None:
@@ -389,7 +443,12 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="Execute one cheap-screen benchmark candidate.")
-    parser.add_argument("--task", required=True, help="Path to cheap-screen task JSON file.")
+    parser.add_argument("--task", help="Path to cheap-screen task JSON file.")
+    parser.add_argument(
+        "--task-store-dir",
+        default=str(DEFAULT_TASK_STORE_DIR),
+        help="Authoritative task-store directory used for next-candidate mode.",
+    )
     parser.add_argument(
         "--output",
         help="Optional path to write the execution outcome JSON.",
@@ -411,23 +470,43 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    try:
-        task_payload = _load_json(Path(args.task))
-    except Exception as exc:
-        outcome = _outcome(
-            task={},
-            status="error",
-            reason_code="task-io-invalid",
-            message=f"Failed to load task payload: {exc.__class__.__name__}: {exc}",
-        )
+    if args.task:
+        try:
+            task_payload = _load_json(Path(args.task))
+        except Exception as exc:
+            outcome = _outcome(
+                task={},
+                status="error",
+                reason_code="task-io-invalid",
+                message=f"Failed to load task payload: {exc.__class__.__name__}: {exc}",
+            )
+        else:
+            outcome = execute_cheap_screen_candidate(
+                task_payload,
+                runner=_default_runner,
+                evidence_path=Path(args.evidence_path),
+                status_path=Path(args.status_path),
+                state_path=Path(args.state_path),
+            )
     else:
-        outcome = execute_cheap_screen_candidate(
-            task_payload,
-            runner=_default_runner,
-            evidence_path=Path(args.evidence_path),
-            status_path=Path(args.status_path),
-            state_path=Path(args.state_path),
-        )
+        try:
+            tasks = _load_tasks_from_task_store(Path(args.task_store_dir))
+        except Exception as exc:
+            outcome = _outcome(
+                task={"lane": "cheap-screen"},
+                status="error",
+                reason_code="task-io-invalid",
+                message=f"Failed to load runnable tasks from task store: {exc.__class__.__name__}: {exc}",
+            )
+        else:
+            outcome = run_next_cheap_screen_candidate(
+                tasks,
+                runner=_default_runner,
+                lane="cheap-screen",
+                evidence_path=Path(args.evidence_path),
+                status_path=Path(args.status_path),
+                state_path=Path(args.state_path),
+            )
 
     rendered = f"{json.dumps(outcome, indent=2)}\n"
     if args.output:
