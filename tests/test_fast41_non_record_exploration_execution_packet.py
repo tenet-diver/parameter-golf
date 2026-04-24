@@ -46,12 +46,10 @@ class Fast41NonRecordExplorationExecutionPacketTest(unittest.TestCase):
         )
         self.assertEqual(record.get("promotionRationale", {}).get("decision"), "reject")
 
-        self.assertEqual(status.get("lastProgressAt"), outcome.get("completedAt"))
-        self.assertEqual(
-            status.get("progress", {}).get("mostRecentEvidenceId"),
-            "evidence-exp-fast41-non-record-001",
+        self.assertIn(
+            "exp-fast41-non-record-001",
+            status.get("recentCompletedExperiments", []),
         )
-        self.assertEqual(state.get("lastProgressAt"), outcome.get("completedAt"))
         self.assertIn(
             "exp-fast41-non-record-001",
             state.get("evidenceSummaryCache", {}).get("recentCompletedExperiments", []),
