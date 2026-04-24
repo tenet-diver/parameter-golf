@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "kind": "feature-spec",
+  "taskId": "FAST-28",
+  "title": "Run the next ablation experiment for parameter-golf",
+  "taskType": "spike",
+  "workflow": {
+    "name": "feature-spec",
+    "variant": "design-first",
+    "template": "system-default system-feature-spec-design-first"
+  },
+  "behaviorContract": {
+    "lane": "ablation",
+    "candidateSeed": "ablation-next-candidate",
+    "maxAblationExperiments": 1,
+    "claimsBenchmarkReadiness": false
+  },
+  "migrationAndOperations": {
+    "dataMigrationRequired": false,
+    "operationalConstraints": [
+      "Use TASK_STORE_DIR as the authoritative source when selecting the next ablation candidate.",
+      "Append one bounded ablation experiment record to authoritative evidence and refresh generated campaign views.",
+      "Keep this spike scoped to evidentiary execution outcomes without any benchmark-readiness promotion side effects."
+    ]
+  },
+  "architectureHandoff": {
+    "boundaries": [
+      "Task store selection is the boundary that determines which ablation candidate can execute next.",
+      "This slice is bounded to a single ablation execution append plus view regeneration through existing evidence pathways.",
+      "Readiness and benchmark-promotion flows remain out of scope for FAST-28 to avoid hidden behavior expansion."
+    ],
+    "interfaces": [
+      "Input: task-store payload with lane=ablation, candidateId, runConfig, traceId, and budgetCaps.",
+      "Input/Output: authoritative evidence interface that appends one ablation record and updates summary projections.",
+      "Output: execution outcome payload with taskId, candidateId, lane, reasonCode, status, and completedAt for operators."
+    ],
+    "risks": [
+      "Missing lane isolation could let non-ablation tasks consume ablation budget and distort campaign sequencing.",
+      "Weak evidence update guarantees could leave operator-facing status/state views stale after a run.",
+      "Unbounded reruns could burn budget without improving the next-candidate ablation signal."
+    ],
+    "implementationReadyDecisions": [
+      "Candidate seed is fixed to ablation-next-candidate for this FAST-28 spike.",
+      "Budget cap is fixed by maxAblationExperiments=1 for this bounded ablation pass.",
+      "Outputs are evidentiary-only and explicitly do not claim benchmark readiness."
+    ]
+  }
+}
