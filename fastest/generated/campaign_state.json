@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-24T01:35:10.386Z",
+    "updatedAt": "2026-04-24T01:50:29.211Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -51,7 +51,7 @@
     }
   },
   "environmentClass": "cpu-smoke",
-  "lastControllerTickAt": "2026-04-24T01:12:53.936Z",
+  "lastControllerTickAt": "2026-04-24T01:48:53.454Z",
   "lastProgressAt": "2026-04-24T01:20:00Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
