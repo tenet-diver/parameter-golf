@@ -22,13 +22,8 @@ class Fast28AblationExecutionEvidenceTest(unittest.TestCase):
         ]
         self.assertEqual(len(fast28_records), 1)
         self.assertEqual(fast28_records[0].get("experimentId"), "exp-fast28-ablation-001")
+        self.assertEqual(fast28_records[0].get("evidenceId"), "evidence-exp-fast28-ablation-001")
         self.assertEqual(fast28_records[0].get("status"), "accepted")
-
-        summary = evidence.get("summary", {})
-        self.assertEqual(
-            summary.get("mostRecentEvidenceId"),
-            "evidence-exp-fast28-ablation-001",
-        )
 
 
 if __name__ == "__main__":
