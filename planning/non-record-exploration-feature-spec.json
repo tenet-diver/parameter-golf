@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "feature-spec",
-  "taskId": "FAST-20",
+  "taskId": "FAST-25",
   "title": "Explore one non-record benchmark direction for parameter-golf",
   "taskType": "spike",
   "workflow": {
@@ -40,7 +40,7 @@
       "Unbounded retries on one direction can consume exploration budget without adding controlled novelty."
     ],
     "implementationReadyDecisions": [
-      "Direction is fixed to non-record-new-direction for this FAST-20 slice.",
+      "Direction is fixed to non-record-new-direction for this FAST-25 slice.",
       "Budget cap is fixed by maxExperimentsPerDirection=1 for this exploratory direction.",
       "Exploration outputs remain evidentiary-only and explicitly avoid benchmark-readiness claims."
     ]
