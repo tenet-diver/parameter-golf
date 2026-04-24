@@ -23,7 +23,8 @@ except ModuleNotFoundError:
 
 
 Runner = Callable[[dict], dict]
-RUNNABLE_TASK_STATUSES = {"queued", "ready"}
+RUNNABLE_TASK_STATUSES = {"queued", "ready", "in_progress", "in-progress"}
+RUNNABLE_TASK_STATUS_SQL = ", ".join(f"'{status}'" for status in sorted(RUNNABLE_TASK_STATUSES))
 DEFAULT_TASK_STORE_DIR = Path(
     os.environ.get(
         "TASK_STORE_DIR",
@@ -160,10 +161,10 @@ def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
     if not sqlite_path.exists():
         raise FileNotFoundError(f"task store sqlite not found: {sqlite_path}")
 
-    query = """
+    query = f"""
         SELECT id, status, status_order, created_at, pipeline_json
         FROM task_store_tasks
-        WHERE status IN ('queued', 'ready')
+        WHERE status IN ({RUNNABLE_TASK_STATUS_SQL})
         ORDER BY status_order ASC, created_at ASC, id ASC
     """
     with sqlite3.connect(sqlite_path) as conn:

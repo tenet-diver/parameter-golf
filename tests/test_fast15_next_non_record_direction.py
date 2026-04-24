@@ -70,7 +70,13 @@ class Fast15NextNonRecordDirectionTest(unittest.TestCase):
         )
         return evidence_path, status_path, state_path
 
-    def _make_task_store(self, sqlite_path: Path, pipeline_json: dict) -> None:
+    def _make_task_store(
+        self,
+        sqlite_path: Path,
+        pipeline_json: dict,
+        *,
+        status: str = "ready",
+    ) -> None:
         conn = sqlite3.connect(sqlite_path)
         try:
             conn.execute(
@@ -91,7 +97,7 @@ class Fast15NextNonRecordDirectionTest(unittest.TestCase):
                 """,
                 (
                     "FAST-15-CANDIDATE",
-                    "ready",
+                    status,
                     0,
                     "2026-04-24T00:00:00Z",
                     json.dumps(pipeline_json),
@@ -158,6 +164,59 @@ class Fast15NextNonRecordDirectionTest(unittest.TestCase):
             self.assertEqual(evidence["summary"]["acceptedExperiments"], 2)
             self.assertEqual(evidence["experimentRecords"][-1]["lane"], "non-record-exploration")
             self.assertEqual(evidence["experimentRecords"][-1]["taskId"], "FAST-15-CANDIDATE")
+
+    def test_cli_executes_in_progress_non_record_task_from_task_store(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            evidence_path, status_path, state_path = self._seed_files(tmp_root)
+            output_path = tmp_root / "outcome.json"
+            task_store_dir = tmp_root / "task-store"
+            task_store_dir.mkdir(parents=True, exist_ok=True)
+            sqlite_path = task_store_dir / "task-store.sqlite"
+            self._make_task_store(
+                sqlite_path,
+                {
+                    "lane": "non-record-exploration",
+                    "candidateId": "exp-fast15-inprogress-001",
+                    "traceId": "trace-fast15-inprogress-001",
+                    "runConfig": {
+                        "seed": 23,
+                        "directionTag": "non-record-new-direction",
+                    },
+                    "budgetCaps": {"maxRuntimeSeconds": 30, "maxNonRecordExplorationExperiments": 1},
+                },
+                status="in_progress",
+            )
+
+            repo_root = Path(__file__).resolve().parents[1]
+            command = [
+                "python",
+                "fastest/scripts/run_non_record_exploration_candidate.py",
+                "--task-store-dir",
+                str(task_store_dir),
+                "--output",
+                str(output_path),
+                "--evidence-path",
+                str(evidence_path),
+                "--status-path",
+                str(status_path),
+                "--state-path",
+                str(state_path),
+            ]
+
+            completed = subprocess.run(
+                command,
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, msg=completed.stderr)
+
+            outcome = json.loads(output_path.read_text())
+            self.assertEqual(outcome["status"], "success")
+            self.assertEqual(outcome["reasonCode"], "non-record-exploration-success")
+            self.assertEqual(outcome["taskId"], "FAST-15-CANDIDATE")
 
 
 if __name__ == "__main__":

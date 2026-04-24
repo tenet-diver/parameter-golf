@@ -24,7 +24,8 @@ except ModuleNotFoundError:
 
 
 Runner = Callable[[dict], dict]
-RUNNABLE_TASK_STATUSES = {"queued", "ready", "todo"}
+RUNNABLE_TASK_STATUSES = {"queued", "ready", "todo", "in_progress", "in-progress"}
+RUNNABLE_TASK_STATUS_SQL = ", ".join(f"'{status}'" for status in sorted(RUNNABLE_TASK_STATUSES))
 LANE_MODULE_PREFIX = "campaign-lane:"
 DEFAULT_TASK_STORE_DIR = Path(
     "/home/codespace/.fastest/orchestrator/projects/parameter-golf-2e398b79d13c/runtime/tasks"
@@ -239,10 +240,10 @@ def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
         raise FileNotFoundError(f"task store sqlite not found: {sqlite_path}")
     sqlite_uri = f"file:{quote(str(sqlite_path.resolve()))}?mode=ro"
 
-    query = """
+    query = f"""
         SELECT id, status, status_order, created_at, pipeline_json, expected_affected_modules_json
         FROM task_store_tasks
-        WHERE status IN ('queued', 'ready', 'todo')
+        WHERE status IN ({RUNNABLE_TASK_STATUS_SQL})
         ORDER BY status_order ASC, created_at ASC, id ASC
     """
     with sqlite3.connect(sqlite_uri, uri=True) as conn:
@@ -252,10 +253,10 @@ def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
             rows = [
                 (*row, None)
                 for row in conn.execute(
-                    """
+                    f"""
                     SELECT id, status, status_order, created_at, pipeline_json
                     FROM task_store_tasks
-                    WHERE status IN ('queued', 'ready', 'todo')
+                    WHERE status IN ({RUNNABLE_TASK_STATUS_SQL})
                     ORDER BY status_order ASC, created_at ASC, id ASC
                     """
                 ).fetchall()
