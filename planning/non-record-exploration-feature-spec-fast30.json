@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "kind": "feature-spec",
+  "taskId": "FAST-30",
+  "title": "Explore one non-record benchmark direction for parameter-golf",
+  "taskType": "spike",
+  "workflow": {
+    "name": "feature-spec",
+    "variant": "design-first",
+    "template": "system-default system-feature-spec-design-first"
+  },
+  "behaviorContract": {
+    "lane": "non-record-exploration",
+    "directionTag": "non-record-new-direction",
+    "maxExperimentsPerDirection": 1,
+    "claimsBenchmarkReadiness": false
+  },
+  "migrationAndOperations": {
+    "dataMigrationRequired": false,
+    "operationalConstraints": [
+      "Resolve runnable candidate identity only from the authoritative task store binding from TASK_STORE_DIR.",
+      "Append one exploratory evidence record and regenerate generated campaign views from authoritative measurement evidence.",
+      "Keep this direction in non-record exploration mode and prevent benchmark-readiness promotion."
+    ]
+  },
+  "architectureHandoff": {
+    "boundaries": [
+      "Task store candidate selection is the boundary of truth for FAST-30 candidate identity and execution order.",
+      "Benchmark adapter execution writes to measurement evidence and generated campaign views only.",
+      "Readiness signaling stays outside this slice so exploration output cannot cross into benchmark readiness state."
+    ],
+    "interfaces": [
+      "Input: task-store task payload with lane=non-record-exploration, directionTag, candidateId, runConfig, and budgetCaps.",
+      "Input/Output: measurement evidence projection interface that appends exploratory evidence and re-renders status/state views.",
+      "Output: execution outcome envelope including taskId, candidateId, lane, reasonCode, and completedAt."
+    ],
+    "risks": [
+      "If lane or direction validation is weak, non-record candidates may execute on the wrong campaign lane.",
+      "If evidence append and view projection diverge, operators can observe stale or conflicting exploration status.",
+      "If readiness flags are propagated from exploratory runs, the system can over-claim benchmark readiness."
+    ],
+    "implementationReadyDecisions": [
+      "Direction stays pinned to non-record-new-direction for FAST-30.",
+      "Budget cap remains maxExperimentsPerDirection=1 for this controlled novelty slice.",
+      "Outputs are evidentiary only and explicitly forbid benchmark-readiness claims."
+    ]
+  }
+}
