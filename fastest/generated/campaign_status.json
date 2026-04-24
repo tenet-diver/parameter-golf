@@ -2,12 +2,12 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T16:12:21.611Z",
+  "updatedAt": "2026-04-24T16:22:11.816Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
   "queueHealth": {
-    "pendingTaskCount": 3,
+    "pendingTaskCount": 2,
     "inFlightTaskCount": 0,
     "stalledSince": null
   },
@@ -16,7 +16,7 @@
     "constraint-clarity": 0,
     "cheap-screen": 1,
     "ablation": 1,
-    "combination": 1,
+    "combination": 0,
     "scale-check": 0,
     "benchmark-rehearsal": 0,
     "non-record-exploration": 1,
@@ -65,7 +65,7 @@
     "details": {
       "environmentClass": "cpu-smoke",
       "trustedControlState": "established",
-      "pendingTaskCount": "3",
+      "pendingTaskCount": "2",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
       "stalledProgress": "false",
