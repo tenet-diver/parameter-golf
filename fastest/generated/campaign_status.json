@@ -23,9 +23,9 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 22,
-    "acceptedExperiments": 22,
-    "mostRecentEvidenceId": "evidence-exp-fast42-combination-001"
+    "totalExperiments": 23,
+    "acceptedExperiments": 23,
+    "mostRecentEvidenceId": "evidence-exp-fast44-pr1732-import-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -49,7 +49,8 @@
     "exp-fast41-non-record-001",
     "exp-fast39-cheap-screen-001",
     "exp-fast33-ablation-001",
-    "exp-fast42-combination-001"
+    "exp-fast42-combination-001",
+    "exp-fast44-pr1732-import-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -59,7 +60,7 @@
     "observedAt": "2026-04-24T15:31:21Z"
   },
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-24T18:29:47Z",
+  "lastProgressAt": "2026-04-24T19:00:00Z",
   "stalledProgress": true,
   "blockers": [
     "Campaign is active but the queue is empty.",
