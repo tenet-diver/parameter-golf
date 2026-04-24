@@ -1,4 +1,5 @@
 import json
+import hashlib
 import subprocess
 import sys
 import tempfile
@@ -51,6 +52,17 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
             self.assertTrue(record["executionCommands"])
             self.assertTrue(record["configProvenance"]["specHash"])
             self.assertEqual(record["evidenceBundle"]["trustState"], "trusted")
+            bundle_path = REPO_ROOT / record["evidenceBundle"]["localPath"]
+            self.assertTrue(bundle_path.is_file())
+            self.assertTrue(bundle_path.is_relative_to(REPO_ROOT))
+
+            bundle = json.loads(bundle_path.read_text())
+            for log_path_text in bundle["artifacts"]["logs"]:
+                log_path = REPO_ROOT / log_path_text
+                self.assertTrue(log_path.is_file())
+                self.assertTrue(log_path.is_relative_to(REPO_ROOT))
+                digest = hashlib.sha256(log_path.read_bytes()).hexdigest()
+                self.assertEqual(bundle["checksums"][log_path_text], digest)
 
     def test_trusted_control_baseline_established(self) -> None:
         status = json.loads(STATUS_PATH.read_text())

@@ -1,0 +1,61 @@
+{
+  "artifacts": {
+    "logs": [
+      "fastest/source/control-evidence/logs/fast1_control_seed42_20260424T000000Z.txt",
+      "fastest/source/control-evidence/logs/fast1_control_20260424T000000Z.txt",
+      "fastest/source/control-evidence/logs/fast1_control_seed2025_20260424T000000Z.txt"
+    ]
+  },
+  "bundle_id": "f3021d0efe9499ff2b12",
+  "campaign_tick_id": "FAST-1-20260424-cpu-smoke-control",
+  "checksums": {
+    "fastest/source/control-evidence/logs/fast1_control_20260424T000000Z.txt": "c124490a4cda892201e29713cb3b44a5a8af5499a3450d1d595ddcaf537c79f4",
+    "fastest/source/control-evidence/logs/fast1_control_seed2025_20260424T000000Z.txt": "8422c3f15649d1ed7f762299112172dbe7e1db044902e696508e3ee2c19d2727",
+    "fastest/source/control-evidence/logs/fast1_control_seed42_20260424T000000Z.txt": "b9687379ff503514a86527968e8f96bc930a7ff4dcc6182a705311678af86de7",
+    "/workspaces/parameter-golf/measurement/control_measurement.yaml": "04ea6b5463202802827059d4199396502d5fe9b23df41eb485def9e3617fcdc2"
+  },
+  "created_at": "2026-04-24T13:58:44.022049+00:00",
+  "env_issues": [],
+  "env_manifest": {
+    "machine": "x86_64",
+    "platform": "Linux-6.8.0-1044-azure-x86_64-with-glibc2.39",
+    "python_executable": "/workspaces/parameter-golf/.venv/bin/python",
+    "python_version": "3.12.1",
+    "system": "Linux"
+  },
+  "primary_metric": 4.006814843333333,
+  "schema_version": 1,
+  "seed_metrics": [
+    {
+      "seed": 42,
+      "value": 4.00789139
+    },
+    {
+      "seed": 1337,
+      "value": 4.00708784
+    },
+    {
+      "seed": 2025,
+      "value": 4.0054653
+    }
+  ],
+  "spec_hash": "90ab17442a7cad2b3de5eccbabaca9dd7ac150ba8a3065a479af8d53a4bfb1c6",
+  "spec_ref": "/workspaces/parameter-golf/measurement/control_measurement.yaml",
+  "spec_snapshot": {
+    "command_template": "python3 train_gpt.py --seed {seed}",
+    "dataset_id": "fineweb_val_v1",
+    "metric": {
+      "direction": "lower_is_better",
+      "max_drift": 0.02,
+      "name": "val_bpb"
+    },
+    "seed_set": [
+      42,
+      1337,
+      2025
+    ],
+    "spec_id": "parameter-golf-control-v1",
+    "tokenizer_id": "fineweb_1024_bpe_v1"
+  },
+  "updated_at": "2026-04-24T13:58:44.022064+00:00"
+}
