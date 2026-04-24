@@ -9,7 +9,7 @@ from unittest import mock
 
 
 AUTHORITATIVE_TASK_STORE_DIR = Path(
-    "/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks"
+    "/home/codespace/.fastest/orchestrator/projects/parameter-golf-2e398b79d13c/runtime/tasks"
 )
 
 

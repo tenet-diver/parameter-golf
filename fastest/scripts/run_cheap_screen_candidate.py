@@ -26,7 +26,7 @@ except ModuleNotFoundError:
 Runner = Callable[[dict], dict]
 RUNNABLE_TASK_STATUSES = {"queued", "ready"}
 DEFAULT_TASK_STORE_DIR = Path(
-    "/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks"
+    "/home/codespace/.fastest/orchestrator/projects/parameter-golf-2e398b79d13c/runtime/tasks"
 )
 TASK_STORE_SQLITE_FILE_ENV = "TASK_STORE_SQLITE_FILE"
 
