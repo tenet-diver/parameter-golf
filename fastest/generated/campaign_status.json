@@ -2,30 +2,30 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T16:11:13.898Z",
+  "updatedAt": "2026-04-24T16:12:21.611Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
   "queueHealth": {
-    "pendingTaskCount": 0,
+    "pendingTaskCount": 3,
     "inFlightTaskCount": 0,
-    "stalledSince": "2026-04-24T16:05:55.760Z"
+    "stalledSince": null
   },
   "queueDepthByLane": {
     "measurement": 1,
     "constraint-clarity": 0,
-    "cheap-screen": 0,
+    "cheap-screen": 1,
     "ablation": 1,
-    "combination": 0,
+    "combination": 1,
     "scale-check": 0,
     "benchmark-rehearsal": 0,
-    "non-record-exploration": 0,
+    "non-record-exploration": 1,
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 17,
-    "acceptedExperiments": 17,
-    "mostRecentEvidenceId": "evidence-exp-fast38-non-record-001"
+    "totalExperiments": 18,
+    "acceptedExperiments": 18,
+    "mostRecentEvidenceId": "evidence-exp-fast40-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -44,7 +44,8 @@
     "fast36-candidate-002",
     "fast36-candidate-003",
     "exp-fast37-combination-001",
-    "exp-fast38-non-record-001"
+    "exp-fast38-non-record-001",
+    "exp-fast40-combination-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -53,22 +54,21 @@
     "metricValue": 1.0999,
     "observedAt": "2026-04-24T15:31:21Z"
   },
-  "lastControllerTickAt": "2026-04-24T14:53:52.011Z",
-  "lastProgressAt": "2026-04-24T16:11:30Z",
-  "stalledProgress": true,
+  "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
+  "lastProgressAt": "2026-04-24T16:14:07Z",
+  "stalledProgress": false,
   "blockers": [
-    "2 task(s) are blocked and need repair before the controller can sustain progress.",
-    "Campaign progress is stalled and needs investigation or measurement repair."
+    "2 task(s) are blocked and need repair before the controller can sustain progress."
   ],
   "adapterStatus": {
     "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
     "details": {
       "environmentClass": "cpu-smoke",
       "trustedControlState": "established",
-      "pendingTaskCount": "0",
+      "pendingTaskCount": "3",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
-      "stalledProgress": "true",
+      "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
       "readiness": "baseline-established"
     }

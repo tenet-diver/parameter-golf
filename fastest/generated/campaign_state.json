@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-24T16:11:13.898Z",
+    "updatedAt": "2026-04-24T16:12:21.611Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -51,9 +51,9 @@
     }
   },
   "environmentClass": "cpu-smoke",
-  "lastControllerTickAt": "2026-04-24T14:53:52.011Z",
-  "lastProgressAt": "2026-04-24T16:11:30Z",
-  "stalledSince": "2026-04-24T16:05:55.760Z",
+  "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
+  "lastProgressAt": "2026-04-24T16:14:07Z",
+  "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -73,7 +73,8 @@
       "evidence-fast36-candidate-003",
       "evidence-exp-fast37-combination-001",
       "evidence-exp-fast38-non-record-001",
-      "reproducibility-manifest"
+      "reproducibility-manifest",
+      "evidence-exp-fast40-combination-001"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
@@ -102,10 +103,11 @@
       "fast36-candidate-002",
       "fast36-candidate-003",
       "exp-fast37-combination-001",
-      "exp-fast38-non-record-001"
+      "exp-fast38-non-record-001",
+      "exp-fast40-combination-001"
     ],
-    "acceptedExperiments": 17,
-    "totalExperiments": 17,
+    "acceptedExperiments": 18,
+    "totalExperiments": 18,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
       "candidateId": "evidence-exp-fast37-combination-001",

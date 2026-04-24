@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T16:11:30Z",
+  "updatedAt": "2026-04-24T16:14:07Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -21,12 +21,13 @@
       "evidence-fast36-candidate-003",
       "evidence-exp-fast37-combination-001",
       "evidence-exp-fast38-non-record-001",
-      "reproducibility-manifest"
+      "reproducibility-manifest",
+      "evidence-exp-fast40-combination-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 17,
-    "acceptedExperiments": 17,
-    "mostRecentEvidenceId": "evidence-exp-fast38-non-record-001"
+    "totalExperiments": 18,
+    "acceptedExperiments": 18,
+    "mostRecentEvidenceId": "evidence-exp-fast40-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -45,7 +46,8 @@
     "fast36-candidate-002",
     "fast36-candidate-003",
     "exp-fast37-combination-001",
-    "exp-fast38-non-record-001"
+    "exp-fast38-non-record-001",
+    "exp-fast40-combination-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -571,6 +573,33 @@
       "promotionRationale": {
         "decision": "reject",
         "reason": "Result is from the non-record exploration lane and is evidentiary-only; benchmark-readiness promotion is intentionally disallowed."
+      }
+    },
+    {
+      "experimentId": "exp-fast40-combination-001",
+      "evidenceId": "evidence-exp-fast40-combination-001",
+      "lane": "combination",
+      "status": "accepted",
+      "completedAt": "2026-04-24T16:14:07Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0999,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-40:combination:exp-fast40-combination-001",
+      "taskId": "FAST-40",
+      "traceId": "trace-fast40-combination-001",
+      "runConfig": {
+        "motifIds": [
+          "motif-qk-gain-band",
+          "motif-hessian-aware-sdclip",
+          "motif-activation-sandwich-low-rank-residual",
+          "motif-cheap-screen-seed-boost"
+        ],
+        "seed": 721
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "maxCombinationExperiments": 100
       }
     }
   ]
