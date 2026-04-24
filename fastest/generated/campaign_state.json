@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-24T15:44:36.833Z",
+    "updatedAt": "2026-04-24T16:11:13.898Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -52,8 +52,8 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T14:53:52.011Z",
-  "lastProgressAt": "2026-04-24T15:57:10Z",
-  "stalledSince": null,
+  "lastProgressAt": "2026-04-24T16:11:30Z",
+  "stalledSince": "2026-04-24T16:05:55.760Z",
   "evidenceSummaryCache": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -72,16 +72,17 @@
       "evidence-fast36-candidate-002",
       "evidence-fast36-candidate-003",
       "evidence-exp-fast37-combination-001",
-      "evidence-exp-fast38-non-record-001"
+      "evidence-exp-fast38-non-record-001",
+      "reproducibility-manifest"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
     "trustedControlState": "established",
     "bestKnownResult": {
-      "candidateId": "exp-fast1-control-20260424-cpu-smoke-001",
-      "metricName": "val_bpb",
-      "metricValue": 4.006814843333333,
-      "observedAt": "2026-04-24T13:58:44Z"
+      "candidateId": "exp-fast37-combination-001",
+      "metricName": "benchmark-score",
+      "metricValue": 1.0999,
+      "observedAt": "2026-04-24T15:31:21Z"
     },
     "progressTrend": "unknown",
     "recentCompletedExperiments": [
@@ -107,15 +108,13 @@
     "totalExperiments": 17,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
-      "candidateId": "evidence-exp-fast38-non-record-001",
+      "candidateId": "evidence-exp-fast37-combination-001",
       "policyVersion": "pg-constraint-clarity-v1",
-      "decision": "hold",
+      "decision": "promote",
       "violatedRules": [],
-      "missingEvidence": [
-        "reproducibility-manifest"
-      ],
+      "missingEvidence": [],
       "ambiguityReasons": [],
-      "promotableStateChange": false
+      "promotableStateChange": true
     }
   }
 }

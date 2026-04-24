@@ -10,6 +10,7 @@ STATUS_PATH = REPO_ROOT / "fastest/generated/campaign_status.json"
 STATE_PATH = REPO_ROOT / "fastest/generated/campaign_state.json"
 SOURCE_PATH = REPO_ROOT / "fastest/source/measurement_evidence.json"
 PACKET_PATH = REPO_ROOT / "planning/fast37_combination_execution_packet.json"
+MANIFEST_PATH = REPO_ROOT / "fastest/source/reproducibility_manifest_exp_fast37_combination_001.json"
 
 
 class Fast37CombinationExecutionPacketTest(unittest.TestCase):
@@ -56,6 +57,35 @@ class Fast37CombinationExecutionPacketTest(unittest.TestCase):
         self.assertEqual(packet.get("promotionRationale", {}).get("decision"), "promote")
         self.assertIsInstance(packet.get("promotionRationale", {}).get("reason"), str)
         self.assertTrue(packet.get("promotionRationale", {}).get("reason"))
+
+    def test_fast37_reproducibility_manifest_unblocks_campaign_promotion(self) -> None:
+        source = json.loads(SOURCE_PATH.read_text())
+        manifest = json.loads(MANIFEST_PATH.read_text())
+
+        self.assertIn("reproducibility-manifest", source.get("summary", {}).get("artifactIds", []))
+        self.assertEqual(
+            source.get("reproducibilityManifest", {}).get("artifactPath"),
+            "fastest/source/reproducibility_manifest_exp_fast37_combination_001.json",
+        )
+        self.assertEqual(manifest.get("candidateId"), "exp-fast37-combination-001")
+        self.assertEqual(manifest.get("metric", {}).get("value"), 1.0999)
+        self.assertEqual(manifest.get("legalitySignals", {}).get("status"), "legal")
+        self.assertIn("reproducibility-manifest", manifest.get("promotionEvidence", []))
+
+        status = json.loads(STATUS_PATH.read_text())
+        state = json.loads(STATE_PATH.read_text())
+        rendered_status, rendered_state = apply_measurement_evidence(
+            source,
+            json.loads(json.dumps(status)),
+            json.loads(json.dumps(state)),
+        )
+        adjudication = rendered_status["promotionAdjudication"]
+
+        self.assertEqual(adjudication["candidateId"], "evidence-exp-fast37-combination-001")
+        self.assertEqual(adjudication["decision"], "promote")
+        self.assertEqual(adjudication["missingEvidence"], [])
+        self.assertTrue(adjudication["promotableStateChange"])
+        self.assertEqual(rendered_state["evidenceSummaryCache"]["latestPromotionAdjudication"], adjudication)
 
     def test_generated_views_match_authoritative_measurement_projection(self) -> None:
         source = json.loads(SOURCE_PATH.read_text())

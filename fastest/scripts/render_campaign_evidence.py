@@ -41,6 +41,31 @@ def _normalized_non_negative_int(value: object, default: int) -> int:
     return default
 
 
+def _promotion_candidate_id(source: dict, summary: dict) -> str | None:
+    manifest = source.get("reproducibilityManifest")
+    if not isinstance(manifest, dict):
+        return summary.get("mostRecentEvidenceId")
+
+    manifest_candidate_id = manifest.get("candidateId")
+    if not isinstance(manifest_candidate_id, str) or not manifest_candidate_id:
+        return summary.get("mostRecentEvidenceId")
+
+    records = source.get("experimentRecords")
+    if not isinstance(records, list):
+        return summary.get("mostRecentEvidenceId")
+
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        if record.get("experimentId") == manifest_candidate_id:
+            evidence_id = record.get("evidenceId")
+            if isinstance(evidence_id, str) and evidence_id:
+                return evidence_id
+            return manifest_candidate_id
+
+    return summary.get("mostRecentEvidenceId")
+
+
 def adjudicate_promotion(candidate: dict) -> dict:
     policy_version = candidate.get("policyVersion", DEFAULT_POLICY_VERSION)
     required_evidence = _normalized_string_list(candidate.get("requiredEvidence"))
@@ -157,7 +182,7 @@ def apply_measurement_evidence(source: dict, status: dict, state: dict) -> tuple
     )
 
     promotion_candidate = {
-        "candidateId": summary.get("mostRecentEvidenceId"),
+        "candidateId": _promotion_candidate_id(source, summary),
         "policyVersion": policy_version,
         "artifactBudgetPolicy": state.get("campaign", {}).get("metadata", {}).get("artifactBudgetPolicy"),
         "requiredEvidence": required_evidence,

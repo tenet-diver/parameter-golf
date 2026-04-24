@@ -161,6 +161,76 @@ class Fast3ConstraintClarityContractTest(unittest.TestCase):
             adjudication,
         )
 
+    def test_apply_measurement_evidence_promotes_manifest_candidate_over_latest_evidence(self) -> None:
+        source = {
+            "updatedAt": "2026-04-24T16:10:00Z",
+            "summary": {
+                "artifactIds": [
+                    "evidence-best-combination-001",
+                    "evidence-latest-non-record-001",
+                    "reproducibility-manifest",
+                ],
+                "trustedControlState": "established",
+                "totalExperiments": 2,
+                "acceptedExperiments": 2,
+                "mostRecentEvidenceId": "evidence-latest-non-record-001",
+            },
+            "recentCompletedExperiments": [
+                "best-combination-001",
+                "latest-non-record-001",
+            ],
+            "promotionPolicy": {
+                "policyVersion": POLICY_VERSION,
+                "requiredEvidence": [
+                    "trusted-baseline-evidence",
+                    "benchmark-measurement-evidence",
+                    "reproducibility-manifest",
+                ],
+                "legalitySignals": {
+                    "status": "legal",
+                    "violations": [],
+                    "conflicts": [],
+                },
+                "minimumAcceptedExperiments": 1,
+            },
+            "reproducibilityManifest": {
+                "candidateId": "best-combination-001",
+                "artifactPath": "fastest/source/reproducibility_manifest_best_combination_001.json",
+                "status": "provided",
+            },
+            "experimentRecords": [
+                {
+                    "experimentId": "best-combination-001",
+                    "evidenceId": "evidence-best-combination-001",
+                    "lane": "combination",
+                },
+                {
+                    "experimentId": "latest-non-record-001",
+                    "evidenceId": "evidence-latest-non-record-001",
+                    "lane": "non-record-exploration",
+                },
+            ],
+        }
+        status = {
+            "progress": {
+                "totalExperiments": 0,
+                "acceptedExperiments": 0,
+                "mostRecentEvidenceId": None,
+            },
+            "blockers": [],
+            "adapterStatus": {"details": {}},
+        }
+        state = {
+            "campaign": {"metadata": {"artifactBudgetPolicy": "required-before-promotion"}},
+            "evidenceSummaryCache": {},
+        }
+
+        rendered_status, _ = apply_measurement_evidence(source, status, state)
+        adjudication = rendered_status["promotionAdjudication"]
+
+        self.assertEqual(adjudication["candidateId"], "evidence-best-combination-001")
+        self.assertEqual(adjudication["decision"], "promote")
+
 
 if __name__ == "__main__":
     unittest.main()

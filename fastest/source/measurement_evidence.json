@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T15:57:10Z",
+  "updatedAt": "2026-04-24T16:11:30Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -20,7 +20,8 @@
       "evidence-fast36-candidate-002",
       "evidence-fast36-candidate-003",
       "evidence-exp-fast37-combination-001",
-      "evidence-exp-fast38-non-record-001"
+      "evidence-exp-fast38-non-record-001",
+      "reproducibility-manifest"
     ],
     "trustedControlState": "established",
     "totalExperiments": 17,
@@ -59,6 +60,13 @@
       "conflicts": []
     },
     "minimumAcceptedExperiments": 1
+  },
+  "reproducibilityManifest": {
+    "candidateId": "exp-fast37-combination-001",
+    "evidenceId": "evidence-exp-fast37-combination-001",
+    "artifactPath": "fastest/source/reproducibility_manifest_exp_fast37_combination_001.json",
+    "status": "provided",
+    "generatedAt": "2026-04-24T16:10:00Z"
   },
   "experimentRecords": [
     {
@@ -370,7 +378,26 @@
       "budgetCaps": {
         "maxCombinationExperiments": 100,
         "maxRuntimeSeconds": 600
-      }
+      },
+      "executionCommands": [
+        "python fastest/scripts/run_combination_candidate.py --task fastest/generated/fast37_combination_task.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json --output fastest/generated/fast37_run_outcome.json"
+      ],
+      "artifactPaths": [
+        "fastest/generated/fast37_combination_task.json",
+        "fastest/generated/fast37_run_outcome.json",
+        "fastest/source/measurement_evidence.json",
+        "fastest/generated/campaign_status.json",
+        "fastest/generated/campaign_state.json",
+        "planning/fast37_combination_execution_packet.json",
+        "fastest/source/reproducibility_manifest_exp_fast37_combination_001.json"
+      ],
+      "promotionRationale": {
+        "decision": "promote",
+        "reason": "Benchmark-score improved from 1.0979 to 1.0999 and required reproducibility evidence is now present.",
+        "policyVersion": "pg-constraint-clarity-v1",
+        "missingEvidence": []
+      },
+      "reproducibilityManifestPath": "fastest/source/reproducibility_manifest_exp_fast37_combination_001.json"
     },
     {
       "experimentId": "exp-fast35-non-record-001",

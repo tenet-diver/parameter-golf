@@ -2,24 +2,24 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T15:44:36.833Z",
+  "updatedAt": "2026-04-24T16:11:13.898Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
   "queueHealth": {
-    "pendingTaskCount": 2,
+    "pendingTaskCount": 0,
     "inFlightTaskCount": 0,
-    "stalledSince": null
+    "stalledSince": "2026-04-24T16:05:55.760Z"
   },
   "queueDepthByLane": {
     "measurement": 1,
     "constraint-clarity": 0,
-    "cheap-screen": 1,
+    "cheap-screen": 0,
     "ablation": 1,
     "combination": 0,
     "scale-check": 0,
     "benchmark-rehearsal": 0,
-    "non-record-exploration": 1,
+    "non-record-exploration": 0,
     "unassigned": 0
   },
   "progress": {
@@ -48,39 +48,38 @@
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
-    "candidateId": "exp-fast1-control-20260424-cpu-smoke-001",
-    "metricName": "val_bpb",
-    "metricValue": 4.006814843333333,
-    "observedAt": "2026-04-24T13:58:44Z"
+    "candidateId": "exp-fast37-combination-001",
+    "metricName": "benchmark-score",
+    "metricValue": 1.0999,
+    "observedAt": "2026-04-24T15:31:21Z"
   },
   "lastControllerTickAt": "2026-04-24T14:53:52.011Z",
-  "lastProgressAt": "2026-04-24T15:57:10Z",
-  "stalledProgress": false,
+  "lastProgressAt": "2026-04-24T16:11:30Z",
+  "stalledProgress": true,
   "blockers": [
-    "2 task(s) are blocked and need repair before the controller can sustain progress."
+    "2 task(s) are blocked and need repair before the controller can sustain progress.",
+    "Campaign progress is stalled and needs investigation or measurement repair."
   ],
   "adapterStatus": {
     "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
     "details": {
       "environmentClass": "cpu-smoke",
       "trustedControlState": "established",
-      "pendingTaskCount": "2",
+      "pendingTaskCount": "0",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
-      "stalledProgress": "false",
+      "stalledProgress": "true",
       "benchmarkTrack": "parameter-golf",
       "readiness": "baseline-established"
     }
   },
   "promotionAdjudication": {
-    "candidateId": "evidence-exp-fast38-non-record-001",
+    "candidateId": "evidence-exp-fast37-combination-001",
     "policyVersion": "pg-constraint-clarity-v1",
-    "decision": "hold",
+    "decision": "promote",
     "violatedRules": [],
-    "missingEvidence": [
-      "reproducibility-manifest"
-    ],
+    "missingEvidence": [],
     "ambiguityReasons": [],
-    "promotableStateChange": false
+    "promotableStateChange": true
   }
 }

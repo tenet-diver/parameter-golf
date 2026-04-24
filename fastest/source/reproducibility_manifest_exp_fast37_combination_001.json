@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "parameter-golf-reproducibility-manifest",
+  "candidateId": "exp-fast37-combination-001",
+  "evidenceId": "evidence-exp-fast37-combination-001",
+  "taskId": "FAST-37",
+  "traceId": "trace-fast37-combination-001",
+  "generatedAt": "2026-04-24T16:11:30Z",
+  "repository": {
+    "path": "/workspaces/parameter-golf",
+    "branch": "push/develop-no-workflow",
+    "evidenceBaseCommit": "5521ec2"
+  },
+  "metric": {
+    "name": "benchmark-score",
+    "value": 1.0999,
+    "direction": "maximize",
+    "previousBestCombination": 1.0979
+  },
+  "execution": {
+    "environmentClass": "cpu-smoke",
+    "runner": "fastest/scripts/run_combination_candidate.py",
+    "command": "python fastest/scripts/run_combination_candidate.py --task fastest/generated/fast37_combination_task.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json --output fastest/generated/fast37_run_outcome.json",
+    "inputArtifacts": [
+      "fastest/generated/fast37_combination_task.json",
+      "fastest/source/measurement_evidence.json"
+    ],
+    "outputArtifacts": [
+      "fastest/generated/fast37_run_outcome.json",
+      "fastest/generated/campaign_status.json",
+      "fastest/generated/campaign_state.json",
+      "planning/fast37_combination_execution_packet.json"
+    ]
+  },
+  "runConfig": {
+    "motifIds": [
+      "motif-qk-gain-band",
+      "motif-hessian-aware-sdclip",
+      "motif-activation-sandwich-low-rank-residual"
+    ],
+    "seed": "579"
+  },
+  "budgetCaps": {
+    "maxCombinationExperiments": 100,
+    "maxRuntimeSeconds": 600
+  },
+  "legalitySignals": {
+    "status": "legal",
+    "violations": [],
+    "conflicts": []
+  },
+  "promotionEvidence": [
+    "trusted-baseline-evidence",
+    "benchmark-measurement-evidence",
+    "reproducibility-manifest"
+  ]
+}
