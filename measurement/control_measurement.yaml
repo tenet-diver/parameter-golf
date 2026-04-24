@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "spec_id": "parameter-golf-control-v1",
+  "dataset_id": "fineweb_val_v1",
+  "tokenizer_id": "fineweb_1024_bpe_v1",
+  "seed_set": [42, 1337, 2025],
+  "metric": {
+    "name": "val_bpb",
+    "direction": "lower_is_better",
+    "max_drift": 0.02
+  },
+  "command_template": "python3 train_gpt.py --seed {seed}",
+  "required_env": {
+    "python": "3",
+    "system": "Linux"
+  }
+}
