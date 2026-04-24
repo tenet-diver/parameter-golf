@@ -23,14 +23,15 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 3,
-    "acceptedExperiments": 3,
-    "mostRecentEvidenceId": "evidence-exp-fast4-qa-smoke-20260423-001"
+    "totalExperiments": 4,
+    "acceptedExperiments": 4,
+    "mostRecentEvidenceId": "evidence-exp-fast11-measurement-20260424-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
     "exp-fast4-cheap-screen-20260423-attempt2-001",
-    "exp-fast4-qa-smoke-20260423-001"
+    "exp-fast4-qa-smoke-20260423-001",
+    "exp-fast11-measurement-20260424-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -40,7 +41,7 @@
     "observedAt": "2026-04-23T21:22:01Z"
   },
   "lastControllerTickAt": "2026-04-24T00:06:44.377Z",
-  "lastProgressAt": "2026-04-23T21:22:01Z",
+  "lastProgressAt": "2026-04-24T00:32:00Z",
   "stalledProgress": false,
   "blockers": [],
   "adapterStatus": {
@@ -57,7 +58,7 @@
     }
   },
   "promotionAdjudication": {
-    "candidateId": "evidence-exp-fast4-qa-smoke-20260423-001",
+    "candidateId": "evidence-exp-fast11-measurement-20260424-001",
     "policyVersion": "pg-constraint-clarity-v1",
     "decision": "hold",
     "violatedRules": [],

@@ -12,6 +12,35 @@ SOURCE_PATH = REPO_ROOT / "fastest/source/measurement_evidence.json"
 
 
 class Fast11MeasurementCoverageRefreshTest(unittest.TestCase):
+    def test_authoritative_evidence_contains_reproducible_fast11_measurement_record(self) -> None:
+        source = json.loads(SOURCE_PATH.read_text())
+        records = source["experimentRecords"]
+        fast11_records = [
+            record
+            for record in records
+            if record.get("taskId") == "FAST-11"
+            and record.get("lane") == "measurement"
+            and record.get("status") == "accepted"
+        ]
+        self.assertTrue(
+            fast11_records,
+            "Expected at least one accepted FAST-11 measurement record in authoritative evidence.",
+        )
+
+        record = fast11_records[-1]
+        self.assertTrue(record.get("experimentId"))
+        self.assertTrue(record.get("evidenceId"))
+        self.assertTrue(record.get("idempotencyKey"))
+        self.assertTrue(record.get("traceId"))
+
+        run_config = record.get("runConfig")
+        self.assertIsInstance(run_config, dict)
+        self.assertIn("seed", run_config)
+
+        budget_caps = record.get("budgetCaps")
+        self.assertIsInstance(budget_caps, dict)
+        self.assertIn("maxRuntimeSeconds", budget_caps)
+
     def test_generated_views_match_authoritative_measurement_projection(self) -> None:
         source = json.loads(SOURCE_PATH.read_text())
         status = json.loads(STATUS_PATH.read_text())
