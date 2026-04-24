@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T16:48:56Z",
+  "updatedAt": "2026-04-24T16:59:56Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -24,12 +24,13 @@
       "reproducibility-manifest",
       "evidence-exp-fast40-combination-001",
       "evidence-exp-fast41-non-record-001",
-      "evidence-exp-fast39-cheap-screen-001"
+      "evidence-exp-fast39-cheap-screen-001",
+      "evidence-exp-fast33-ablation-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 20,
-    "acceptedExperiments": 20,
-    "mostRecentEvidenceId": "evidence-exp-fast39-cheap-screen-001"
+    "totalExperiments": 21,
+    "acceptedExperiments": 21,
+    "mostRecentEvidenceId": "evidence-exp-fast33-ablation-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -51,7 +52,8 @@
     "exp-fast38-non-record-001",
     "exp-fast40-combination-001",
     "exp-fast41-non-record-001",
-    "exp-fast39-cheap-screen-001"
+    "exp-fast39-cheap-screen-001",
+    "exp-fast33-ablation-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -662,6 +664,28 @@
       },
       "budgetCaps": {
         "maxRuntimeSeconds": 30
+      }
+    },
+    {
+      "experimentId": "exp-fast33-ablation-001",
+      "evidenceId": "evidence-exp-fast33-ablation-001",
+      "lane": "ablation",
+      "status": "accepted",
+      "completedAt": "2026-04-24T16:59:56Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.025,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-33:ablation:exp-fast33-ablation-001",
+      "taskId": "FAST-33",
+      "traceId": "trace-fast33-ablation-001",
+      "runConfig": {
+        "seed": 33,
+        "sourceTaskId": "FAST-33"
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30,
+        "maxAblationExperiments": 100
       }
     }
   ]

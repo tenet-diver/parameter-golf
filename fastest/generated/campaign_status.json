@@ -23,9 +23,9 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 20,
-    "acceptedExperiments": 20,
-    "mostRecentEvidenceId": "evidence-exp-fast39-cheap-screen-001"
+    "totalExperiments": 21,
+    "acceptedExperiments": 21,
+    "mostRecentEvidenceId": "evidence-exp-fast33-ablation-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -47,7 +47,8 @@
     "exp-fast38-non-record-001",
     "exp-fast40-combination-001",
     "exp-fast41-non-record-001",
-    "exp-fast39-cheap-screen-001"
+    "exp-fast39-cheap-screen-001",
+    "exp-fast33-ablation-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -57,7 +58,7 @@
     "observedAt": "2026-04-24T15:31:21Z"
   },
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-24T16:48:56Z",
+  "lastProgressAt": "2026-04-24T16:59:56Z",
   "stalledProgress": true,
   "blockers": [
     "3 task(s) are blocked and need repair before the controller can sustain progress.",
