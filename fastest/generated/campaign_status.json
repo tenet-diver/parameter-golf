@@ -2,7 +2,7 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T16:22:11.816Z",
+  "updatedAt": "2026-04-24T16:32:27Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
@@ -23,9 +23,9 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 18,
-    "acceptedExperiments": 18,
-    "mostRecentEvidenceId": "evidence-exp-fast40-combination-001"
+    "totalExperiments": 19,
+    "acceptedExperiments": 19,
+    "mostRecentEvidenceId": "evidence-exp-fast41-non-record-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -45,7 +45,8 @@
     "fast36-candidate-003",
     "exp-fast37-combination-001",
     "exp-fast38-non-record-001",
-    "exp-fast40-combination-001"
+    "exp-fast40-combination-001",
+    "exp-fast41-non-record-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -55,7 +56,7 @@
     "observedAt": "2026-04-24T15:31:21Z"
   },
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-24T16:14:07Z",
+  "lastProgressAt": "2026-04-24T16:32:27Z",
   "stalledProgress": false,
   "blockers": [
     "2 task(s) are blocked and need repair before the controller can sustain progress."

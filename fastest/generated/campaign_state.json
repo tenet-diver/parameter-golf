@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-24T16:22:11.816Z",
+    "updatedAt": "2026-04-24T16:32:27Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -52,7 +52,7 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-24T16:14:07Z",
+  "lastProgressAt": "2026-04-24T16:32:27Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
@@ -74,7 +74,8 @@
       "evidence-exp-fast37-combination-001",
       "evidence-exp-fast38-non-record-001",
       "reproducibility-manifest",
-      "evidence-exp-fast40-combination-001"
+      "evidence-exp-fast40-combination-001",
+      "evidence-exp-fast41-non-record-001"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
@@ -104,10 +105,11 @@
       "fast36-candidate-003",
       "exp-fast37-combination-001",
       "exp-fast38-non-record-001",
-      "exp-fast40-combination-001"
+      "exp-fast40-combination-001",
+      "exp-fast41-non-record-001"
     ],
-    "acceptedExperiments": 18,
-    "totalExperiments": 18,
+    "acceptedExperiments": 19,
+    "totalExperiments": 19,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
       "candidateId": "evidence-exp-fast37-combination-001",

@@ -1,0 +1,84 @@
+{
+  "taskId": "FAST-41",
+  "title": "Explore one non-record benchmark direction for parameter-golf",
+  "lane": "non-record-exploration",
+  "candidateId": "exp-fast41-non-record-001",
+  "status": "success",
+  "reasonCode": "non-record-exploration-success",
+  "completedAt": "2026-04-24T16:32:27Z",
+  "commands": [
+    "python fastest/scripts/run_non_record_exploration_candidate.py --task fastest/generated/fast41_non_record_task.json --output fastest/generated/fast41_non_record_outcome.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json"
+  ],
+  "artifactPaths": [
+    "fastest/generated/fast41_non_record_task.json",
+    "fastest/generated/fast41_non_record_outcome.json",
+    "fastest/source/measurement_evidence.json",
+    "fastest/generated/campaign_status.json",
+    "fastest/generated/campaign_state.json",
+    "planning/fast41_non_record_exploration_execution_packet.json"
+  ],
+  "observedMetric": {
+    "name": "benchmark-score",
+    "value": 1.0126,
+    "source": "fastest/generated/fast41_non_record_outcome.json"
+  },
+  "promotionRationale": {
+    "decision": "reject",
+    "reason": "Result is from the non-record exploration lane and is evidentiary-only; benchmark-readiness promotion is intentionally disallowed.",
+    "nonRecordPolicy": "no-benchmark-readiness-claims"
+  },
+  "designBrief": {
+    "solutionOverview": "Execute one bounded non-record candidate and project evidence into campaign views while enforcing no-promotion behavior.",
+    "interfacesChanged": [
+      "Input task contract consumed by fastest/scripts/run_non_record_exploration_candidate.py with lane=non-record-exploration and explicit budgetCaps.",
+      "Output outcome contract persisted at fastest/generated/fast41_non_record_outcome.json and mirrored into authoritative evidence and generated views.",
+      "Evidence projection boundary between fastest/source/measurement_evidence.json and fastest/generated/campaign_status.json + fastest/generated/campaign_state.json."
+    ],
+    "stateAndFlowChanges": [
+      "Idle -> Loading task payload -> Validate lane/baseline/budget -> Execute deterministic runner -> Append evidence record -> Regenerate status/state views -> Emit outcome.",
+      "Measurement summary counters incremented to totalExperiments=19 and acceptedExperiments=19 after FAST-41 append.",
+      "recentCompletedExperiments appended exp-fast41-non-record-001 in authoritative evidence and projected views."
+    ],
+    "edgeCases": [
+      "Budget exhaustion if maxNonRecordExplorationExperiments <= existing non-record record count.",
+      "Baseline gating failure when summary.trustedControlState is not established/verified.",
+      "Duplicate replay returns duplicate-task-replay and must not append a second record.",
+      "Partial regeneration failure yields partial status with evidence updated but views stale."
+    ],
+    "designRationale": "The flow keeps exploration reliability high by making gating explicit and deterministic, while preserving operator clarity through outcome reason codes and synchronized evidence/status/state artifacts."
+  },
+  "handoff": {
+    "status": "ready-for-implementation",
+    "contract": "Coding must treat non-record exploration as evidentiary-only: write one accepted record per idempotency key, refresh generated projections, and always return explicit promotion rejection rationale.",
+    "inputs": [
+      "fastest/generated/fast41_non_record_task.json",
+      "fastest/source/measurement_evidence.json",
+      "fastest/generated/campaign_status.json",
+      "fastest/generated/campaign_state.json"
+    ],
+    "outputs": [
+      "fastest/generated/fast41_non_record_outcome.json",
+      "fastest/source/measurement_evidence.json#experimentRecords[exp-fast41-non-record-001]",
+      "fastest/generated/campaign_status.json",
+      "fastest/generated/campaign_state.json"
+    ],
+    "acceptanceCriteria": [
+      "Outcome status is success with reasonCode non-record-exploration-success and observedMetric benchmark-score=1.0126.",
+      "Evidence record exists with idempotencyKey FAST-41:non-record-exploration:exp-fast41-non-record-001 and command/artifact traceability.",
+      "promotionRationale.decision remains reject for non-record lane.",
+      "Projected campaign status/state are refreshed to include exp-fast41-non-record-001 in recent completed experiments."
+    ],
+    "dependencies": [
+      "fastest/scripts/run_non_record_exploration_candidate.py",
+      "fastest/scripts/render_campaign_evidence.py",
+      "Trusted control baseline established in fastest/source/measurement_evidence.json summary."
+    ],
+    "questions": [
+      "Should future non-record exploration runs enforce a minimum novelty delta threshold before accepting evidence append?"
+    ]
+  },
+  "assumptions": [
+    "Referenced docs paths docs/contracts/benchmark-campaign-contract.md and docs/reference/architecture/operator-v1-supported-path.md were unavailable in this worktree, so contract interpretation used existing runner/tests/spec artifacts.",
+    "Deterministic default runner objective is acceptable for non-record exploration lane validation in this task."
+  ]
+}

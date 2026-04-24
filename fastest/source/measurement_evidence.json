@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T16:14:07Z",
+  "updatedAt": "2026-04-24T16:32:27Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -22,12 +22,13 @@
       "evidence-exp-fast37-combination-001",
       "evidence-exp-fast38-non-record-001",
       "reproducibility-manifest",
-      "evidence-exp-fast40-combination-001"
+      "evidence-exp-fast40-combination-001",
+      "evidence-exp-fast41-non-record-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 18,
-    "acceptedExperiments": 18,
-    "mostRecentEvidenceId": "evidence-exp-fast40-combination-001"
+    "totalExperiments": 19,
+    "acceptedExperiments": 19,
+    "mostRecentEvidenceId": "evidence-exp-fast41-non-record-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -47,7 +48,8 @@
     "fast36-candidate-003",
     "exp-fast37-combination-001",
     "exp-fast38-non-record-001",
-    "exp-fast40-combination-001"
+    "exp-fast40-combination-001",
+    "exp-fast41-non-record-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -600,6 +602,43 @@
       "budgetCaps": {
         "maxRuntimeSeconds": 600,
         "maxCombinationExperiments": 100
+      }
+    },
+    {
+      "experimentId": "exp-fast41-non-record-001",
+      "evidenceId": "evidence-exp-fast41-non-record-001",
+      "lane": "non-record-exploration",
+      "status": "accepted",
+      "completedAt": "2026-04-24T16:32:27Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0126,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-41:non-record-exploration:exp-fast41-non-record-001",
+      "taskId": "FAST-41",
+      "traceId": "trace-fast41-non-record-001",
+      "runConfig": {
+        "seed": 41,
+        "hypothesis": "attention-kv-head-sharing-probe",
+        "interfaceFocus": "non-record-evidence-only"
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30,
+        "maxNonRecordExplorationExperiments": 3
+      },
+      "executionCommands": [
+        "python fastest/scripts/run_non_record_exploration_candidate.py --task fastest/generated/fast41_non_record_task.json --output fastest/generated/fast41_non_record_outcome.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json"
+      ],
+      "artifactPaths": [
+        "fastest/generated/fast41_non_record_task.json",
+        "fastest/source/measurement_evidence.json",
+        "fastest/generated/campaign_status.json",
+        "fastest/generated/campaign_state.json",
+        "fastest/generated/fast41_non_record_outcome.json"
+      ],
+      "promotionRationale": {
+        "decision": "reject",
+        "reason": "Result is from the non-record exploration lane and is evidentiary-only; benchmark-readiness promotion is intentionally disallowed."
       }
     }
   ]
