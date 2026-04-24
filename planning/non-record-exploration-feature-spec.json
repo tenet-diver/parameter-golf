@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "kind": "feature-spec",
+  "taskId": "FAST-20",
+  "title": "Explore one non-record benchmark direction for parameter-golf",
+  "taskType": "spike",
+  "workflow": {
+    "name": "feature-spec",
+    "variant": "design-first",
+    "template": "system-default system-feature-spec-design-first"
+  },
+  "behaviorContract": {
+    "lane": "non-record-exploration",
+    "directionTag": "non-record-new-direction",
+    "maxExperimentsPerDirection": 1,
+    "claimsBenchmarkReadiness": false
+  },
+  "migrationAndOperations": {
+    "dataMigrationRequired": false,
+    "operationalConstraints": [
+      "Use the authoritative task store binding from TASK_STORE_DIR for candidate selection.",
+      "Append exploratory evidence records without promoting benchmark-readiness state.",
+      "Keep non-record exploration budget bounded to one experiment for this direction."
+    ]
+  },
+  "architectureHandoff": {
+    "boundaries": [
+      "Task store selection decides the next runnable non-record candidate and is the only source of candidate identity.",
+      "Execution writes only to authoritative evidence and generated views; no direct mutation of unrelated campaign artifacts.",
+      "Readiness signaling stays outside this slice so non-record exploration cannot claim benchmark readiness."
+    ],
+    "interfaces": [
+      "Input: task-store candidate payload with lane=non-record-exploration, directionTag, runConfig, and budgetCaps.",
+      "Input/Output: measurement evidence projection interface used to append one exploratory evidence record and refresh views.",
+      "Output: execution outcome contract carrying taskId, candidateId, reasonCode, and completion timestamp."
+    ],
+    "risks": [
+      "Missing or weak lane checks could leak exploration tasks into benchmark-directed lanes.",
+      "A readiness claim on exploratory records could incorrectly signal benchmark readiness.",
+      "Unbounded retries on one direction can consume exploration budget without adding controlled novelty."
+    ],
+    "implementationReadyDecisions": [
+      "Direction is fixed to non-record-new-direction for this FAST-20 slice.",
+      "Budget cap is fixed by maxExperimentsPerDirection=1 for this exploratory direction.",
+      "Exploration outputs remain evidentiary-only and explicitly avoid benchmark-readiness claims."
+    ]
+  }
+}
