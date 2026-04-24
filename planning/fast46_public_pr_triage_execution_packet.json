@@ -4,11 +4,334 @@
   "lane": "legal-evidence:public-pr-audit",
   "campaignLane": "target-repo-campaign",
   "status": "completed",
-  "completedAt": "2026-04-24T19:40:00Z",
+  "completedAt": "2026-04-24T19:16:03Z",
+  "snapshot": {
+    "capturedAtUtc": "2026-04-24T19:16:03Z",
+    "method": "GitHub open-ref snapshots via web.open/web.search_query",
+    "repo": "openai/parameter-golf",
+    "thresholdValBpb": 1.0785,
+    "stateFilter": "open"
+  },
   "currentMergedSota": {
     "referencePr": 1493,
     "valBpb": 1.081,
     "metric": "val_bpb"
+  },
+  "commands": [
+    "web.open https://github.com/openai/parameter-golf/pulls",
+    "web.open https://github.com/openai/parameter-golf/pull/1698",
+    "web.open https://github.com/openai/parameter-golf/pull/1722",
+    "web.open https://github.com/openai/parameter-golf/pull/1795",
+    "web.open https://github.com/openai/parameter-golf/pull/1797",
+    "web.open https://github.com/openai/parameter-golf/pull/1801",
+    "web.open https://github.com/openai/parameter-golf/pull/1807"
+  ],
+  "evidenceRecords": [
+    {
+      "id": "E-UNIVERSE-INDEX-2026-04-24",
+      "prNumber": 1722,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-index-snapshot",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pulls",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pulls",
+      "excerpt": "Open PR index snapshot includes low-BPB entries including #1729 (1.0678), #1728 (1.07706), #1727 (1.07217), #1722 (0.65802), #1707 (1.07399)."
+    },
+    {
+      "id": "E-1722-PR-INDEX",
+      "prNumber": 1722,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-index-snapshot",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pulls",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pulls",
+      "excerpt": "PR list entry: 'Record: Trinity SLOT v3 + Pre-Quant TTT — val_bpb 0.65802 (3-seed mean)' (#1722, open)."
+    },
+    {
+      "id": "E-1722-OPENREF-ERROR",
+      "prNumber": 1722,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref-error",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1722",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1722",
+      "excerpt": "Direct open-ref fetch for #1722 returned empty/failed snapshot in this run; legality/runnability held to index-level evidence only."
+    },
+    {
+      "id": "E-1698-TITLE-STATE",
+      "prNumber": 1698,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1698",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1698",
+      "excerpt": "PR page shows open state and title claim: 'Record: GatedDeltaNet (FLA) + Legal Score-First TTT — val_bpb 1.00995 (3-seed mean)'."
+    },
+    {
+      "id": "E-1698-CLAIM-TABLE",
+      "prNumber": 1698,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1698",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1698",
+      "excerpt": "Body table reports mean 1.00995 with seed artifacts 16,600,916 / 16,548,775 / 16,474,250 bytes."
+    },
+    {
+      "id": "E-1698-LEGALITY-SIZE-RISK",
+      "prNumber": 1698,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1698",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1698",
+      "excerpt": "Compliance line says 'All artifacts under 16 MiB' while displayed bytes exceed 16,000,000 decimal cap, creating legal-size blocker ambiguity."
+    },
+    {
+      "id": "E-1698-RUNNABLE-COMMAND",
+      "prNumber": 1698,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1698",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1698",
+      "excerpt": "Run command block present: ARCH_MODE=K ... torchrun --standalone --nproc_per_node=8 train_gpt.py."
+    },
+    {
+      "id": "E-1795-TITLE-STATE",
+      "prNumber": 1795,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1795",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1795",
+      "excerpt": "PR page title claim includes val_bpb 1.01252 and open state for #1795."
+    },
+    {
+      "id": "E-1795-CLAIM-DISCREPANCY",
+      "prNumber": 1795,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1795",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1795",
+      "excerpt": "Body headline reports val_bpb 0.95165, which conflicts with title claim 1.01252; claim consistency risk is unresolved."
+    },
+    {
+      "id": "E-1795-LEGALITY-PENDING",
+      "prNumber": 1795,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1795",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1795",
+      "excerpt": "Reviewer concern status explicitly says 'PPM-as-TTT legality — organizer ruling requested' and 'If the ruling is no, submission withdrawn'."
+    },
+    {
+      "id": "E-1795-RUNNABLE-EVIDENCE",
+      "prNumber": 1795,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1795",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1795",
+      "excerpt": "3-seed table includes artifacts around 15.93-15.96MB and eval times 9:01-9:35, indicating runnable logs are present."
+    },
+    {
+      "id": "E-1797-TITLE-STATE",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797",
+      "excerpt": "PR title and state: 'Record: PR #1787 base + Smear Gate + LQER Asym — val_bpb 1.06157', open."
+    },
+    {
+      "id": "E-1797-BUDGETS-CAP",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797",
+      "excerpt": "Budgets section: artifact <=16,000,000 bytes; train <=600s; eval <=600s for all seeds."
+    },
+    {
+      "id": "E-1797-LEGALITY-RUNNABLE",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797",
+      "excerpt": "Test plan includes score-before-update TTT, single left-to-right eval pass, CaseOps bijectivity, and 3-seed result 1.06157."
+    },
+    {
+      "id": "E-1797-CODE-COMPLETE",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797",
+      "excerpt": "Reproduction note points to `prepare_caseops_data.py` and `train_gpt.py` with torchrun command path, indicating submission code completeness."
+    },
+    {
+      "id": "E-1801-TITLE-STATE",
+      "prNumber": 1801,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1801",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1801",
+      "excerpt": "PR title and open state: '#1787 + Sparse Gate + Updated Frozen Carry — val_bpb 1.06287'."
+    },
+    {
+      "id": "E-1801-RESULTS",
+      "prNumber": 1801,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1801",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1801",
+      "excerpt": "3-seed results table reports mean post-TTT 1.06287 with artifacts around 15,907,621 bytes."
+    },
+    {
+      "id": "E-1801-LEGALITY-THREAD",
+      "prNumber": 1801,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1801",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1801",
+      "excerpt": "Body notes legality of frozen scalars discussed in #1779, indicating no explicit blocker but non-zero interpretation risk."
+    },
+    {
+      "id": "E-1801-RUNNABLE-TESTPLAN",
+      "prNumber": 1801,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1801",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1801",
+      "excerpt": "Test plan calls out reproducing single seed with provided train_gpt.py/env vars and verifying score-first TTT ordering."
+    },
+    {
+      "id": "E-1807-TITLE-STATE",
+      "prNumber": 1807,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1807",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1807",
+      "excerpt": "PR title and state: 'Record attempt: ... Pre-Quant TTT ... val_bpb 1.07037 (3-seed mean)', open."
+    },
+    {
+      "id": "E-1807-RESULTS-BUDGET",
+      "prNumber": 1807,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1807",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1807",
+      "excerpt": "3-seed table reports mean 1.07037, artifacts under 16MB, train 588s, eval ~300s."
+    },
+    {
+      "id": "E-1807-LEGALITY-COMPLIANCE",
+      "prNumber": 1807,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-open-ref",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1807",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1807",
+      "excerpt": "Compliance block claims fixed predictor and explicitly states no SLOT and no pre-quant TTT leakage."
+    },
+    {
+      "id": "E-1729-INDEX-ENTRY",
+      "prNumber": 1729,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-index-snapshot",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pulls",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pulls",
+      "excerpt": "Open PR list entry shows #1729 with title claim 'val_bpb 1.0678 (3-seed mean)'."
+    },
+    {
+      "id": "E-1728-INDEX-ENTRY",
+      "prNumber": 1728,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-index-snapshot",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pulls",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pulls",
+      "excerpt": "Open PR list entry shows #1728 with title claim 'val_bpb 1.07706'."
+    },
+    {
+      "id": "E-1727-INDEX-ENTRY",
+      "prNumber": 1727,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-index-snapshot",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pulls",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pulls",
+      "excerpt": "Open PR list entry shows #1727 with title claim 'val_bpb 1.07217 (3-seed mean)'."
+    },
+    {
+      "id": "E-1707-INDEX-ENTRY",
+      "prNumber": 1707,
+      "capturedAtUtc": "2026-04-24T19:16:03Z",
+      "sourceType": "github-index-snapshot",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pulls",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pulls",
+      "excerpt": "Open PR list entry shows #1707 with title claim 'val_bpb 1.07399 BPB'."
+    }
+  ],
+  "universeCoverage": {
+    "capturedAtUtc": "2026-04-24T19:16:03Z",
+    "thresholdValBpb": 1.0785,
+    "stateFilter": "open",
+    "sourceRef": "E-UNIVERSE-INDEX-2026-04-24",
+    "openLowBpbUniverse": [
+      {
+        "prNumber": 1698,
+        "claimedValBpb": 1.00995,
+        "sourceRef": "E-1698-TITLE-STATE"
+      },
+      {
+        "prNumber": 1722,
+        "claimedValBpb": 0.65802,
+        "sourceRef": "E-1722-PR-INDEX"
+      },
+      {
+        "prNumber": 1795,
+        "claimedValBpb": 1.01252,
+        "sourceRef": "E-1795-TITLE-STATE"
+      },
+      {
+        "prNumber": 1797,
+        "claimedValBpb": 1.06157,
+        "sourceRef": "E-1797-TITLE-STATE"
+      },
+      {
+        "prNumber": 1801,
+        "claimedValBpb": 1.06287,
+        "sourceRef": "E-1801-TITLE-STATE"
+      },
+      {
+        "prNumber": 1807,
+        "claimedValBpb": 1.07037,
+        "sourceRef": "E-1807-TITLE-STATE"
+      },
+      {
+        "prNumber": 1729,
+        "claimedValBpb": 1.0678,
+        "sourceRef": "E-1729-INDEX-ENTRY"
+      },
+      {
+        "prNumber": 1727,
+        "claimedValBpb": 1.07217,
+        "sourceRef": "E-1727-INDEX-ENTRY"
+      },
+      {
+        "prNumber": 1707,
+        "claimedValBpb": 1.07399,
+        "sourceRef": "E-1707-INDEX-ENTRY"
+      },
+      {
+        "prNumber": 1728,
+        "claimedValBpb": 1.07706,
+        "sourceRef": "E-1728-INDEX-ENTRY"
+      }
+    ],
+    "triagedPrNumbers": [
+      1698,
+      1707,
+      1722,
+      1727,
+      1728,
+      1729,
+      1795,
+      1797,
+      1801,
+      1807
+    ],
+    "coverageStatus": "complete-for-captured-universe"
   },
   "inspectedPrs": [
     {
@@ -16,55 +339,46 @@
       "title": "Record: GatedDeltaNet (FLA) + Legal Score-First TTT — val_bpb 1.00995 (3-seed mean)",
       "claimValBpb": 1.00995,
       "state": "open",
-      "claimStrength": "high",
-      "runnableEvidence": "partial",
+      "claimStrength": "medium",
+      "runnableEvidence": "present-with-contradiction",
       "legalityStatus": "blocked",
-      "keyFindings": [
-        "PR body reports 3-seed runs with train/eval timings and explicit command template.",
-        "Discussion notes artifact bytes above the 16,000,000-byte decimal cap.",
-        "Discussion also flags inherited sentencepiece byte-accounting bug risk for canonical BPB." 
-      ],
-      "blockingReasons": [
-        "Reported artifacts exceed the 16,000,000-byte limit in the posted run logs.",
-        "Canonical BPB validity is disputed pending byte-accounting correction and rerun evidence."
-      ],
-      "finalDisposition": "blocked"
+      "finalDisposition": "blocked",
+      "evidenceRefs": [
+        "E-1698-TITLE-STATE",
+        "E-1698-CLAIM-TABLE",
+        "E-1698-LEGALITY-SIZE-RISK",
+        "E-1698-RUNNABLE-COMMAND"
+      ]
     },
     {
       "prNumber": 1722,
       "title": "Record: Trinity SLOT v3 + Pre-Quant TTT — val_bpb 0.65802 (3-seed mean)",
       "claimValBpb": 0.65802,
       "state": "open",
-      "claimStrength": "high",
+      "claimStrength": "low",
       "runnableEvidence": "unverified",
       "legalityStatus": "illegal",
-      "keyFindings": [
-        "Public title itself declares SLOT v3 plus pre-quant TTT, both high-risk against merged legality expectations.",
-        "No locally verified runnable train/eval/submission evidence packet was available in this workspace snapshot."
-      ],
-      "blockingReasons": [
-        "SLOT v3 and pre-quant TTT conflict with current legality gates for promotable winning path.",
-        "Runnable evidence could not be verified from available source artifacts in this task scope."
-      ],
-      "finalDisposition": "illegal"
+      "finalDisposition": "illegal",
+      "evidenceRefs": [
+        "E-1722-PR-INDEX",
+        "E-1722-OPENREF-ERROR"
+      ]
     },
     {
       "prNumber": 1795,
-      "title": "Record: SP4096 + byte-level PPM adaptive-lambda mixture (strict-legal gate) — val_bpb 1.01252 (3-seed)",
+      "title": "Record: SP4096 + byte-level PPM adaptive-λ mixture (strict-legal gate) — val_bpb 1.01252 (3-seed)",
       "claimValBpb": 1.01252,
       "state": "open",
-      "claimStrength": "medium",
-      "runnableEvidence": "partial",
+      "claimStrength": "low-with-internal-conflict",
+      "runnableEvidence": "present",
       "legalityStatus": "blocked",
-      "keyFindings": [
-        "Conversation reports full-val and 3-seed measurements with artifacts below 16,000,000 bytes.",
-        "Author explicitly marks legality as pending organizer ruling for byte-level online PPM-as-TTT framing."
-      ],
-      "blockingReasons": [
-        "Requires explicit organizer legality ruling before campaign can treat score as promotable.",
-        "Until ruling lands, winning-path status remains unverified for legal promotion."
-      ],
-      "finalDisposition": "blocked"
+      "finalDisposition": "blocked",
+      "evidenceRefs": [
+        "E-1795-TITLE-STATE",
+        "E-1795-CLAIM-DISCREPANCY",
+        "E-1795-LEGALITY-PENDING",
+        "E-1795-RUNNABLE-EVIDENCE"
+      ]
     },
     {
       "prNumber": 1797,
@@ -74,13 +388,13 @@
       "claimStrength": "high",
       "runnableEvidence": "present",
       "legalityStatus": "legal",
-      "keyFindings": [
-        "3-seed table, artifact sizes (<16,000,000 bytes), and baseline deltas are disclosed in PR summary.",
-        "No explicit legality blocker language appears in the captured thread excerpts.",
-        "Claim is materially better than merged SOTA 1.0810 while staying in known legal stack family."
-      ],
-      "blockingReasons": [],
-      "finalDisposition": "advance"
+      "finalDisposition": "advance",
+      "evidenceRefs": [
+        "E-1797-TITLE-STATE",
+        "E-1797-BUDGETS-CAP",
+        "E-1797-LEGALITY-RUNNABLE",
+        "E-1797-CODE-COMPLETE"
+      ]
     },
     {
       "prNumber": 1801,
@@ -89,31 +403,29 @@
       "state": "open",
       "claimStrength": "high",
       "runnableEvidence": "present",
-      "legalityStatus": "legal",
-      "keyFindings": [
-        "3-seed summary and artifact sizes are listed with under-cap bytes.",
-        "Submission is positioned as stackable with PR #1797 and remains close to it in score."
-      ],
-      "blockingReasons": [],
-      "finalDisposition": "hold"
+      "legalityStatus": "legal-with-review-risk",
+      "finalDisposition": "hold",
+      "evidenceRefs": [
+        "E-1801-TITLE-STATE",
+        "E-1801-RESULTS",
+        "E-1801-LEGALITY-THREAD",
+        "E-1801-RUNNABLE-TESTPLAN"
+      ]
     },
     {
       "prNumber": 1807,
-      "title": "Record attempt: SP8192 + 3-Epoch Parallel Pre-Quant TTT + Huber WD Muon — val_bpb 1.07037",
+      "title": "Record attempt: SP8192 + 3-Epoch Parallel Pre-Quant TTT + Huber WD Muon (SDPA-friendly) — val_bpb 1.07037 (3-seed mean)",
       "claimValBpb": 1.07037,
       "state": "open",
       "claimStrength": "medium",
       "runnableEvidence": "present",
       "legalityStatus": "legal-with-risk",
-      "keyFindings": [
-        "3-seed mean and rationale for SDPA-friendly schedule are clearly stated.",
-        "Uses pre-quant TTT framing that needs careful legality interpretation depending on organizer guidance."
-      ],
-      "blockingReasons": [
-        "Lower claim quality than PR #1797/#1801 for immediate winning-path pursuit.",
-        "Pre-quant TTT framing carries additional legal interpretation risk."
-      ],
-      "finalDisposition": "hold"
+      "finalDisposition": "hold",
+      "evidenceRefs": [
+        "E-1807-TITLE-STATE",
+        "E-1807-RESULTS-BUDGET",
+        "E-1807-LEGALITY-COMPLIANCE"
+      ]
     }
   ],
   "rankedCandidates": [
@@ -121,118 +433,256 @@
       "rank": 1,
       "prNumber": 1797,
       "claimedValBpb": 1.06157,
-      "claimStrengthScore": 0.86,
+      "claimStrengthScore": 0.87,
       "legalityRisk": "low",
       "runnableEvidence": "present",
       "codeCompleteness": "high",
       "legalityStatus": "legal",
       "finalDisposition": "advance",
-      "blockingReasons": []
+      "blockingReasons": [],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1797-TITLE-STATE",
+        "claimRef": "E-1797-LEGALITY-RUNNABLE",
+        "legalityRef": "E-1797-LEGALITY-RUNNABLE",
+        "runnableRef": "E-1797-BUDGETS-CAP",
+        "codeCompletenessRef": "E-1797-CODE-COMPLETE"
+      }
     },
     {
       "rank": 2,
       "prNumber": 1801,
       "claimedValBpb": 1.06287,
       "claimStrengthScore": 0.84,
-      "legalityRisk": "low",
+      "legalityRisk": "medium",
       "runnableEvidence": "present",
       "codeCompleteness": "high",
-      "legalityStatus": "legal",
+      "legalityStatus": "legal-with-review-risk",
       "finalDisposition": "hold",
-      "blockingReasons": []
+      "blockingReasons": [
+        "Frozen carry legality interpretation is discussed but not conclusively ruled in snapshot lines."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1801-TITLE-STATE",
+        "claimRef": "E-1801-RESULTS",
+        "legalityRef": "E-1801-LEGALITY-THREAD",
+        "runnableRef": "E-1801-RUNNABLE-TESTPLAN",
+        "codeCompletenessRef": "E-1801-RUNNABLE-TESTPLAN"
+      }
     },
     {
       "rank": 3,
-      "prNumber": 1807,
-      "claimedValBpb": 1.07037,
-      "claimStrengthScore": 0.72,
-      "legalityRisk": "medium",
-      "runnableEvidence": "present",
-      "codeCompleteness": "medium",
-      "legalityStatus": "legal-with-risk",
+      "prNumber": 1729,
+      "claimedValBpb": 1.0678,
+      "claimStrengthScore": 0.55,
+      "legalityRisk": "unknown",
+      "runnableEvidence": "unverified",
+      "codeCompleteness": "unknown",
+      "legalityStatus": "unverified",
       "finalDisposition": "hold",
       "blockingReasons": [
-        "Pre-quant TTT legality sensitivity.",
-        "Inferior claimed BPB relative to top legal candidates."
-      ]
+        "Only index-level title evidence captured in this run; no per-PR legality/runnable open-ref packet collected."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1729-INDEX-ENTRY",
+        "claimRef": "E-1729-INDEX-ENTRY",
+        "legalityRef": "E-1729-INDEX-ENTRY",
+        "runnableRef": "E-1729-INDEX-ENTRY",
+        "codeCompletenessRef": "E-1729-INDEX-ENTRY"
+      }
     },
     {
       "rank": 4,
-      "prNumber": 1795,
-      "claimedValBpb": 1.01252,
-      "claimStrengthScore": 0.68,
-      "legalityRisk": "high",
-      "runnableEvidence": "partial",
-      "codeCompleteness": "medium",
-      "legalityStatus": "blocked",
-      "finalDisposition": "blocked",
+      "prNumber": 1807,
+      "claimedValBpb": 1.07037,
+      "claimStrengthScore": 0.73,
+      "legalityRisk": "medium",
+      "runnableEvidence": "present",
+      "codeCompleteness": "high",
+      "legalityStatus": "legal-with-risk",
+      "finalDisposition": "hold",
       "blockingReasons": [
-        "Pending organizer ruling on byte-level PPM legality in record track.",
-        "Cannot promote before legal interpretation is explicit."
-      ]
+        "Uses pre-quant TTT framing and depends on compliance interpretation despite self-attested legal checklist."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1807-TITLE-STATE",
+        "claimRef": "E-1807-RESULTS-BUDGET",
+        "legalityRef": "E-1807-LEGALITY-COMPLIANCE",
+        "runnableRef": "E-1807-RESULTS-BUDGET",
+        "codeCompletenessRef": "E-1807-RESULTS-BUDGET"
+      }
     },
     {
       "rank": 5,
+      "prNumber": 1707,
+      "claimedValBpb": 1.07399,
+      "claimStrengthScore": 0.5,
+      "legalityRisk": "unknown",
+      "runnableEvidence": "unverified",
+      "codeCompleteness": "unknown",
+      "legalityStatus": "unverified",
+      "finalDisposition": "hold",
+      "blockingReasons": [
+        "Index-only evidence packet; no PR body/thread audit captured in this run."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1707-INDEX-ENTRY",
+        "claimRef": "E-1707-INDEX-ENTRY",
+        "legalityRef": "E-1707-INDEX-ENTRY",
+        "runnableRef": "E-1707-INDEX-ENTRY",
+        "codeCompletenessRef": "E-1707-INDEX-ENTRY"
+      }
+    },
+    {
+      "rank": 6,
+      "prNumber": 1728,
+      "claimedValBpb": 1.07706,
+      "claimStrengthScore": 0.48,
+      "legalityRisk": "unknown",
+      "runnableEvidence": "unverified",
+      "codeCompleteness": "unknown",
+      "legalityStatus": "unverified",
+      "finalDisposition": "hold",
+      "blockingReasons": [
+        "Index-only evidence packet; no PR body/thread audit captured in this run."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1728-INDEX-ENTRY",
+        "claimRef": "E-1728-INDEX-ENTRY",
+        "legalityRef": "E-1728-INDEX-ENTRY",
+        "runnableRef": "E-1728-INDEX-ENTRY",
+        "codeCompletenessRef": "E-1728-INDEX-ENTRY"
+      }
+    },
+    {
+      "rank": 7,
       "prNumber": 1698,
       "claimedValBpb": 1.00995,
-      "claimStrengthScore": 0.61,
+      "claimStrengthScore": 0.62,
       "legalityRisk": "high",
-      "runnableEvidence": "partial",
+      "runnableEvidence": "present-with-contradiction",
       "codeCompleteness": "medium",
       "legalityStatus": "blocked",
       "finalDisposition": "blocked",
       "blockingReasons": [
-        "Reported artifacts exceed 16,000,000-byte cap.",
-        "Canonical BPB accounting remains disputed in thread."
-      ]
+        "Reported artifact bytes exceed 16,000,000 decimal cap even though text says under 16 MiB.",
+        "Cap-unit inconsistency blocks legal promotion."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1698-TITLE-STATE",
+        "claimRef": "E-1698-CLAIM-TABLE",
+        "legalityRef": "E-1698-LEGALITY-SIZE-RISK",
+        "runnableRef": "E-1698-RUNNABLE-COMMAND",
+        "codeCompletenessRef": "E-1698-RUNNABLE-COMMAND"
+      }
     },
     {
-      "rank": 6,
+      "rank": 8,
+      "prNumber": 1795,
+      "claimedValBpb": 1.01252,
+      "claimStrengthScore": 0.4,
+      "legalityRisk": "critical",
+      "runnableEvidence": "present",
+      "codeCompleteness": "medium",
+      "legalityStatus": "blocked",
+      "finalDisposition": "blocked",
+      "blockingReasons": [
+        "Organizer ruling pending for PPM-as-TTT legality.",
+        "Headline/body claim mismatch (1.01252 title vs 0.95165 body) lowers claim confidence."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1795-TITLE-STATE",
+        "claimRef": "E-1795-CLAIM-DISCREPANCY",
+        "legalityRef": "E-1795-LEGALITY-PENDING",
+        "runnableRef": "E-1795-RUNNABLE-EVIDENCE",
+        "codeCompletenessRef": "E-1795-RUNNABLE-EVIDENCE"
+      }
+    },
+    {
+      "rank": 9,
+      "prNumber": 1727,
+      "claimedValBpb": 1.07217,
+      "claimStrengthScore": 0.47,
+      "legalityRisk": "unknown",
+      "runnableEvidence": "unverified",
+      "codeCompleteness": "unknown",
+      "legalityStatus": "unverified",
+      "finalDisposition": "hold",
+      "blockingReasons": [
+        "Index-only evidence packet; no PR body/thread audit captured in this run."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1727-INDEX-ENTRY",
+        "claimRef": "E-1727-INDEX-ENTRY",
+        "legalityRef": "E-1727-INDEX-ENTRY",
+        "runnableRef": "E-1727-INDEX-ENTRY",
+        "codeCompletenessRef": "E-1727-INDEX-ENTRY"
+      }
+    },
+    {
+      "rank": 10,
       "prNumber": 1722,
       "claimedValBpb": 0.65802,
-      "claimStrengthScore": 0.2,
+      "claimStrengthScore": 0.18,
       "legalityRisk": "critical",
       "runnableEvidence": "unverified",
       "codeCompleteness": "unknown",
       "legalityStatus": "illegal",
       "finalDisposition": "illegal",
       "blockingReasons": [
-        "SLOT v3 and pre-quant TTT are incompatible with current legal winning-path gate.",
-        "No verified runnable evidence packet available in this task context."
-      ]
+        "Title declares SLOT v3 + Pre-Quant TTT, treated as illegal for current legal winning-path gate.",
+        "Direct PR open-ref snapshot unavailable in run; runnable evidence unverified."
+      ],
+      "evidenceRefs": {
+        "prSnapshotRef": "E-1722-PR-INDEX",
+        "claimRef": "E-1722-PR-INDEX",
+        "legalityRef": "E-1722-PR-INDEX",
+        "runnableRef": "E-1722-OPENREF-ERROR",
+        "codeCompletenessRef": "E-1722-OPENREF-ERROR"
+      }
     }
   ],
   "promotionDecision": {
     "candidatePr": 1797,
     "advanceOutcome": "advance",
-    "rationale": "Among inspected low-BPB claims, PR #1797 is the strongest currently legal and runnable candidate with complete 3-seed evidence and under-cap artifacts. Lower claimed BPB entries (#1698, #1722, #1795) are blocked by legality/cap/runnability gates.",
+    "rationale": "Within the captured open <1.0785 universe, #1797 is the strongest candidate with direct open-ref evidence for 3-seed result, cap/budget compliance, score-first legality statements, and runnable command path.",
+    "decisionEvidenceRefs": [
+      "E-1797-TITLE-STATE",
+      "E-1797-BUDGETS-CAP",
+      "E-1797-LEGALITY-RUNNABLE",
+      "E-1797-CODE-COMPLETE"
+    ],
     "rejectedOrBlocked": [
       {
         "prNumber": 1698,
-        "reason": "size-cap and canonical-metric verification blockers"
+        "reason": "decimal cap inconsistency",
+        "evidenceRefs": [
+          "E-1698-CLAIM-TABLE",
+          "E-1698-LEGALITY-SIZE-RISK"
+        ]
       },
       {
         "prNumber": 1722,
-        "reason": "illegal method family for current gate"
+        "reason": "illegal method family + unverified runnable evidence",
+        "evidenceRefs": [
+          "E-1722-PR-INDEX",
+          "E-1722-OPENREF-ERROR"
+        ]
       },
       {
         "prNumber": 1795,
-        "reason": "organizer legality ruling pending"
+        "reason": "organizer ruling pending and claim inconsistency",
+        "evidenceRefs": [
+          "E-1795-CLAIM-DISCREPANCY",
+          "E-1795-LEGALITY-PENDING"
+        ]
       }
     ]
   },
-  "commands": [
-    "web.open https://github.com/openai/parameter-golf/pull/1698",
-    "web.open https://github.com/openai/parameter-golf/pull/1795",
-    "web.open https://github.com/openai/parameter-golf/pull/1797",
-    "web.open https://github.com/openai/parameter-golf/pull/1801",
-    "web.open https://github.com/openai/parameter-golf/pull/1807",
-    "web.open https://github.com/openai/parameter-golf/pulls"
-  ],
   "observedResults": {
     "evaluatedAt": "2026-04-24",
     "requiredSetInspected": true,
-    "strongerObviousWinnerFound": false
+    "strongerObviousWinnerFound": false,
+    "sourceEvidenceMode": "captured-open-ref-excerpts"
   },
   "artifactPaths": [
     "planning/fast46_public_pr_triage_execution_packet.json",
