@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-23T23:22:00.440Z",
+    "updatedAt": "2026-04-24T00:06:44.377Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -51,16 +51,18 @@
     }
   },
   "environmentClass": "cpu-smoke",
-  "lastControllerTickAt": "2026-04-23T22:20:12.420Z",
+  "lastControllerTickAt": "2026-04-24T00:06:44.377Z",
   "lastProgressAt": "2026-04-23T21:22:01Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
-      "target-source:2026-04-23T21:22:01Z"
+      "evidence-fast1-control-20260423-001",
+      "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
+      "evidence-exp-fast4-qa-smoke-20260423-001"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
-    "trustedControlState": "verified",
+    "trustedControlState": "established",
     "bestKnownResult": {
       "candidateId": "exp-fast4-qa-smoke-20260423-001",
       "metricName": "benchmark-score",
@@ -69,30 +71,23 @@
     },
     "progressTrend": "unknown",
     "recentCompletedExperiments": [
-      {
-        "evidenceId": "evidence-exp-fast4-qa-smoke-20260423-001",
-        "candidateId": "exp-fast4-qa-smoke-20260423-001",
-        "metricName": "benchmark-score",
-        "metricValue": 1.0197,
-        "observedAt": "2026-04-23T21:22:01Z"
-      },
-      {
-        "evidenceId": "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
-        "candidateId": "exp-fast4-cheap-screen-20260423-attempt2-001",
-        "metricName": "benchmark-score",
-        "metricValue": 1.0112,
-        "observedAt": "2026-04-23T21:18:34Z"
-      },
-      {
-        "evidenceId": "evidence-fast1-control-20260423-001",
-        "candidateId": "exp-fast1-control-20260423-001",
-        "metricName": "benchmark-score",
-        "metricValue": 1,
-        "observedAt": "2026-04-23T20:21:00.000Z"
-      }
+      "exp-fast1-control-20260423-001",
+      "exp-fast4-cheap-screen-20260423-attempt2-001",
+      "exp-fast4-qa-smoke-20260423-001"
     ],
     "acceptedExperiments": 3,
     "totalExperiments": 3,
-    "promotionGateRejectionCount": 0
+    "promotionGateRejectionCount": 0,
+    "latestPromotionAdjudication": {
+      "candidateId": "evidence-exp-fast4-qa-smoke-20260423-001",
+      "policyVersion": "pg-constraint-clarity-v1",
+      "decision": "hold",
+      "violatedRules": [],
+      "missingEvidence": [
+        "reproducibility-manifest"
+      ],
+      "ambiguityReasons": [],
+      "promotableStateChange": false
+    }
   }
 }
