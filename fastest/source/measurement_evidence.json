@@ -1,24 +1,26 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T00:32:00Z",
+  "updatedAt": "2026-04-24T01:20:00Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
       "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
       "evidence-exp-fast4-qa-smoke-20260423-001",
-      "evidence-exp-fast11-measurement-20260424-001"
+      "evidence-exp-fast11-measurement-20260424-001",
+      "evidence-exp-fast16-measurement-20260424-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 4,
-    "acceptedExperiments": 4,
-    "mostRecentEvidenceId": "evidence-exp-fast11-measurement-20260424-001"
+    "totalExperiments": 5,
+    "acceptedExperiments": 5,
+    "mostRecentEvidenceId": "evidence-exp-fast16-measurement-20260424-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
     "exp-fast4-cheap-screen-20260423-attempt2-001",
     "exp-fast4-qa-smoke-20260423-001",
-    "exp-fast11-measurement-20260424-001"
+    "exp-fast11-measurement-20260424-001",
+    "exp-fast16-measurement-20260424-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -110,6 +112,26 @@
       "traceId": "trace-fast11-measurement-001",
       "runConfig": {
         "seed": 11
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30
+      }
+    },
+    {
+      "experimentId": "exp-fast16-measurement-20260424-001",
+      "evidenceId": "evidence-exp-fast16-measurement-20260424-001",
+      "lane": "measurement",
+      "status": "accepted",
+      "completedAt": "2026-04-24T01:20:00Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0211,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-16:measurement:exp-fast16-measurement-20260424-001",
+      "taskId": "FAST-16",
+      "traceId": "trace-fast16-measurement-001",
+      "runConfig": {
+        "seed": 16
       },
       "budgetCaps": {
         "maxRuntimeSeconds": 30
