@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T02:47:00Z",
+  "updatedAt": "2026-04-24T08:59:20Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -10,12 +10,13 @@
       "evidence-exp-fast11-measurement-20260424-001",
       "evidence-exp-fast16-measurement-20260424-001",
       "evidence-exp-fast21-measurement-20260424-001",
-      "evidence-exp-fast26-measurement-20260424-001"
+      "evidence-exp-fast26-measurement-20260424-001",
+      "evidence-exp-fast28-ablation-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 7,
-    "acceptedExperiments": 7,
-    "mostRecentEvidenceId": "evidence-exp-fast26-measurement-20260424-001"
+    "totalExperiments": 8,
+    "acceptedExperiments": 8,
+    "mostRecentEvidenceId": "evidence-exp-fast28-ablation-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -24,7 +25,8 @@
     "exp-fast11-measurement-20260424-001",
     "exp-fast16-measurement-20260424-001",
     "exp-fast21-measurement-20260424-001",
-    "exp-fast26-measurement-20260424-001"
+    "exp-fast26-measurement-20260424-001",
+    "exp-fast28-ablation-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -179,6 +181,27 @@
       },
       "budgetCaps": {
         "maxRuntimeSeconds": 30
+      }
+    },
+    {
+      "experimentId": "exp-fast28-ablation-001",
+      "evidenceId": "evidence-exp-fast28-ablation-001",
+      "lane": "ablation",
+      "status": "accepted",
+      "completedAt": "2026-04-24T08:59:20Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0551,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-28:ablation:exp-fast28-ablation-001",
+      "taskId": "FAST-28",
+      "traceId": "trace-fast28-ablation-001",
+      "runConfig": {
+        "seed": 28
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30,
+        "maxAblationExperiments": 1
       }
     }
   ]
