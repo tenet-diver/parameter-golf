@@ -2,17 +2,17 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf-fastest-run",
-  "updatedAt": "2026-04-24T02:01:58.248Z",
+  "updatedAt": "2026-04-24T02:17:54.356Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "verified",
   "queueHealth": {
-    "pendingTaskCount": 5,
+    "pendingTaskCount": 4,
     "inFlightTaskCount": 0,
     "stalledSince": null
   },
   "queueDepthByLane": {
-    "measurement": 1,
+    "measurement": 0,
     "constraint-clarity": 0,
     "cheap-screen": 1,
     "ablation": 1,
@@ -80,7 +80,7 @@
     "details": {
       "environmentClass": "cpu-smoke",
       "trustedControlState": "verified",
-      "pendingTaskCount": "5",
+      "pendingTaskCount": "4",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
       "stalledProgress": "false",
