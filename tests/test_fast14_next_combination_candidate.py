@@ -1,4 +1,5 @@
 import json
+import os
 import sqlite3
 import subprocess
 import tempfile
@@ -158,6 +159,82 @@ class Fast14NextCombinationCandidateTest(unittest.TestCase):
             self.assertEqual(evidence["summary"]["acceptedExperiments"], 2)
             self.assertEqual(evidence["experimentRecords"][-1]["lane"], "combination")
             self.assertEqual(evidence["experimentRecords"][-1]["taskId"], "FAST-14-CANDIDATE")
+
+    def test_cli_ignores_out_of_root_task_store_sqlite_override(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            evidence_path, status_path, state_path = self._seed_files(tmp_root)
+            output_path = tmp_root / "outcome.json"
+
+            task_store_dir = tmp_root / "task-store"
+            task_store_dir.mkdir(parents=True, exist_ok=True)
+            default_sqlite_path = task_store_dir / "task-store.sqlite"
+            self._make_task_store(
+                default_sqlite_path,
+                {
+                    "lane": "combination",
+                    "candidateId": "exp-fast14-default-001",
+                    "traceId": "trace-fast14-default-001",
+                    "runConfig": {
+                        "seed": 5,
+                        "motifIds": ["motif-cheap-screen-a", "motif-ablation-b"],
+                    },
+                    "budgetCaps": {"maxRuntimeSeconds": 30, "maxCombinationExperiments": 1},
+                },
+            )
+
+            out_of_root_sqlite_path = tmp_root / "outside.sqlite"
+            self._make_task_store(
+                out_of_root_sqlite_path,
+                {
+                    "lane": "combination",
+                    "candidateId": "exp-fast14-outside-001",
+                    "traceId": "trace-fast14-outside-001",
+                    "runConfig": {
+                        "seed": 9,
+                        "motifIds": ["motif-cheap-screen-x", "motif-ablation-y"],
+                    },
+                    "budgetCaps": {"maxRuntimeSeconds": 30, "maxCombinationExperiments": 1},
+                },
+            )
+
+            repo_root = Path(__file__).resolve().parents[1]
+            command = [
+                "python",
+                "fastest/scripts/run_combination_candidate.py",
+                "--task-store-dir",
+                str(task_store_dir),
+                "--output",
+                str(output_path),
+                "--evidence-path",
+                str(evidence_path),
+                "--status-path",
+                str(status_path),
+                "--state-path",
+                str(state_path),
+            ]
+            env = os.environ.copy()
+            env["TASK_STORE_SQLITE_FILE"] = str(out_of_root_sqlite_path)
+
+            completed = subprocess.run(
+                command,
+                cwd=repo_root,
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(completed.returncode, 0, msg=completed.stderr)
+
+            outcome = json.loads(output_path.read_text())
+            self.assertEqual(outcome["status"], "success")
+            self.assertEqual(outcome["reasonCode"], "combination-success")
+            self.assertEqual(outcome["taskId"], "FAST-14-CANDIDATE")
+            self.assertEqual(outcome["candidateId"], "exp-fast14-default-001")
+
+            evidence = json.loads(evidence_path.read_text())
+            self.assertEqual(evidence["experimentRecords"][-1]["taskId"], "FAST-14-CANDIDATE")
+            self.assertEqual(evidence["experimentRecords"][-1]["experimentId"], "exp-fast14-default-001")
 
 
 if __name__ == "__main__":
