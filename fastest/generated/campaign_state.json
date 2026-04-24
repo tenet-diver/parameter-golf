@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-24T01:13:47.360Z",
+    "updatedAt": "2026-04-24T01:18:45.984Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -56,42 +56,57 @@
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
-      "evidence-fast1-control-20260423-001",
-      "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
-      "evidence-exp-fast4-qa-smoke-20260423-001",
-      "evidence-exp-fast11-measurement-20260424-001",
-      "evidence-exp-fast16-measurement-20260424-001"
+      "target-source:2026-04-24T01:20:00Z"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
-    "trustedControlState": "established",
+    "trustedControlState": "verified",
     "bestKnownResult": {
-      "candidateId": "exp-fast11-measurement-20260424-001",
+      "candidateId": "exp-fast16-measurement-20260424-001",
       "metricName": "benchmark-score",
-      "metricValue": 1.0204,
-      "observedAt": "2026-04-24T00:32:00Z"
+      "metricValue": 1.0211,
+      "observedAt": "2026-04-24T01:20:00Z"
     },
     "progressTrend": "unknown",
     "recentCompletedExperiments": [
-      "exp-fast1-control-20260423-001",
-      "exp-fast4-cheap-screen-20260423-attempt2-001",
-      "exp-fast4-qa-smoke-20260423-001",
-      "exp-fast11-measurement-20260424-001",
-      "exp-fast16-measurement-20260424-001"
+      {
+        "evidenceId": "evidence-exp-fast16-measurement-20260424-001",
+        "candidateId": "exp-fast16-measurement-20260424-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0211,
+        "observedAt": "2026-04-24T01:20:00Z"
+      },
+      {
+        "evidenceId": "evidence-exp-fast11-measurement-20260424-001",
+        "candidateId": "exp-fast11-measurement-20260424-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0204,
+        "observedAt": "2026-04-24T00:32:00Z"
+      },
+      {
+        "evidenceId": "evidence-exp-fast4-qa-smoke-20260423-001",
+        "candidateId": "exp-fast4-qa-smoke-20260423-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0197,
+        "observedAt": "2026-04-23T21:22:01Z"
+      },
+      {
+        "evidenceId": "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
+        "candidateId": "exp-fast4-cheap-screen-20260423-attempt2-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0112,
+        "observedAt": "2026-04-23T21:18:34Z"
+      },
+      {
+        "evidenceId": "evidence-fast1-control-20260423-001",
+        "candidateId": "exp-fast1-control-20260423-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1,
+        "observedAt": "2026-04-23T20:21:00.000Z"
+      }
     ],
     "acceptedExperiments": 5,
     "totalExperiments": 5,
-    "promotionGateRejectionCount": 0,
-    "latestPromotionAdjudication": {
-      "candidateId": "evidence-exp-fast16-measurement-20260424-001",
-      "policyVersion": "pg-constraint-clarity-v1",
-      "decision": "hold",
-      "violatedRules": [],
-      "missingEvidence": [
-        "reproducibility-manifest"
-      ],
-      "ambiguityReasons": [],
-      "promotableStateChange": false
-    }
+    "promotionGateRejectionCount": 0
   }
 }
