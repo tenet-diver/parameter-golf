@@ -55,12 +55,14 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
             bundle_path = REPO_ROOT / record["evidenceBundle"]["localPath"]
             self.assertTrue(bundle_path.is_file())
             self.assertTrue(bundle_path.is_relative_to(REPO_ROOT))
+            self.assertEqual(bundle_path.stat().st_mode & 0o002, 0)
 
             bundle = json.loads(bundle_path.read_text())
             for log_path_text in bundle["artifacts"]["logs"]:
                 log_path = REPO_ROOT / log_path_text
                 self.assertTrue(log_path.is_file())
                 self.assertTrue(log_path.is_relative_to(REPO_ROOT))
+                self.assertEqual(log_path.stat().st_mode & 0o002, 0)
                 digest = hashlib.sha256(log_path.read_bytes()).hexdigest()
                 self.assertEqual(bundle["checksums"][log_path_text], digest)
 
