@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 1,
+  "kind": "ranked-competition-idea-queue",
+  "taskId": "FAST-8",
+  "title": "Maintain ranked idea queue scored by info gain, score upside, cost, and mergeability",
+  "generatedAt": "2026-04-24T22:35:34Z",
+  "competitionPreset": "parameter-golf",
+  "competitionAnchor": {
+    "artifactLimitBytes": 16000000,
+    "scoring": "FineWeb validation bits-per-byte plus local benchmark-score campaign signal",
+    "leaderboardConstraint": "credible path toward 10-minute-on-8xH100 execution"
+  },
+  "sourceInputs": [
+    "fastest/source/measurement_evidence.json",
+    "records/fast5_visible_motif_ablation_screen_results.json"
+  ],
+  "architectureHandoff": {
+    "implementationBoundary": "planning artifact builder only; runners continue consuming explicit task packets",
+    "changedInterfaces": [
+      "planning/ranked-idea-queue.json"
+    ],
+    "rolloutConstraints": [
+      "Queue is advisory input for the next planning cycle.",
+      "Imported candidates remain blocked until local runnable reproduction evidence exists."
+    ]
+  },
+  "rankingFormula": {
+    "componentWeights": {
+      "expectedInfoGain": 0.35,
+      "expectedUpside": 0.35,
+      "cost": 0.15,
+      "mergeability": 0.15
+    },
+    "componentSemantics": {
+      "expectedInfoGain": "likelihood a bounded run changes planning knowledge",
+      "expectedUpside": "score improvement potential from imported or local evidence",
+      "cost": "preference for cheap runtime and budget-constrained validation",
+      "mergeability": "readiness to become legal, reproducible, reviewable competition code"
+    }
+  },
+  "durability": {
+    "artifactPath": "planning/ranked-idea-queue.json",
+    "nextPlanningCycleInput": true,
+    "updateCommand": "python fastest/scripts/maintain_ranked_idea_queue.py"
+  },
+  "rankedIdeas": [
+    {
+      "ideaId": "local-ablation-fast5-3-layer-recurrence",
+      "title": "Develop ablation motif: 3-layer recurrence",
+      "sourceKind": "local-ablation",
+      "sourceLane": "ablation-screen",
+      "evidenceRefs": [
+        "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.76,
+        "expectedUpside": 0.9639,
+        "cost": 0.363,
+        "mergeability": 0.68,
+        "composite": 0.7598
+      },
+      "mergeabilityNotes": "local ablation needs implementation extraction before merge",
+      "nextPlanningAction": "deepen",
+      "rank": 1
+    },
+    {
+      "ideaId": "local-ablation-fast5-hessian-aware-clipping",
+      "title": "Develop ablation motif: Hessian-aware clipping",
+      "sourceKind": "local-ablation",
+      "sourceLane": "ablation-screen",
+      "evidenceRefs": [
+        "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.76,
+        "expectedUpside": 0.8913,
+        "cost": 0.35,
+        "mergeability": 0.68,
+        "composite": 0.7325
+      },
+      "mergeabilityNotes": "local ablation needs implementation extraction before merge",
+      "nextPlanningAction": "deepen",
+      "rank": 2
+    },
+    {
+      "ideaId": "local-ablation-fast5-legal-score-first-ttt",
+      "title": "Develop ablation motif: legal score-first TTT",
+      "sourceKind": "local-ablation",
+      "sourceLane": "ablation-screen",
+      "evidenceRefs": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.72,
+        "expectedUpside": 0.9126,
+        "cost": 0.363,
+        "mergeability": 0.68,
+        "composite": 0.7279
+      },
+      "mergeabilityNotes": "local ablation needs implementation extraction before merge",
+      "nextPlanningAction": "combine-later",
+      "rank": 3
+    },
+    {
+      "ideaId": "local-ablation-fast5-qk-gain-tuning",
+      "title": "Develop ablation motif: QK-gain tuning",
+      "sourceKind": "local-ablation",
+      "sourceLane": "ablation-screen",
+      "evidenceRefs": [
+        "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.72,
+        "expectedUpside": 0.8537,
+        "cost": 0.363,
+        "mergeability": 0.68,
+        "composite": 0.7072
+      },
+      "mergeabilityNotes": "local ablation needs implementation extraction before merge",
+      "nextPlanningAction": "combine-later",
+      "rank": 4
+    },
+    {
+      "ideaId": "local-ablation-fast5-sp8192-tokenizer",
+      "title": "Develop ablation motif: SP8192 tokenizer",
+      "sourceKind": "local-ablation",
+      "sourceLane": "ablation-screen",
+      "evidenceRefs": [
+        "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.72,
+        "expectedUpside": 0.8316,
+        "cost": 0.35,
+        "mergeability": 0.68,
+        "composite": 0.6976
+      },
+      "mergeabilityNotes": "local ablation needs implementation extraction before merge",
+      "nextPlanningAction": "combine-later",
+      "rank": 5
+    },
+    {
+      "ideaId": "imported-evidence-exp-fast44-pr1732-import-001",
+      "title": "Reproduce imported candidate exp-fast44-pr1732-import-001",
+      "sourceKind": "imported-evidence",
+      "sourceLane": "submission-record",
+      "evidenceRefs": [
+        "evidence-exp-fast44-pr1732-import-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.72,
+        "expectedUpside": 1.0,
+        "cost": 0.35,
+        "mergeability": 0.12,
+        "composite": 0.6725
+      },
+      "mergeabilityNotes": "imported evidence requires runnable local reproduction; needs_external_8xh100_verification; verification gate blocked",
+      "nextPlanningAction": "extract runnable reproduction path before promotion",
+      "rank": 6
+    },
+    {
+      "ideaId": "local-experiment-fast36-candidate-003",
+      "title": "Follow up local cheap-screen result fast36-candidate-003",
+      "sourceKind": "local-experiment",
+      "sourceLane": "cheap-screen",
+      "evidenceRefs": [
+        "evidence-fast36-candidate-003"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.78,
+        "expectedUpside": 0.23,
+        "cost": 0.805,
+        "mergeability": 0.82,
+        "composite": 0.5972
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
+      "rank": 7
+    },
+    {
+      "ideaId": "local-experiment-exp-fast37-combination-001",
+      "title": "Follow up local combination result exp-fast37-combination-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "combination",
+      "evidenceRefs": [
+        "evidence-exp-fast37-combination-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.7,
+        "expectedUpside": 0.5,
+        "cost": 0.35,
+        "mergeability": 0.82,
+        "composite": 0.5955
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
+      "rank": 8
+    },
+    {
+      "ideaId": "local-experiment-exp-fast40-combination-001",
+      "title": "Follow up local combination result exp-fast40-combination-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "combination",
+      "evidenceRefs": [
+        "evidence-exp-fast40-combination-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.7,
+        "expectedUpside": 0.5,
+        "cost": 0.35,
+        "mergeability": 0.82,
+        "composite": 0.5955
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
+      "rank": 9
+    },
+    {
+      "ideaId": "local-experiment-exp-fast35-non-record-001",
+      "title": "Follow up local non-record-exploration result exp-fast35-non-record-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "non-record-exploration",
+      "evidenceRefs": [
+        "evidence-exp-fast35-non-record-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.9,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5831
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
+      "rank": 10
+    },
+    {
+      "ideaId": "local-experiment-exp-fast38-non-record-001",
+      "title": "Follow up local non-record-exploration result exp-fast38-non-record-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "non-record-exploration",
+      "evidenceRefs": [
+        "evidence-exp-fast38-non-record-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.9,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5831
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
+      "rank": 11
+    },
+    {
+      "ideaId": "local-experiment-exp-fast41-non-record-001",
+      "title": "Follow up local non-record-exploration result exp-fast41-non-record-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "non-record-exploration",
+      "evidenceRefs": [
+        "evidence-exp-fast41-non-record-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.9,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5831
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
+      "rank": 12
+    },
+    {
+      "ideaId": "local-experiment-exp-fast34-combination-001",
+      "title": "Follow up local combination result exp-fast34-combination-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "combination",
+      "evidenceRefs": [
+        "evidence-exp-fast34-combination-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.7,
+        "expectedUpside": 0.45,
+        "cost": 0.35,
+        "mergeability": 0.82,
+        "composite": 0.578
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
+      "rank": 13
+    },
+    {
+      "ideaId": "local-experiment-exp-fast28-ablation-001",
+      "title": "Follow up local ablation result exp-fast28-ablation-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "ablation",
+      "evidenceRefs": [
+        "evidence-exp-fast28-ablation-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.84,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5621
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "plan bounded follow-up experiment",
+      "rank": 14
+    },
+    {
+      "ideaId": "local-experiment-exp-fast33-ablation-001",
+      "title": "Follow up local ablation result exp-fast33-ablation-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "ablation",
+      "evidenceRefs": [
+        "evidence-exp-fast33-ablation-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.84,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5621
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "plan bounded follow-up experiment",
+      "rank": 15
+    },
+    {
+      "ideaId": "local-experiment-exp-fast39-cheap-screen-001",
+      "title": "Follow up local cheap-screen result exp-fast39-cheap-screen-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "cheap-screen",
+      "evidenceRefs": [
+        "evidence-exp-fast39-cheap-screen-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.78,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5411
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
+      "rank": 16
+    },
+    {
+      "ideaId": "local-experiment-exp-fast4-cheap-screen-20260423-attempt2-001",
+      "title": "Follow up local cheap-screen result exp-fast4-cheap-screen-20260423-attempt2-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "cheap-screen",
+      "evidenceRefs": [
+        "evidence-exp-fast4-cheap-screen-20260423-attempt2-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.78,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5411
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
+      "rank": 17
+    },
+    {
+      "ideaId": "local-experiment-exp-fast4-qa-smoke-20260423-001",
+      "title": "Follow up local cheap-screen result exp-fast4-qa-smoke-20260423-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "cheap-screen",
+      "evidenceRefs": [
+        "evidence-exp-fast4-qa-smoke-20260423-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.78,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5411
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
+      "rank": 18
+    },
+    {
+      "ideaId": "local-experiment-fast36-candidate-002",
+      "title": "Follow up local cheap-screen result fast36-candidate-002",
+      "sourceKind": "local-experiment",
+      "sourceLane": "cheap-screen",
+      "evidenceRefs": [
+        "evidence-fast36-candidate-002"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.78,
+        "expectedUpside": 0.0625,
+        "cost": 0.805,
+        "mergeability": 0.82,
+        "composite": 0.5386
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
+      "rank": 19
+    },
+    {
+      "ideaId": "local-experiment-exp-fast42-combination-001",
+      "title": "Follow up local combination result exp-fast42-combination-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "combination",
+      "evidenceRefs": [
+        "evidence-exp-fast42-combination-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.7,
+        "expectedUpside": 0.05,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5306
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
+      "rank": 20
+    },
+    {
+      "ideaId": "local-experiment-exp-fast32-cheap-screen-001",
+      "title": "Follow up local cheap-screen result exp-fast32-cheap-screen-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "cheap-screen",
+      "evidenceRefs": [
+        "evidence-exp-fast32-cheap-screen-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.78,
+        "expectedUpside": 0.0,
+        "cost": 0.805,
+        "mergeability": 0.82,
+        "composite": 0.5167
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
+      "rank": 21
+    },
+    {
+      "ideaId": "local-experiment-exp-fast29-combination-001",
+      "title": "Follow up local combination result exp-fast29-combination-001",
+      "sourceKind": "local-experiment",
+      "sourceLane": "combination",
+      "evidenceRefs": [
+        "evidence-exp-fast29-combination-001"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.7,
+        "expectedUpside": 0.0,
+        "cost": 0.9675,
+        "mergeability": 0.82,
+        "composite": 0.5131
+      },
+      "mergeabilityNotes": "local experiment already has campaign evidence",
+      "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
+      "rank": 22
+    },
+    {
+      "ideaId": "local-ablation-fast5-parallel-residuals",
+      "title": "Develop ablation motif: parallel residuals",
+      "sourceKind": "local-ablation",
+      "sourceLane": "ablation-screen",
+      "evidenceRefs": [
+        "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.72,
+        "expectedUpside": 0.2423,
+        "cost": 0.35,
+        "mergeability": 0.68,
+        "composite": 0.4913
+      },
+      "mergeabilityNotes": "local ablation needs implementation extraction before merge",
+      "nextPlanningAction": "rerun-near-threshold",
+      "rank": 23
+    }
+  ]
+}
