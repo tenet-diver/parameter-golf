@@ -59,8 +59,11 @@ def _outcome(
     reason_code: str,
     message: str,
     completed_at: str | None = None,
+    observed_metric: dict | None = None,
+    artifact_paths: list[str] | None = None,
+    promotion_rationale: dict | None = None,
 ) -> dict:
-    return {
+    payload = {
         "taskId": task.get("taskId"),
         "traceId": task.get("traceId"),
         "candidateId": task.get("candidateId"),
@@ -70,6 +73,13 @@ def _outcome(
         "message": message,
         "completedAt": completed_at,
     }
+    if observed_metric is not None:
+        payload["observedMetric"] = observed_metric
+    if artifact_paths is not None:
+        payload["artifactPaths"] = artifact_paths
+    if promotion_rationale is not None:
+        payload["promotionRationale"] = promotion_rationale
+    return payload
 
 
 def _idempotency_key(task: dict) -> str:
@@ -245,6 +255,8 @@ def execute_non_record_exploration_candidate(
     status_path: Path = DEFAULT_STATUS_PATH,
     state_path: Path = DEFAULT_STATE_PATH,
 ) -> dict:
+    artifact_paths = [str(evidence_path), str(status_path), str(state_path)]
+
     if task.get("lane") != "non-record-exploration":
         return _outcome(
             task=task,
@@ -449,6 +461,11 @@ def execute_non_record_exploration_candidate(
             reason_code="no-results-produced",
             message="Non-record exploration run completed without a successful result; investigate failureCode and retry.",
             completed_at=completed_at,
+            observed_metric={
+                "name": objective_metric_name,
+                "value": objective_value,
+            },
+            artifact_paths=artifact_paths,
         )
 
     return _outcome(
@@ -457,6 +474,18 @@ def execute_non_record_exploration_candidate(
         reason_code="non-record-exploration-success",
         message="Non-record exploration candidate executed within bounds and evidence/views were refreshed.",
         completed_at=completed_at,
+        observed_metric={
+            "name": objective_metric_name,
+            "value": objective_value,
+        },
+        artifact_paths=artifact_paths,
+        promotion_rationale={
+            "decision": "reject",
+            "reason": (
+                "Result is from the non-record exploration lane and is evidentiary-only; "
+                "benchmark-readiness promotion is intentionally disallowed."
+            ),
+        },
     )
 
 
@@ -552,10 +581,16 @@ def main() -> None:
                 state_path=Path(args.state_path),
             )
 
-    rendered = f"{json.dumps(outcome, indent=2)}\n"
     if args.output:
+        artifact_paths = outcome.get("artifactPaths")
+        if isinstance(artifact_paths, list):
+            output_path = str(Path(args.output))
+            if output_path not in artifact_paths:
+                artifact_paths.append(output_path)
+        rendered = f"{json.dumps(outcome, indent=2)}\n"
         Path(args.output).write_text(rendered)
     else:
+        rendered = f"{json.dumps(outcome, indent=2)}\n"
         print(rendered, end="")
 
 

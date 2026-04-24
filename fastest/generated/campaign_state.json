@@ -52,7 +52,7 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T09:33:49.148Z",
-  "lastProgressAt": "2026-04-24T10:59:35Z",
+  "lastProgressAt": "2026-04-24T11:08:17Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
@@ -66,7 +66,8 @@
       "evidence-exp-fast28-ablation-001",
       "evidence-exp-fast29-combination-001",
       "evidence-exp-fast32-cheap-screen-001",
-      "evidence-exp-fast34-combination-001"
+      "evidence-exp-fast34-combination-001",
+      "evidence-exp-fast35-non-record-001"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
@@ -89,13 +90,14 @@
       "exp-fast28-ablation-001",
       "exp-fast29-combination-001",
       "exp-fast32-cheap-screen-001",
-      "exp-fast34-combination-001"
+      "exp-fast34-combination-001",
+      "exp-fast35-non-record-001"
     ],
-    "acceptedExperiments": 11,
-    "totalExperiments": 11,
+    "acceptedExperiments": 12,
+    "totalExperiments": 12,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
-      "candidateId": "evidence-exp-fast34-combination-001",
+      "candidateId": "evidence-exp-fast35-non-record-001",
       "policyVersion": "pg-constraint-clarity-v1",
       "decision": "hold",
       "violatedRules": [],

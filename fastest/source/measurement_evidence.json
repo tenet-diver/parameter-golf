@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T10:59:35Z",
+  "updatedAt": "2026-04-24T11:08:17Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -14,12 +14,13 @@
       "evidence-exp-fast28-ablation-001",
       "evidence-exp-fast29-combination-001",
       "evidence-exp-fast32-cheap-screen-001",
-      "evidence-exp-fast34-combination-001"
+      "evidence-exp-fast34-combination-001",
+      "evidence-exp-fast35-non-record-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 11,
-    "acceptedExperiments": 11,
-    "mostRecentEvidenceId": "evidence-exp-fast34-combination-001"
+    "totalExperiments": 12,
+    "acceptedExperiments": 12,
+    "mostRecentEvidenceId": "evidence-exp-fast35-non-record-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -32,7 +33,8 @@
     "exp-fast28-ablation-001",
     "exp-fast29-combination-001",
     "exp-fast32-cheap-screen-001",
-    "exp-fast34-combination-001"
+    "exp-fast34-combination-001",
+    "exp-fast35-non-record-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -297,6 +299,28 @@
       "budgetCaps": {
         "maxCombinationExperiments": 100,
         "maxRuntimeSeconds": 600
+      }
+    },
+    {
+      "experimentId": "exp-fast35-non-record-001",
+      "evidenceId": "evidence-exp-fast35-non-record-001",
+      "lane": "non-record-exploration",
+      "status": "accepted",
+      "completedAt": "2026-04-24T11:08:17Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0793,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-35:non-record-exploration:exp-fast35-non-record-001",
+      "taskId": "FAST-35",
+      "traceId": "trace-fast35-non-record-001",
+      "runConfig": {
+        "seed": 35,
+        "hypothesis": "activation-sandwich-low-rank-residual"
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30,
+        "maxNonRecordExplorationExperiments": 1
       }
     }
   ]
