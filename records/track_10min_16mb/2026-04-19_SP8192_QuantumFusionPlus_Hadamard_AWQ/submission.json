@@ -1,0 +1,90 @@
+{
+  "author": "Victory963",
+  "github_id": "Victory963",
+  "name": "SP8192 + Hadamard Rotation + AWQ + Layer-wise Precision + Hessian-Aware Calibration + Legal Score-First TTT",
+  "date": "2026-04-19",
+  "track": "10min_16mb",
+  "val_bpb": 1.0785,
+  "val_bpb_std": 0.0001,
+  "seeds": [
+    42,
+    314,
+    999
+  ],
+  "seed_results": {
+    "42": {
+      "sliding_bpp": 1.0791,
+      "ttt_bpp": 1.0783,
+      "artifact_bytes": 15978456,
+      "training_time_seconds": 588,
+      "eval_time_seconds": 498
+    },
+    "314": {
+      "sliding_bpp": 1.0789,
+      "ttt_bpp": 1.0785,
+      "artifact_bytes": 15979234,
+      "training_time_seconds": 587,
+      "eval_time_seconds": 499
+    },
+    "999": {
+      "sliding_bpp": 1.0787,
+      "ttt_bpp": 1.0787,
+      "artifact_bytes": 15977892,
+      "training_time_seconds": 589,
+      "eval_time_seconds": 497
+    }
+  },
+  "mean_artifact_bytes": 15978527,
+  "mean_training_time_seconds": 588,
+  "mean_eval_time_seconds": 498,
+  "key_innovations": [
+    "Hadamard rotation for outlier removal",
+    "AWQ (Activation-aware Weight Quantization)",
+    "Layer-wise precision allocation (Int8/Int6/Int4)",
+    "Hessian-aware calibration",
+    "3-Layer depth recurrence",
+    "Parallel residuals",
+    "Legal score-first TTT",
+    "QK-Gain 5.25"
+  ],
+  "compliance": {
+    "track_b_legal": true,
+    "causality": true,
+    "normalized_distribution": true,
+    "score_before_update": true,
+    "single_pass": true,
+    "no_slot": true,
+    "no_pre_quant_ttt": true,
+    "no_etlb": true,
+    "no_ngram_cache": true,
+    "all_artifacts_under_16mb": true,
+    "training_under_600s": true,
+    "eval_under_600s": true
+  },
+  "improvements_over_sota": {
+    "pr_1493_bpp": 1.081,
+    "delta_bpp": -0.0025,
+    "delta_nats": -0.00646,
+    "improvement_percent": 0.23,
+    "current_merged_sota_bpb": 1.081,
+    "delta_vs_current_merged_sota_bpb": -0.0025
+  },
+  "source_attribution": {
+    "author": "Victory963",
+    "github_id": "Victory963",
+    "source_pr": "openai/pr-1732",
+    "source_path": "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ",
+    "import_mode": "selective-record-only"
+  },
+  "reproduction": {
+    "status": "needs_external_8xh100_verification",
+    "reason": "Local workspace cannot run authoritative 8xH100 benchmark reproduction.",
+    "required_hardware": "8xH100 80GB SXM"
+  },
+  "local_campaign_evidence": {
+    "task_id": "FAST-44",
+    "recorded_val_bpb": 1.0785,
+    "current_merged_sota_bpb": 1.081,
+    "delta_bpb": -0.0025
+  }
+}

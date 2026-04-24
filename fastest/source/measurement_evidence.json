@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T18:29:47Z",
+  "updatedAt": "2026-04-24T19:00:00Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -26,12 +26,13 @@
       "evidence-exp-fast41-non-record-001",
       "evidence-exp-fast39-cheap-screen-001",
       "evidence-exp-fast33-ablation-001",
-      "evidence-exp-fast42-combination-001"
+      "evidence-exp-fast42-combination-001",
+      "evidence-exp-fast44-pr1732-import-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 22,
-    "acceptedExperiments": 22,
-    "mostRecentEvidenceId": "evidence-exp-fast42-combination-001"
+    "totalExperiments": 23,
+    "acceptedExperiments": 23,
+    "mostRecentEvidenceId": "evidence-exp-fast44-pr1732-import-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -55,7 +56,8 @@
     "exp-fast41-non-record-001",
     "exp-fast39-cheap-screen-001",
     "exp-fast33-ablation-001",
-    "exp-fast42-combination-001"
+    "exp-fast42-combination-001",
+    "exp-fast44-pr1732-import-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -790,6 +792,50 @@
         "decision": "reject",
         "reason": "Candidate did not beat the best-known benchmark-score of 1.0999 from exp-fast37-combination-001."
       }
+    },
+    {
+      "experimentId": "exp-fast44-pr1732-import-001",
+      "evidenceId": "evidence-exp-fast44-pr1732-import-001",
+      "lane": "submission-record",
+      "status": "accepted",
+      "completedAt": "2026-04-24T19:00:00Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 1.0785,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-44:submission-record:exp-fast44-pr1732-import-001",
+      "taskId": "FAST-44",
+      "traceId": "trace-fast44-pr1732-import-001",
+      "runConfig": {
+        "sourceRef": "openai/pr-1732",
+        "sourcePath": "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ",
+        "importMode": "selective-record-only"
+      },
+      "budgetCaps": {
+        "artifactLimitBytes": 16000000,
+        "maxRuntimeSeconds": 600
+      },
+      "artifactBytes": 15978527,
+      "submissionClass": "record-candidate-import",
+      "classificationReason": "Imported winning candidate evidence from PR #1732 with local campaign attribution and metadata checks.",
+      "sourceAttribution": {
+        "author": "Victory963",
+        "githubId": "Victory963",
+        "sourcePr": "openai/pr-1732"
+      },
+      "comparison": {
+        "candidateValBpb": 1.0785,
+        "currentMergedSotaValBpb": 1.081,
+        "deltaBpb": -0.0025
+      },
+      "reproductionStatus": {
+        "status": "needs_external_8xh100_verification",
+        "reason": "Authoritative reproduction requires external 8xH100 hardware not available in local workspace."
+      },
+      "artifactPaths": [
+        "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/README.md",
+        "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/submission.json"
+      ]
     }
   ]
 }
