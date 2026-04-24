@@ -1,5 +1,6 @@
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -16,6 +17,16 @@ DEFAULT_REQUIRED_EVIDENCE = [
     "benchmark-measurement-evidence",
     "reproducibility-manifest",
 ]
+REQUIRED_FAST31_ATTEMPT_FIELDS = (
+    "candidateId",
+    "commands",
+    "artifactPaths",
+    "observedMetricOutput",
+    "promotionDecisionRationale",
+    "blockedReasonCode",
+    "nextRecoveryTask",
+    "reproducibilityEvidence",
+)
 
 
 def _load_json(path: Path) -> dict:
@@ -39,6 +50,184 @@ def _normalized_non_negative_int(value: object, default: int) -> int:
     if isinstance(value, int) and value >= 0:
         return value
     return default
+
+
+def _parse_utc_timestamp(value: object) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    normalized = value.replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _is_populated_str_list(value: object) -> bool:
+    if not isinstance(value, list) or not value:
+        return False
+    return all(isinstance(item, str) and item.strip() for item in value)
+
+
+def _latest_fast31_measurement_attempt(source: dict) -> dict | None:
+    attempts = source.get("executionAttempts")
+    if not isinstance(attempts, list):
+        return None
+
+    selected: dict | None = None
+    selected_time = datetime.min.replace(tzinfo=timezone.utc)
+    for attempt in attempts:
+        if not isinstance(attempt, dict):
+            continue
+        if attempt.get("taskId") != "FAST-31":
+            continue
+        if attempt.get("lane") != "measurement":
+            continue
+        stamp = (
+            _parse_utc_timestamp(attempt.get("attemptedAt"))
+            or _parse_utc_timestamp(attempt.get("completedAt"))
+            or datetime.min.replace(tzinfo=timezone.utc)
+        )
+        if selected is None or stamp >= selected_time:
+            selected = attempt
+            selected_time = stamp
+    return selected
+
+
+def _attempt_missing_required_fields(attempt: dict) -> list[str]:
+    missing_fields: list[str] = []
+    for field in REQUIRED_FAST31_ATTEMPT_FIELDS:
+        if field not in attempt:
+            missing_fields.append(field)
+
+    if "commands" in attempt and not _is_populated_str_list(attempt.get("commands")):
+        missing_fields.append("commands")
+    if "artifactPaths" in attempt and not _is_populated_str_list(attempt.get("artifactPaths")):
+        missing_fields.append("artifactPaths")
+
+    observed_metric = attempt.get("observedMetricOutput")
+    if "observedMetricOutput" in attempt:
+        if not isinstance(observed_metric, dict):
+            missing_fields.append("observedMetricOutput")
+        elif observed_metric.get("status") not in {"observed", "partial", "blocked"}:
+            missing_fields.append("observedMetricOutput.status")
+
+    rationale = attempt.get("promotionDecisionRationale")
+    if "promotionDecisionRationale" in attempt:
+        if not isinstance(rationale, dict):
+            missing_fields.append("promotionDecisionRationale")
+        else:
+            if rationale.get("decision") not in {"promote", "hold", "reject"}:
+                missing_fields.append("promotionDecisionRationale.decision")
+            if rationale.get("advanceOutcome") not in {"advance", "retry", "reject"}:
+                missing_fields.append("promotionDecisionRationale.advanceOutcome")
+
+    reproducibility = attempt.get("reproducibilityEvidence")
+    if "reproducibilityEvidence" in attempt:
+        if not isinstance(reproducibility, dict):
+            missing_fields.append("reproducibilityEvidence")
+        elif reproducibility.get("type") not in {"manifest", "waiver"}:
+            missing_fields.append("reproducibilityEvidence.type")
+
+    return sorted(set(missing_fields))
+
+
+def _reproducibility_requirement_satisfied(attempt: dict, now: datetime) -> bool:
+    reproducibility = attempt.get("reproducibilityEvidence")
+    if not isinstance(reproducibility, dict):
+        return False
+
+    evidence_type = reproducibility.get("type")
+    if evidence_type == "manifest":
+        if reproducibility.get("status") != "provided":
+            return False
+        if not isinstance(reproducibility.get("artifactPath"), str) or not reproducibility.get("artifactPath"):
+            return False
+        candidate_id = attempt.get("candidateId")
+        manifest_candidate_id = reproducibility.get("candidateId")
+        if (
+            isinstance(candidate_id, str)
+            and candidate_id
+            and candidate_id != "none"
+            and isinstance(manifest_candidate_id, str)
+            and manifest_candidate_id
+            and manifest_candidate_id != candidate_id
+        ):
+            return False
+        return True
+
+    if evidence_type == "waiver":
+        for field in ("waiverId", "approver", "approvedAt", "expiresAt"):
+            value = reproducibility.get(field)
+            if not isinstance(value, str) or not value:
+                return False
+        expires_at = _parse_utc_timestamp(reproducibility.get("expiresAt"))
+        if expires_at is None:
+            return False
+        return expires_at > now
+
+    return False
+
+
+def _apply_fast31_attempt_adjudication(
+    source: dict,
+    adjudication: dict,
+    required_evidence: list[str],
+) -> dict:
+    attempt = _latest_fast31_measurement_attempt(source)
+    if attempt is None:
+        return adjudication
+
+    now = _parse_utc_timestamp(source.get("updatedAt")) or datetime.now(timezone.utc)
+    missing_fields = _attempt_missing_required_fields(attempt)
+    attempt_candidate_id = attempt.get("candidateId")
+    if (
+        isinstance(attempt_candidate_id, str)
+        and attempt_candidate_id == "none"
+        and attempt.get("blockedReasonCode") == "no-task-available"
+    ):
+        return adjudication
+
+    reproducibility_ok = _reproducibility_requirement_satisfied(attempt, now)
+
+    rationale = attempt.get("promotionDecisionRationale")
+    if not isinstance(rationale, dict):
+        rationale = {}
+
+    missing_evidence = _normalized_string_list(rationale.get("missingEvidence"))
+    if "reproducibility-manifest" in required_evidence and not reproducibility_ok:
+        if "reproducibility-manifest" not in missing_evidence:
+            missing_evidence.append("reproducibility-manifest")
+    missing_evidence = sorted(set(missing_evidence))
+
+    violated_rules = list(adjudication.get("violatedRules", []))
+    if missing_fields:
+        violated_rules.append(
+            f"{adjudication.get('policyVersion', DEFAULT_POLICY_VERSION)}:execution-attempt-packet-invalid"
+        )
+    if attempt.get("blockedReasonCode"):
+        violated_rules.append(
+            f"{adjudication.get('policyVersion', DEFAULT_POLICY_VERSION)}:execution-attempt-blocked"
+        )
+    violated_rules = sorted(set(violated_rules))
+
+    decision = rationale.get("decision")
+    if decision not in {"promote", "hold", "reject"}:
+        decision = "hold"
+    if violated_rules:
+        decision = "reject"
+    elif missing_evidence and decision == "promote":
+        decision = "hold"
+
+    result = dict(adjudication)
+    result["candidateId"] = attempt_candidate_id if attempt_candidate_id is not None else result.get("candidateId")
+    result["decision"] = decision
+    result["violatedRules"] = violated_rules
+    result["missingEvidence"] = missing_evidence
+    result["promotableStateChange"] = decision == "promote" and not missing_evidence and not violated_rules
+    return result
 
 
 def _promotion_candidate_id(source: dict, summary: dict) -> str | None:
@@ -191,6 +380,7 @@ def apply_measurement_evidence(source: dict, status: dict, state: dict) -> tuple
         "promotionGatesSatisfied": summary.get("acceptedExperiments", 0) >= minimum_accepted_experiments,
     }
     adjudication = adjudicate_promotion(promotion_candidate)
+    adjudication = _apply_fast31_attempt_adjudication(source, adjudication, required_evidence)
     status["promotionAdjudication"] = adjudication
     evidence_cache["latestPromotionAdjudication"] = adjudication
 

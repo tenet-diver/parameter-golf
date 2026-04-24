@@ -76,6 +76,47 @@
     "status": "provided",
     "generatedAt": "2026-04-24T16:10:00Z"
   },
+  "executionAttempts": [
+    {
+      "taskId": "FAST-31",
+      "lane": "measurement",
+      "attemptedAt": "2026-04-24T10:06:06Z",
+      "candidateId": "none",
+      "commands": [
+        "python fastest/scripts/run_cheap_screen_candidate.py --task-store-dir /home/codespace/.fastest/orchestrator/projects/parameter-golf-2e398b79d13c/runtime/tasks --output fastest/generated/fast31_next_run_outcome.json",
+        "python fastest/scripts/render_campaign_evidence.py --source-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json",
+        "python -m unittest tests/test_fast31_measurement_coverage_refresh.py tests/test_fast31_qa_decision_contract.py",
+        "git diff --check"
+      ],
+      "artifactPaths": [
+        "fastest/source/measurement_evidence.json",
+        "fastest/generated/campaign_status.json",
+        "fastest/generated/campaign_state.json",
+        "fastest/generated/fast31_next_run_outcome.json"
+      ],
+      "observedMetricOutput": {
+        "status": "blocked",
+        "name": "benchmark-score",
+        "reason": "No runnable measurement candidate was available in the task store."
+      },
+      "promotionDecisionRationale": {
+        "decision": "hold",
+        "advanceOutcome": "retry",
+        "reason": "Keep FAST-31 in todo until a runnable measurement candidate is available.",
+        "missingEvidence": []
+      },
+      "blockedReasonCode": "no-task-available",
+      "nextRecoveryTask": "Queue a runnable measurement candidate and rerun FAST-31 promotion assessment.",
+      "reproducibilityEvidence": {
+        "type": "waiver",
+        "waiverId": "waiver-fast31-repro-001",
+        "approver": "campaign-owner",
+        "approvedAt": "2026-04-24T10:07:00Z",
+        "expiresAt": "2026-05-01T00:00:00Z",
+        "reason": "No measurement candidate could be executed during this attempt."
+      }
+    }
+  ],
   "experimentRecords": [
     {
       "experimentId": "exp-fast1-control-20260423-001",
