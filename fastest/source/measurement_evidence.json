@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T10:11:54Z",
+  "updatedAt": "2026-04-24T10:59:35Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -13,12 +13,13 @@
       "evidence-exp-fast26-measurement-20260424-001",
       "evidence-exp-fast28-ablation-001",
       "evidence-exp-fast29-combination-001",
-      "evidence-exp-fast32-cheap-screen-001"
+      "evidence-exp-fast32-cheap-screen-001",
+      "evidence-exp-fast34-combination-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 10,
-    "acceptedExperiments": 10,
-    "mostRecentEvidenceId": "evidence-exp-fast32-cheap-screen-001"
+    "totalExperiments": 11,
+    "acceptedExperiments": 11,
+    "mostRecentEvidenceId": "evidence-exp-fast34-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -30,7 +31,8 @@
     "exp-fast26-measurement-20260424-001",
     "exp-fast28-ablation-001",
     "exp-fast29-combination-001",
-    "exp-fast32-cheap-screen-001"
+    "exp-fast32-cheap-screen-001",
+    "exp-fast34-combination-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -270,6 +272,31 @@
         "missingEvidence": [
           "reproducibility-manifest"
         ]
+      }
+    },
+    {
+      "experimentId": "exp-fast34-combination-001",
+      "evidenceId": "evidence-exp-fast34-combination-001",
+      "lane": "combination",
+      "status": "accepted",
+      "completedAt": "2026-04-24T10:59:35Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0979,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-34:combination:exp-fast34-combination-001",
+      "taskId": "FAST-34",
+      "traceId": "trace-fast34-combination-001",
+      "runConfig": {
+        "motifIds": [
+          "motif-qk-gain-band",
+          "motif-hessian-aware-sdclip"
+        ],
+        "seed": "34"
+      },
+      "budgetCaps": {
+        "maxCombinationExperiments": 100,
+        "maxRuntimeSeconds": 600
       }
     }
   ]

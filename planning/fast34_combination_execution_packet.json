@@ -1,0 +1,25 @@
+{
+  "taskId": "FAST-34",
+  "candidateId": "exp-fast34-combination-001",
+  "status": "success",
+  "reasonCode": "combination-success",
+  "completedAt": "2026-04-24T10:59:35Z",
+  "commands": [
+    "python fastest/scripts/run_combination_candidate.py --task-store-dir /home/codespace/.fastest/orchestrator/projects/parameter-golf-2e398b79d13c/runtime/tasks --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json --output fastest/generated/fast34_run_outcome.json"
+  ],
+  "artifactPaths": [
+    "fastest/generated/fast34_run_outcome.json",
+    "fastest/source/measurement_evidence.json",
+    "fastest/generated/campaign_status.json",
+    "fastest/generated/campaign_state.json"
+  ],
+  "observedMetric": {
+    "name": "benchmark-score",
+    "value": 1.0979,
+    "previousBestCombination": 1.0205
+  },
+  "promotionRationale": {
+    "decision": "promote",
+    "reason": "Promote because objectiveValue improved over prior best combination evidence."
+  }
+}
