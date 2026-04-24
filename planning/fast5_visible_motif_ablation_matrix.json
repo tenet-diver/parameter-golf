@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "taskId": "FAST-5",
+  "title": "Run cheap ablations on strongest visible Parameter Golf motifs",
+  "artifactLimitBytes": 16000000,
+  "budgetProfile": {
+    "competitionPreset": "parameter-golf",
+    "artifactLimitBytes": 16000000,
+    "targetRuntime": "credible path toward 10-minute-on-8xH100",
+    "defaultSeedPolicy": "reuse visible 3-seed leaderboard means when available"
+  },
+  "trustedControl": {
+    "baselineId": "control-2026-03-25-bigramhash3072-xsa-gptq",
+    "configHash": "record:records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+    "commit": "workspace-record-import",
+    "dataset": "FineWeb validation",
+    "scoringCommand": "leaderboard submission val_bpb from checked-in record evidence",
+    "artifactMeasurementCommand": "leaderboard submission bytes_total/artifact_bytes_max",
+    "seedPolicy": {
+      "mode": "visible-leaderboard-mean",
+      "seeds": [314, 42, 999]
+    },
+    "scoreBpb": 1.11473509,
+    "artifactBytes": 15984850
+  },
+  "ablations": [
+    {
+      "runId": "fast5-sp8192-tokenizer",
+      "motif": "SP8192 tokenizer",
+      "variantConfigRef": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+      "seed": "1,42,1234,1337,2025",
+      "scoreBpb": 1.08563,
+      "artifactBytes": 15985678,
+      "legalityClass": "legal",
+      "legalityNotes": "Checked-in 10min_16mb record evidence reports artifact under 16MB and no eval-time adaptation.",
+      "runtimeSeconds": 600,
+      "status": "success",
+      "failureReason": null,
+      "nextAction": "combine-later"
+    },
+    {
+      "runId": "fast5-3-layer-recurrence",
+      "motif": "3-layer recurrence",
+      "variantConfigRef": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+      "seed": "42,314,999",
+      "scoreBpb": 1.081,
+      "artifactBytes": 15993232,
+      "legalityClass": "legal",
+      "legalityNotes": "Record uses layers 3-5 recurrence and declares score-first TTT compliance plus artifact under 16MB.",
+      "runtimeSeconds": 588,
+      "status": "success",
+      "failureReason": null,
+      "nextAction": "deepen",
+      "dependency_coupled": true,
+      "coupledFields": ["SP8192 tokenizer", "parallel residuals", "QK-gain tuning", "legal score-first TTT"]
+    },
+    {
+      "runId": "fast5-parallel-residuals",
+      "motif": "parallel residuals",
+      "variantConfigRef": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+      "seed": "1337,42,2024",
+      "scoreBpb": 1.10625353,
+      "artifactBytes": 15946657,
+      "legalityClass": "legal",
+      "legalityNotes": "No TTT; checked-in 10min_16mb record evidence reports artifact under 16MB.",
+      "runtimeSeconds": 600,
+      "status": "success",
+      "failureReason": null,
+      "nextAction": "rerun-near-threshold"
+    },
+    {
+      "runId": "fast5-legal-score-first-ttt",
+      "motif": "legal score-first TTT",
+      "variantConfigRef": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+      "seed": "0,42,1234",
+      "scoreBpb": 1.08279384,
+      "artifactBytes": 15992546,
+      "legalityClass": "legal",
+      "legalityNotes": "Score-first evaluation only; every chunk is scored before SGD update, with no pre-quant TTT, SLOT, ETLB, n-gram cache, or rescoring.",
+      "runtimeSeconds": 588,
+      "status": "success",
+      "failureReason": null,
+      "nextAction": "combine-later"
+    },
+    {
+      "runId": "fast5-qk-gain-tuning",
+      "motif": "QK-gain tuning",
+      "variantConfigRef": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+      "seed": "0,42,1234",
+      "scoreBpb": 1.08485681,
+      "artifactBytes": 15992546,
+      "legalityClass": "legal",
+      "legalityNotes": "Uses QK_GAIN_INIT=5.0 sliding score before TTT; record evidence reports artifact under 16MB.",
+      "runtimeSeconds": 588,
+      "status": "success",
+      "failureReason": null,
+      "nextAction": "combine-later"
+    },
+    {
+      "runId": "fast5-hessian-aware-clipping",
+      "motif": "Hessian-aware clipping",
+      "variantConfigRef": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+      "seed": "1337,42,3141",
+      "scoreBpb": 1.08354,
+      "artifactBytes": 15978121,
+      "legalityClass": "legal",
+      "legalityNotes": "No TTT, SLOT, n-gram cache, or eval-time adaptation; checked-in evidence reports artifact under 16MB.",
+      "runtimeSeconds": 600,
+      "status": "success",
+      "failureReason": null,
+      "nextAction": "deepen"
+    }
+  ]
+}
