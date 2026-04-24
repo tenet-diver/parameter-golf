@@ -135,6 +135,37 @@ def summarize_motifs(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     ]
 
 
+def summarize_recent_movement(records: list[dict[str, Any]], *, limit: int = 8) -> list[dict[str, Any]]:
+    dated_records = [
+        record
+        for record in records
+        if isinstance(record.get("date"), str) and str(record.get("date")).strip()
+    ]
+    dated_records = sorted(
+        dated_records,
+        key=lambda record: (str(record["date"]), -float(record["score"])),
+        reverse=True,
+    )
+    movement: list[dict[str, Any]] = []
+    best_before: float | None = None
+    for record in sorted(dated_records, key=lambda item: (str(item["date"]), float(item["score"]))):
+        score = float(record["score"])
+        if best_before is None or score < best_before:
+            delta = None if best_before is None else round(score - best_before, 6)
+            movement.append(
+                {
+                    "date": record["date"],
+                    "name": record["name"],
+                    "score": score,
+                    "previousBestScore": best_before,
+                    "deltaVsPreviousBest": delta,
+                    "source": record["source"],
+                }
+            )
+            best_before = score
+    return movement[-limit:]
+
+
 def build_leaderboard_knowledge(
     *,
     readme_path: Path = README_PATH,
@@ -164,6 +195,7 @@ def build_leaderboard_knowledge(
         },
         "records": all_records,
         "motifs": summarize_motifs(all_records),
+        "recentMovement": summarize_recent_movement(all_records),
     }
 
 

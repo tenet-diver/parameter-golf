@@ -64,6 +64,8 @@ class Fast2LeaderboardKnowledgeTest(unittest.TestCase):
             self.assertEqual(knowledge["summary"]["bestScore"], 1.079)
             self.assertEqual(knowledge["sources"]["submissionRecordCount"], 1)
             self.assertGreaterEqual(len(knowledge["motifs"]), 2)
+            self.assertEqual(knowledge["recentMovement"][-1]["score"], 1.079)
+            self.assertLess(knowledge["recentMovement"][-1]["deltaVsPreviousBest"], 0)
 
     def test_writer_creates_machine_readable_source_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
