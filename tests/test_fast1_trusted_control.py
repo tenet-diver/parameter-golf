@@ -58,6 +58,10 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
             self.assertTrue(bundle_path.is_file())
             self.assertTrue(bundle_path.is_relative_to(REPO_ROOT))
             self.assertEqual(bundle_path.stat().st_mode & 0o002, 0)
+            for parent in bundle_path.parents:
+                if parent == REPO_ROOT:
+                    break
+                self.assertEqual(parent.stat().st_mode & 0o002, 0)
 
             bundle = json.loads(bundle_path.read_text())
             for log_path_text in bundle["artifacts"]["logs"]:
