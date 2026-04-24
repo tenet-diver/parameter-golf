@@ -188,11 +188,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Exit non-zero when generated views are stale instead of rewriting them.",
     )
+    parser.add_argument("--source-path", type=Path, default=SOURCE_PATH)
+    parser.add_argument("--status-path", type=Path, default=STATUS_PATH)
+    parser.add_argument("--state-path", type=Path, default=STATE_PATH)
     args = parser.parse_args(argv)
 
-    source = _load_json(SOURCE_PATH)
-    status = _load_json(STATUS_PATH)
-    state = _load_json(STATE_PATH)
+    source = _load_json(args.source_path)
+    status = _load_json(args.status_path)
+    state = _load_json(args.state_path)
 
     if args.check:
         if _check_projection_is_fresh(source, status, state):
@@ -201,8 +204,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     rendered_status, rendered_state = apply_measurement_evidence(source, status, state)
-    _write_json(STATUS_PATH, rendered_status)
-    _write_json(STATE_PATH, rendered_state)
+    _write_json(args.status_path, rendered_status)
+    _write_json(args.state_path, rendered_state)
     return 0
 
 

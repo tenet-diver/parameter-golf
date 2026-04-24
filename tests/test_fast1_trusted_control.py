@@ -1,6 +1,7 @@
 import json
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -118,12 +119,15 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
         )
 
     def test_controller_tick_regenerates_views_from_authoritative_evidence(self) -> None:
-        original_source = AUTHORITATIVE_EVIDENCE_PATH.read_text()
-        original_status = STATUS_PATH.read_text()
-        original_state = STATE_PATH.read_text()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            source_path = Path(tmp_dir) / "measurement_evidence.json"
+            status_path = Path(tmp_dir) / "campaign_status.json"
+            state_path = Path(tmp_dir) / "campaign_state.json"
+            source_path.write_text(AUTHORITATIVE_EVIDENCE_PATH.read_text())
+            status_path.write_text(STATUS_PATH.read_text())
+            state_path.write_text(STATE_PATH.read_text())
 
-        try:
-            evidence = json.loads(original_source)
+            evidence = json.loads(source_path.read_text())
             evidence["updatedAt"] = "2026-04-23T22:00:00.000Z"
             evidence["summary"]["artifactIds"] = ["evidence-fast1-control-regen-001"]
             evidence["summary"]["totalExperiments"] = 2
@@ -144,18 +148,27 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
                     "objectiveValue": 1.01,
                 }
             )
-            AUTHORITATIVE_EVIDENCE_PATH.write_text(f"{json.dumps(evidence, indent=2)}\n")
+            source_path.write_text(f"{json.dumps(evidence, indent=2)}\n")
 
             tick = subprocess.run(
-                [sys.executable, str(CONTROLLER_TICK_PATH)],
+                [
+                    sys.executable,
+                    str(CONTROLLER_TICK_PATH),
+                    "--source-path",
+                    str(source_path),
+                    "--status-path",
+                    str(status_path),
+                    "--state-path",
+                    str(state_path),
+                ],
                 capture_output=True,
                 text=True,
                 check=False,
             )
             self.assertEqual(tick.returncode, 0, msg=tick.stderr)
 
-            status = json.loads(STATUS_PATH.read_text())
-            state = json.loads(STATE_PATH.read_text())
+            status = json.loads(status_path.read_text())
+            state = json.loads(state_path.read_text())
             summary = evidence["summary"]
 
             self.assertEqual(status["progress"]["totalExperiments"], summary["totalExperiments"])
@@ -187,37 +200,44 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
                 state["evidenceSummaryCache"]["recentCompletedExperiments"],
                 evidence["recentCompletedExperiments"],
             )
-        finally:
-            AUTHORITATIVE_EVIDENCE_PATH.write_text(original_source)
-            STATUS_PATH.write_text(original_status)
-            STATE_PATH.write_text(original_state)
 
     def test_controller_tick_check_fails_when_generated_views_are_stale(self) -> None:
-        original_status = STATUS_PATH.read_text()
-        original_state = STATE_PATH.read_text()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            source_path = Path(tmp_dir) / "measurement_evidence.json"
+            status_path = Path(tmp_dir) / "campaign_status.json"
+            state_path = Path(tmp_dir) / "campaign_state.json"
+            source_path.write_text(AUTHORITATIVE_EVIDENCE_PATH.read_text())
+            status_path.write_text(STATUS_PATH.read_text())
+            state_path.write_text(STATE_PATH.read_text())
 
-        try:
-            status = json.loads(original_status)
-            state = json.loads(original_state)
+            status = json.loads(status_path.read_text())
+            state = json.loads(state_path.read_text())
 
             status["trustedControlState"] = "verified"
             status["recentCompletedExperiments"] = ["exp-stale-view"]
             state["evidenceSummaryCache"]["trustedControlState"] = "verified"
             state["evidenceSummaryCache"]["recentCompletedExperiments"] = ["exp-stale-view"]
 
-            STATUS_PATH.write_text(f"{json.dumps(status, indent=2)}\n")
-            STATE_PATH.write_text(f"{json.dumps(state, indent=2)}\n")
+            status_path.write_text(f"{json.dumps(status, indent=2)}\n")
+            state_path.write_text(f"{json.dumps(state, indent=2)}\n")
 
             tick = subprocess.run(
-                [sys.executable, str(CONTROLLER_TICK_PATH), "--check"],
+                [
+                    sys.executable,
+                    str(CONTROLLER_TICK_PATH),
+                    "--check",
+                    "--source-path",
+                    str(source_path),
+                    "--status-path",
+                    str(status_path),
+                    "--state-path",
+                    str(state_path),
+                ],
                 capture_output=True,
                 text=True,
                 check=False,
             )
             self.assertNotEqual(tick.returncode, 0)
-        finally:
-            STATUS_PATH.write_text(original_status)
-            STATE_PATH.write_text(original_state)
 
 
 if __name__ == "__main__":
