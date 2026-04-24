@@ -79,12 +79,18 @@
   "reproduction": {
     "status": "needs_external_8xh100_verification",
     "reason": "Local workspace cannot run authoritative 8xH100 benchmark reproduction.",
-    "required_hardware": "8xH100 80GB SXM"
+    "required_hardware": "8xH100 80GB SXM",
+    "verification_gate": {
+      "status": "blocked-not-winning",
+      "reason_code": "missing_runnable_train_eval_ttt_quantized_serialization_path",
+      "reason": "Imported script defines model modules but does not provide runnable train/eval/TTT/quantized serialization entrypoints for authoritative reproduction."
+    }
   },
   "local_campaign_evidence": {
     "task_id": "FAST-44",
     "recorded_val_bpb": 1.0785,
     "current_merged_sota_bpb": 1.081,
-    "delta_bpb": -0.0025
+    "delta_bpb": -0.0025,
+    "campaign_status": "blocked-not-winning"
   }
 }

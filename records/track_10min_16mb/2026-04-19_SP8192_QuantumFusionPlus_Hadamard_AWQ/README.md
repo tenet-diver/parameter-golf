@@ -4,7 +4,7 @@
 
 ## FAST-44 Import Attribution
 
-- Imported selectively from `openai/pr-1732` and attributed to `Victory963` (PR #1732 winning candidate evidence).
+- Imported selectively from `openai/pr-1732` and attributed to `Victory963` (PR #1732 candidate import; locally blocked-not-winning until runnable 8xH100 reproduction).
 - Local campaign evidence records candidate `val_bpb 1.0785` versus current merged SOTA `1.0810` (`delta_bpb -0.0025`).
 - Reproduction status: needs external 8xH100 verification.
 

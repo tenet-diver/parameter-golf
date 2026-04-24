@@ -817,7 +817,8 @@
       },
       "artifactBytes": 15978527,
       "submissionClass": "record-candidate-import",
-      "classificationReason": "Imported winning candidate evidence from PR #1732 with local campaign attribution and metadata checks.",
+      "classificationReason": "Imported PR #1732 candidate metadata with local campaign attribution; blocked-not-winning until runnable 8xH100 reproduction exists.",
+      "campaignStatus": "blocked-not-winning",
       "sourceAttribution": {
         "author": "Victory963",
         "githubId": "Victory963",
@@ -831,6 +832,11 @@
       "reproductionStatus": {
         "status": "needs_external_8xh100_verification",
         "reason": "Authoritative reproduction requires external 8xH100 hardware not available in local workspace."
+      },
+      "verificationGate": {
+        "status": "blocked-not-winning",
+        "reasonCode": "missing_runnable_train_eval_ttt_quantized_serialization_path",
+        "reason": "Imported train_gpt_sp8192_fusion.py currently defines model components and readiness logs without runnable end-to-end train/eval/TTT/quantized serialization entrypoints."
       },
       "artifactPaths": [
         "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/README.md",
