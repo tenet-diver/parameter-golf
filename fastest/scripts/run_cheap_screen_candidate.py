@@ -21,6 +21,7 @@ except ModuleNotFoundError:
 
 
 Runner = Callable[[dict], dict]
+RUNNABLE_TASK_STATUSES = {"queued", "ready"}
 
 
 def _utc_now_iso() -> str:
@@ -69,6 +70,89 @@ def _idempotency_key(task: dict) -> str:
             str(task.get("lane", "")),
             str(task.get("candidateId", "")),
         ]
+    )
+
+
+def _status_order(task: dict) -> int:
+    status_order = task.get("statusOrder")
+    if isinstance(status_order, bool):
+        return 2**31 - 1
+    if isinstance(status_order, int):
+        return status_order
+    return 2**31 - 1
+
+
+def select_next_candidate(tasks: list[dict], lane: str = "cheap-screen") -> dict | None:
+    eligible: list[dict] = []
+    for task in tasks:
+        if not isinstance(task, dict):
+            continue
+        if task.get("lane") != lane:
+            continue
+        if task.get("status") not in RUNNABLE_TASK_STATUSES:
+            continue
+        eligible.append(task)
+
+    if not eligible:
+        return None
+
+    return sorted(
+        eligible,
+        key=lambda task: (
+            _status_order(task),
+            str(task.get("createdAt", "")),
+            str(task.get("taskId", "")),
+        ),
+    )[0]
+
+
+def run_next_cheap_screen_candidate(
+    tasks: list[dict],
+    *,
+    runner: Runner,
+    lane: str = "cheap-screen",
+    evidence_path: Path = DEFAULT_EVIDENCE_PATH,
+    status_path: Path = DEFAULT_STATUS_PATH,
+    state_path: Path = DEFAULT_STATE_PATH,
+) -> dict:
+    if lane != "cheap-screen":
+        return _outcome(
+            task={"lane": lane},
+            status="error",
+            reason_code="invalid-lane",
+            message="Task lane must be cheap-screen.",
+        )
+
+    selected = select_next_candidate(tasks, lane=lane)
+    if selected is None:
+        return _outcome(
+            task={"lane": lane},
+            status="success",
+            reason_code="no-task-available",
+            message="No runnable cheap-screen candidate is available.",
+        )
+
+    if not isinstance(selected.get("taskId"), str) or not selected.get("taskId"):
+        return _outcome(
+            task=selected,
+            status="error",
+            reason_code="task-io-invalid",
+            message="Selected cheap-screen task is missing taskId.",
+        )
+    if not isinstance(selected.get("candidateId"), str) or not selected.get("candidateId"):
+        return _outcome(
+            task=selected,
+            status="error",
+            reason_code="task-io-invalid",
+            message="Selected cheap-screen task is missing candidateId.",
+        )
+
+    return execute_cheap_screen_candidate(
+        selected,
+        runner=runner,
+        evidence_path=evidence_path,
+        status_path=status_path,
+        state_path=state_path,
     )
 
 
