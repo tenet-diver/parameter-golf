@@ -26,6 +26,8 @@ import mlx.nn as nn
 import mlx.optimizers as optim
 from mlx.utils import tree_flatten, tree_unflatten
 
+from fastest.scripts.artifact_budget_analyzer import estimate_artifact_budget
+
 # ==============================================================================
 # SHARD FORMAT + COMPUTE DTYPE
 # ==============================================================================
@@ -942,6 +944,16 @@ def main() -> None:
         f"val_batch_size:{args.val_batch_size} "
         f"warmup_steps:{args.warmup_steps} max_wallclock_seconds:{args.max_wallclock_seconds:.3f}"
     )
+    budget_estimate = estimate_artifact_budget(args, code_path=__file__)
+    for line in budget_estimate.to_log_lines():
+        log(line)
+    if budget_estimate.over_budget:
+        log(
+            "WARNING: artifact budget estimate exceeds 16MB before training; "
+            "reduce vocab, width, depth, MLP size, untied heads, or quantized payload."
+        )
+        if bool(int(os.environ.get("ARTIFACT_BUDGET_STRICT", "0"))):
+            raise RuntimeError("artifact budget estimate exceeds 16MB")
     log(f"mlx_max_microbatch_tokens:{args.mlx_max_microbatch_tokens}")
     log(
         f"optimizer:muon+adam muon_matrix_params:{len(opt.matrix_keys)} scalar_params:{len(opt.scalar_keys)} "

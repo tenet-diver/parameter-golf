@@ -27,6 +27,8 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 
+from fastest.scripts.artifact_budget_analyzer import estimate_artifact_budget
+
 # -----------------------------
 # HYPERPARAMETERS
 # -----------------------------
@@ -989,6 +991,16 @@ def main() -> None:
         f"iterations:{args.iterations} warmup_steps:{args.warmup_steps} "
         f"max_wallclock_seconds:{args.max_wallclock_seconds:.3f}"
     )
+    budget_estimate = estimate_artifact_budget(args, code_path=__file__)
+    for line in budget_estimate.to_log_lines():
+        log0(line)
+    if budget_estimate.over_budget:
+        log0(
+            "WARNING: artifact budget estimate exceeds 16MB before training; "
+            "reduce vocab, width, depth, MLP size, untied heads, or quantized payload."
+        )
+        if bool(int(os.environ.get("ARTIFACT_BUDGET_STRICT", "0"))):
+            raise RuntimeError("artifact budget estimate exceeds 16MB")
     log0(f"seed:{args.seed}")
 
     # -----------------------------
