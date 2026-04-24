@@ -5,6 +5,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
+from urllib.parse import quote
 
 try:
     from fastest.scripts.render_campaign_evidence import (
@@ -25,10 +26,7 @@ except ModuleNotFoundError:
 Runner = Callable[[dict], dict]
 RUNNABLE_TASK_STATUSES = {"queued", "ready"}
 DEFAULT_TASK_STORE_DIR = Path(
-    os.environ.get(
-        "TASK_STORE_DIR",
-        "/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks",
-    )
+    "/home/codespace/.fastest/orchestrator/projects/parameter-golf-fastest-run-2e398b79d13c/runtime/tasks"
 )
 TASK_STORE_SQLITE_FILE_ENV = "TASK_STORE_SQLITE_FILE"
 
@@ -143,6 +141,7 @@ def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
     sqlite_path = _resolve_task_store_sqlite(task_store_dir)
     if not sqlite_path.exists():
         raise FileNotFoundError(f"task store sqlite not found: {sqlite_path}")
+    sqlite_uri = f"file:{quote(str(sqlite_path.resolve()))}?mode=ro"
 
     query = """
         SELECT id, status, status_order, created_at, pipeline_json
@@ -150,7 +149,7 @@ def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
         WHERE status IN ('queued', 'ready')
         ORDER BY status_order ASC, created_at ASC, id ASC
     """
-    with sqlite3.connect(sqlite_path) as conn:
+    with sqlite3.connect(sqlite_uri, uri=True) as conn:
         rows = conn.execute(query).fetchall()
 
     tasks: list[dict] = []
