@@ -1,0 +1,26 @@
+{
+  "taskId": "FAST-37",
+  "candidateId": "exp-fast37-combination-001",
+  "status": "success",
+  "reasonCode": "combination-success",
+  "completedAt": "2026-04-24T15:31:21Z",
+  "commands": [
+    "python fastest/scripts/run_combination_candidate.py --task fastest/generated/fast37_combination_task.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json --output fastest/generated/fast37_run_outcome.json"
+  ],
+  "artifactPaths": [
+    "fastest/generated/fast37_combination_task.json",
+    "fastest/generated/fast37_run_outcome.json",
+    "fastest/source/measurement_evidence.json",
+    "fastest/generated/campaign_status.json",
+    "fastest/generated/campaign_state.json"
+  ],
+  "observedMetric": {
+    "name": "benchmark-score",
+    "value": 1.0999,
+    "previousBestCombination": 1.0979
+  },
+  "promotionRationale": {
+    "decision": "promote",
+    "reason": "Promote to the combination shortlist because benchmark-score improved from 1.0979 to 1.0999; keep campaign-level adjudication on hold until reproducibility-manifest evidence is provided."
+  }
+}

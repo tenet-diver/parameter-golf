@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T13:58:44Z",
+  "updatedAt": "2026-04-24T15:31:21Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -16,12 +16,13 @@
       "evidence-exp-fast29-combination-001",
       "evidence-exp-fast32-cheap-screen-001",
       "evidence-exp-fast34-combination-001",
-      "evidence-exp-fast35-non-record-001"
+      "evidence-exp-fast35-non-record-001",
+      "evidence-exp-fast37-combination-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 13,
-    "acceptedExperiments": 13,
-    "mostRecentEvidenceId": "evidence-fast1-control-20260424-cpu-smoke-001"
+    "totalExperiments": 14,
+    "acceptedExperiments": 14,
+    "mostRecentEvidenceId": "evidence-exp-fast37-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -36,7 +37,8 @@
     "exp-fast29-combination-001",
     "exp-fast32-cheap-screen-001",
     "exp-fast34-combination-001",
-    "exp-fast35-non-record-001"
+    "exp-fast35-non-record-001",
+    "exp-fast37-combination-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -398,6 +400,32 @@
       "promotionRationale": {
         "decision": "reject",
         "reason": "Result is from the non-record exploration lane and is evidentiary-only; benchmark-readiness promotion is intentionally disallowed."
+      }
+    },
+    {
+      "experimentId": "exp-fast37-combination-001",
+      "evidenceId": "evidence-exp-fast37-combination-001",
+      "lane": "combination",
+      "status": "accepted",
+      "completedAt": "2026-04-24T15:31:21Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0999,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-37:combination:exp-fast37-combination-001",
+      "taskId": "FAST-37",
+      "traceId": "trace-fast37-combination-001",
+      "runConfig": {
+        "motifIds": [
+          "motif-qk-gain-band",
+          "motif-hessian-aware-sdclip",
+          "motif-activation-sandwich-low-rank-residual"
+        ],
+        "seed": "579"
+      },
+      "budgetCaps": {
+        "maxCombinationExperiments": 100,
+        "maxRuntimeSeconds": 600
       }
     }
   ]

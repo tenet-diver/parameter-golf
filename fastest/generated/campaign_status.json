@@ -2,19 +2,19 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T13:50:46.282Z",
+  "updatedAt": "2026-04-24T14:53:52.011Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
   "queueHealth": {
-    "pendingTaskCount": 2,
+    "pendingTaskCount": 3,
     "inFlightTaskCount": 0,
     "stalledSince": null
   },
   "queueDepthByLane": {
     "measurement": 1,
     "constraint-clarity": 0,
-    "cheap-screen": 0,
+    "cheap-screen": 1,
     "ablation": 1,
     "combination": 1,
     "scale-check": 0,
@@ -23,9 +23,9 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 13,
-    "acceptedExperiments": 13,
-    "mostRecentEvidenceId": "evidence-fast1-control-20260424-cpu-smoke-001"
+    "totalExperiments": 14,
+    "acceptedExperiments": 14,
+    "mostRecentEvidenceId": "evidence-exp-fast37-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -40,17 +40,18 @@
     "exp-fast29-combination-001",
     "exp-fast32-cheap-screen-001",
     "exp-fast34-combination-001",
-    "exp-fast35-non-record-001"
+    "exp-fast35-non-record-001",
+    "exp-fast37-combination-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
-    "candidateId": "exp-fast34-combination-001",
-    "metricName": "benchmark-score",
-    "metricValue": 1.0979,
-    "observedAt": "2026-04-24T10:59:35Z"
+    "candidateId": "exp-fast1-control-20260424-cpu-smoke-001",
+    "metricName": "val_bpb",
+    "metricValue": 4.006814843333333,
+    "observedAt": "2026-04-24T13:58:44Z"
   },
-  "lastControllerTickAt": "2026-04-24T09:33:49.148Z",
-  "lastProgressAt": "2026-04-24T13:58:44Z",
+  "lastControllerTickAt": "2026-04-24T14:53:52.011Z",
+  "lastProgressAt": "2026-04-24T15:31:21Z",
   "stalledProgress": false,
   "blockers": [
     "2 task(s) are blocked and need repair before the controller can sustain progress."
@@ -60,7 +61,7 @@
     "details": {
       "environmentClass": "cpu-smoke",
       "trustedControlState": "established",
-      "pendingTaskCount": "2",
+      "pendingTaskCount": "3",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
       "stalledProgress": "false",
@@ -69,7 +70,7 @@
     }
   },
   "promotionAdjudication": {
-    "candidateId": "evidence-fast1-control-20260424-cpu-smoke-001",
+    "candidateId": "evidence-exp-fast37-combination-001",
     "policyVersion": "pg-constraint-clarity-v1",
     "decision": "hold",
     "violatedRules": [],
