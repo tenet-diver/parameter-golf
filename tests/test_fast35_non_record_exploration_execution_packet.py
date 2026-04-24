@@ -140,6 +140,118 @@ class Fast35NonRecordExplorationExecutionPacketTest(unittest.TestCase):
             self.assertEqual(promotion_rationale.get("decision"), "reject")
             self.assertIn("non-record exploration", promotion_rationale.get("reason", ""))
 
+            evidence = json.loads(evidence_path.read_text())
+            record = evidence["experimentRecords"][-1]
+            self.assertEqual(record["experimentId"], "exp-fast35-non-record-001")
+            self.assertEqual(
+                record["executionCommands"],
+                [
+                    "python fastest/scripts/run_non_record_exploration_candidate.py"
+                    + " --task "
+                    + str(task_path)
+                    + " --output "
+                    + str(output_path)
+                    + " --evidence-path "
+                    + str(evidence_path)
+                    + " --status-path "
+                    + str(status_path)
+                    + " --state-path "
+                    + str(state_path)
+                ],
+            )
+            self.assertEqual(
+                record["artifactPaths"],
+                [
+                    str(task_path),
+                    str(evidence_path),
+                    str(status_path),
+                    str(state_path),
+                    str(output_path),
+                ],
+            )
+            self.assertIsInstance(record.get("promotionRationale"), dict)
+            self.assertEqual(record["promotionRationale"]["decision"], "reject")
+            self.assertEqual(record["objectiveMetricName"], "benchmark-score")
+            self.assertEqual(record["objectiveValue"], 1.0793)
+
+    def test_duplicate_replay_outcome_preserves_contract_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            evidence_path, status_path, state_path, task_path, output_path = self._seed_files(tmp_root)
+            replay_output_path = tmp_root / "fast35_non_record_replay_outcome.json"
+
+            repo_root = Path(__file__).resolve().parents[1]
+            first_command = [
+                "python",
+                "fastest/scripts/run_non_record_exploration_candidate.py",
+                "--task",
+                str(task_path),
+                "--output",
+                str(output_path),
+                "--evidence-path",
+                str(evidence_path),
+                "--status-path",
+                str(status_path),
+                "--state-path",
+                str(state_path),
+            ]
+            replay_command = [
+                "python",
+                "fastest/scripts/run_non_record_exploration_candidate.py",
+                "--task",
+                str(task_path),
+                "--output",
+                str(replay_output_path),
+                "--evidence-path",
+                str(evidence_path),
+                "--status-path",
+                str(status_path),
+                "--state-path",
+                str(state_path),
+            ]
+
+            first_completed = subprocess.run(
+                first_command,
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(first_completed.returncode, 0, msg=first_completed.stderr)
+
+            replay_completed = subprocess.run(
+                replay_command,
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(replay_completed.returncode, 0, msg=replay_completed.stderr)
+
+            replay_outcome = json.loads(replay_output_path.read_text())
+            self.assertEqual(replay_outcome["reasonCode"], "duplicate-task-replay")
+            self.assertEqual(replay_outcome["observedMetric"], {"name": "benchmark-score", "value": 1.0793})
+            self.assertEqual(
+                replay_outcome["artifactPaths"],
+                [
+                    str(task_path),
+                    str(evidence_path),
+                    str(status_path),
+                    str(state_path),
+                    str(output_path),
+                    str(replay_output_path),
+                ],
+            )
+            self.assertEqual(replay_outcome["promotionRationale"]["decision"], "reject")
+
+            evidence = json.loads(evidence_path.read_text())
+            fast35_records = [
+                record
+                for record in evidence["experimentRecords"]
+                if record.get("experimentId") == "exp-fast35-non-record-001"
+            ]
+            self.assertEqual(len(fast35_records), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -98,6 +98,20 @@ def _coerce_seed(value: object) -> str:
     return str(value)
 
 
+def _dedupe_preserving_order(values: list[str]) -> list[str]:
+    return list(dict.fromkeys(values))
+
+
+def _default_non_record_promotion_rationale() -> dict:
+    return {
+        "decision": "reject",
+        "reason": (
+            "Result is from the non-record exploration lane and is evidentiary-only; "
+            "benchmark-readiness promotion is intentionally disallowed."
+        ),
+    }
+
+
 def _status_order(task: dict) -> int:
     status_order = task.get("statusOrder")
     if isinstance(status_order, bool):
@@ -205,6 +219,8 @@ def run_next_non_record_exploration_candidate(
     evidence_path: Path = DEFAULT_EVIDENCE_PATH,
     status_path: Path = DEFAULT_STATUS_PATH,
     state_path: Path = DEFAULT_STATE_PATH,
+    execution_commands: list[str] | None = None,
+    contract_artifact_paths: list[str] | None = None,
 ) -> dict:
     if lane != "non-record-exploration":
         return _outcome(
@@ -244,6 +260,8 @@ def run_next_non_record_exploration_candidate(
         evidence_path=evidence_path,
         status_path=status_path,
         state_path=state_path,
+        execution_commands=execution_commands,
+        contract_artifact_paths=contract_artifact_paths,
     )
 
 
@@ -254,8 +272,11 @@ def execute_non_record_exploration_candidate(
     evidence_path: Path = DEFAULT_EVIDENCE_PATH,
     status_path: Path = DEFAULT_STATUS_PATH,
     state_path: Path = DEFAULT_STATE_PATH,
+    execution_commands: list[str] | None = None,
+    contract_artifact_paths: list[str] | None = None,
 ) -> dict:
-    artifact_paths = [str(evidence_path), str(status_path), str(state_path)]
+    artifact_paths = contract_artifact_paths or [str(evidence_path), str(status_path), str(state_path)]
+    artifact_paths = _dedupe_preserving_order(artifact_paths)
 
     if task.get("lane") != "non-record-exploration":
         return _outcome(
@@ -319,12 +340,29 @@ def execute_non_record_exploration_candidate(
         None,
     )
     if existing is not None:
+        existing_metric_name = existing.get("objectiveMetricName")
+        existing_metric_value = existing.get("objectiveValue")
+        observed_metric = None
+        if isinstance(existing_metric_name, str) and existing_metric_name and _is_number(existing_metric_value):
+            observed_metric = {"name": existing_metric_name, "value": existing_metric_value}
+
+        persisted_artifact_paths = existing.get("artifactPaths")
+        if not isinstance(persisted_artifact_paths, list):
+            persisted_artifact_paths = artifact_paths
+
+        promotion_rationale = existing.get("promotionRationale")
+        if not isinstance(promotion_rationale, dict):
+            promotion_rationale = _default_non_record_promotion_rationale()
+
         return _outcome(
             task=task,
             status="success",
             reason_code="duplicate-task-replay",
             message="Non-record exploration candidate already recorded; skipped duplicate append.",
             completed_at=existing.get("completedAt"),
+            observed_metric=observed_metric,
+            artifact_paths=persisted_artifact_paths,
+            promotion_rationale=promotion_rationale,
         )
 
     max_combination_experiments = _max_non_record_exploration_experiments(task)
@@ -395,6 +433,7 @@ def execute_non_record_exploration_candidate(
         )
 
     record_status = "accepted" if run_result.get("status") == "success" else "failed-terminal"
+    promotion_rationale = _default_non_record_promotion_rationale()
     new_record = {
         "experimentId": task.get("candidateId"),
         "evidenceId": evidence_id,
@@ -410,6 +449,9 @@ def execute_non_record_exploration_candidate(
         "traceId": task.get("traceId"),
         "runConfig": task.get("runConfig"),
         "budgetCaps": task.get("budgetCaps"),
+        "executionCommands": execution_commands or [],
+        "artifactPaths": artifact_paths,
+        "promotionRationale": promotion_rationale,
     }
     experiment_records.append(new_record)
 
@@ -479,13 +521,7 @@ def execute_non_record_exploration_candidate(
             "value": objective_value,
         },
         artifact_paths=artifact_paths,
-        promotion_rationale={
-            "decision": "reject",
-            "reason": (
-                "Result is from the non-record exploration lane and is evidentiary-only; "
-                "benchmark-readiness promotion is intentionally disallowed."
-            ),
-        },
+        promotion_rationale=promotion_rationale,
     )
 
 
@@ -542,6 +578,39 @@ def main() -> None:
         help="Path to generated campaign state JSON.",
     )
     args = parser.parse_args()
+    script_invocation = "python fastest/scripts/run_non_record_exploration_candidate.py"
+    execution_command_parts = [script_invocation]
+    if args.task:
+        execution_command_parts.extend(["--task", str(Path(args.task))])
+    else:
+        execution_command_parts.extend(["--task-store-dir", str(Path(args.task_store_dir))])
+    if args.output:
+        execution_command_parts.extend(["--output", str(Path(args.output))])
+    execution_command_parts.extend(
+        [
+            "--evidence-path",
+            str(Path(args.evidence_path)),
+            "--status-path",
+            str(Path(args.status_path)),
+            "--state-path",
+            str(Path(args.state_path)),
+        ]
+    )
+    execution_commands = [" ".join(execution_command_parts)]
+
+    contract_artifact_paths: list[str] = []
+    if args.task:
+        contract_artifact_paths.append(str(Path(args.task)))
+    contract_artifact_paths.extend(
+        [
+            str(Path(args.evidence_path)),
+            str(Path(args.status_path)),
+            str(Path(args.state_path)),
+        ]
+    )
+    if args.output:
+        contract_artifact_paths.append(str(Path(args.output)))
+    contract_artifact_paths = _dedupe_preserving_order(contract_artifact_paths)
 
     if args.task:
         try:
@@ -560,6 +629,8 @@ def main() -> None:
                 evidence_path=Path(args.evidence_path),
                 status_path=Path(args.status_path),
                 state_path=Path(args.state_path),
+                execution_commands=execution_commands,
+                contract_artifact_paths=contract_artifact_paths,
             )
     else:
         try:
@@ -579,6 +650,8 @@ def main() -> None:
                 evidence_path=Path(args.evidence_path),
                 status_path=Path(args.status_path),
                 state_path=Path(args.state_path),
+                execution_commands=execution_commands,
+                contract_artifact_paths=contract_artifact_paths,
             )
 
     if args.output:

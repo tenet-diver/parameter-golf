@@ -321,6 +321,20 @@
       "budgetCaps": {
         "maxRuntimeSeconds": 30,
         "maxNonRecordExplorationExperiments": 1
+      },
+      "executionCommands": [
+        "python fastest/scripts/run_non_record_exploration_candidate.py --task fastest/generated/fast35_non_record_task.json --output fastest/generated/fast35_non_record_outcome.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json"
+      ],
+      "artifactPaths": [
+        "fastest/generated/fast35_non_record_task.json",
+        "fastest/source/measurement_evidence.json",
+        "fastest/generated/campaign_status.json",
+        "fastest/generated/campaign_state.json",
+        "fastest/generated/fast35_non_record_outcome.json"
+      ],
+      "promotionRationale": {
+        "decision": "reject",
+        "reason": "Result is from the non-record exploration lane and is evidentiary-only; benchmark-readiness promotion is intentionally disallowed."
       }
     }
   ]
