@@ -2,14 +2,14 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T16:32:27Z",
+  "updatedAt": "2026-04-24T16:42:28.156Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
   "queueHealth": {
-    "pendingTaskCount": 2,
+    "pendingTaskCount": 0,
     "inFlightTaskCount": 0,
-    "stalledSince": null
+    "stalledSince": "2026-04-24T16:42:28.156Z"
   },
   "queueDepthByLane": {
     "measurement": 1,
@@ -19,7 +19,7 @@
     "combination": 0,
     "scale-check": 0,
     "benchmark-rehearsal": 0,
-    "non-record-exploration": 1,
+    "non-record-exploration": 0,
     "unassigned": 0
   },
   "progress": {
@@ -57,19 +57,20 @@
   },
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
   "lastProgressAt": "2026-04-24T16:32:27Z",
-  "stalledProgress": false,
+  "stalledProgress": true,
   "blockers": [
-    "2 task(s) are blocked and need repair before the controller can sustain progress."
+    "3 task(s) are blocked and need repair before the controller can sustain progress.",
+    "Campaign progress is stalled and needs investigation or measurement repair."
   ],
   "adapterStatus": {
     "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
     "details": {
       "environmentClass": "cpu-smoke",
       "trustedControlState": "established",
-      "pendingTaskCount": "2",
+      "pendingTaskCount": "0",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
-      "stalledProgress": "false",
+      "stalledProgress": "true",
       "benchmarkTrack": "parameter-golf",
       "readiness": "baseline-established"
     }

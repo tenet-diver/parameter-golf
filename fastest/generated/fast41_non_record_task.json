@@ -1,0 +1,15 @@
+{
+  "taskId": "FAST-41",
+  "traceId": "trace-fast41-non-record-001",
+  "candidateId": "exp-fast41-non-record-001",
+  "lane": "non-record-exploration",
+  "runConfig": {
+    "seed": 41,
+    "hypothesis": "attention-kv-head-sharing-probe",
+    "interfaceFocus": "non-record-evidence-only"
+  },
+  "budgetCaps": {
+    "maxRuntimeSeconds": 30,
+    "maxNonRecordExplorationExperiments": 3
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "FAST-41",
+  "traceId": "trace-fast41-non-record-001",
+  "candidateId": "exp-fast41-non-record-001",
+  "lane": "non-record-exploration",
+  "status": "success",
+  "reasonCode": "non-record-exploration-success",
+  "message": "Non-record exploration candidate executed within bounds and evidence/views were refreshed.",
+  "completedAt": "2026-04-24T16:32:27Z",
+  "observedMetric": {
+    "name": "benchmark-score",
+    "value": 1.0126
+  }
+}
