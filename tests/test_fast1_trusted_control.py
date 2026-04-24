@@ -37,11 +37,19 @@ class Fast1TrustedControlContractTest(unittest.TestCase):
 
         run_config = record.get("runConfig")
         self.assertIsInstance(run_config, dict)
-        self.assertIn("seed", run_config)
+        self.assertTrue("seed" in run_config or "seedSet" in run_config)
 
         budget_caps = record.get("budgetCaps")
         self.assertIsInstance(budget_caps, dict)
         self.assertIn("maxRuntimeSeconds", budget_caps)
+
+        if record["evidenceId"] == "evidence-fast1-control-20260424-cpu-smoke-001":
+            self.assertEqual(record["submissionClass"], "non-record-only")
+            self.assertGreater(record["objectiveValue"], 0)
+            self.assertLessEqual(record["artifactBytes"], record["budgetCaps"]["artifactLimitBytes"])
+            self.assertTrue(record["executionCommands"])
+            self.assertTrue(record["configProvenance"]["specHash"])
+            self.assertEqual(record["evidenceBundle"]["trustState"], "trusted")
 
     def test_trusted_control_baseline_established(self) -> None:
         status = json.loads(STATUS_PATH.read_text())

@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T11:08:17Z",
+  "updatedAt": "2026-04-24T13:58:44Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
+      "evidence-fast1-control-20260424-cpu-smoke-001",
       "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
       "evidence-exp-fast4-qa-smoke-20260423-001",
       "evidence-exp-fast11-measurement-20260424-001",
@@ -18,12 +19,13 @@
       "evidence-exp-fast35-non-record-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 12,
-    "acceptedExperiments": 12,
-    "mostRecentEvidenceId": "evidence-exp-fast35-non-record-001"
+    "totalExperiments": 13,
+    "acceptedExperiments": 13,
+    "mostRecentEvidenceId": "evidence-fast1-control-20260424-cpu-smoke-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
+    "exp-fast1-control-20260424-cpu-smoke-001",
     "exp-fast4-cheap-screen-20260423-attempt2-001",
     "exp-fast4-qa-smoke-20260423-001",
     "exp-fast11-measurement-20260424-001",
@@ -69,6 +71,67 @@
       },
       "budgetCaps": {
         "maxRuntimeSeconds": 30
+      }
+    },
+    {
+      "experimentId": "exp-fast1-control-20260424-cpu-smoke-001",
+      "evidenceId": "evidence-fast1-control-20260424-cpu-smoke-001",
+      "lane": "measurement",
+      "status": "accepted",
+      "completedAt": "2026-04-24T13:58:44Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 4.006814843333333,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-1:measurement:exp-fast1-control-20260424-cpu-smoke-001",
+      "taskId": "FAST-1",
+      "traceId": "trace-fast1-control-20260424-cpu-smoke-001",
+      "runConfig": {
+        "seedSet": [
+          42,
+          1337,
+          2025
+        ],
+        "commandTemplate": "python3 train_gpt.py --seed {seed}",
+        "valTokenLimit": "smoke"
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "artifactLimitBytes": 16000000
+      },
+      "artifactBytes": 465726,
+      "submissionClass": "non-record-only",
+      "classificationReason": "CPU smoke run with reduced validation token limit; not a full 10-minute 8xH100 leaderboard run.",
+      "configProvenance": {
+        "specRef": "/workspaces/parameter-golf/measurement/control_measurement.yaml",
+        "specHash": "90ab17442a7cad2b3de5eccbabaca9dd7ac150ba8a3065a479af8d53a4bfb1c6",
+        "datasetId": "fineweb_val_v1",
+        "tokenizerId": "fineweb_1024_bpe_v1"
+      },
+      "executionCommands": [
+        ".venv/bin/python train_gpt.py --seed 42",
+        ".venv/bin/python train_gpt.py --seed 1337",
+        ".venv/bin/python train_gpt.py --seed 2025"
+      ],
+      "seedMetrics": [
+        {
+          "seed": 42,
+          "value": 4.00789139
+        },
+        {
+          "seed": 1337,
+          "value": 4.00708784
+        },
+        {
+          "seed": 2025,
+          "value": 4.0054653
+        }
+      ],
+      "evidenceBundle": {
+        "bundleId": "f3021d0efe9499ff2b12",
+        "localPath": "/tmp/fast1-control-evidence/bundles/f3021d0efe9499ff2b12.json",
+        "trustState": "trusted",
+        "envIssues": []
       }
     },
     {

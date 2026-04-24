@@ -23,12 +23,13 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 12,
-    "acceptedExperiments": 12,
-    "mostRecentEvidenceId": "evidence-exp-fast35-non-record-001"
+    "totalExperiments": 13,
+    "acceptedExperiments": 13,
+    "mostRecentEvidenceId": "evidence-fast1-control-20260424-cpu-smoke-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
+    "exp-fast1-control-20260424-cpu-smoke-001",
     "exp-fast4-cheap-screen-20260423-attempt2-001",
     "exp-fast4-qa-smoke-20260423-001",
     "exp-fast11-measurement-20260424-001",
@@ -49,7 +50,7 @@
     "observedAt": "2026-04-24T10:59:35Z"
   },
   "lastControllerTickAt": "2026-04-24T09:33:49.148Z",
-  "lastProgressAt": "2026-04-24T11:08:17Z",
+  "lastProgressAt": "2026-04-24T13:58:44Z",
   "stalledProgress": false,
   "blockers": [
     "2 task(s) are blocked and need repair before the controller can sustain progress."
@@ -68,7 +69,7 @@
     }
   },
   "promotionAdjudication": {
-    "candidateId": "evidence-exp-fast35-non-record-001",
+    "candidateId": "evidence-fast1-control-20260424-cpu-smoke-001",
     "policyVersion": "pg-constraint-clarity-v1",
     "decision": "hold",
     "violatedRules": [],
