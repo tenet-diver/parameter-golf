@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-24T14:53:52.011Z",
+    "updatedAt": "2026-04-24T15:43:22.721Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -52,28 +52,15 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T14:53:52.011Z",
-  "lastProgressAt": "2026-04-24T15:31:21Z",
+  "lastProgressAt": "2026-04-24T13:58:44Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
-      "evidence-fast1-control-20260423-001",
-      "evidence-fast1-control-20260424-cpu-smoke-001",
-      "evidence-exp-fast4-cheap-screen-20260423-attempt2-001",
-      "evidence-exp-fast4-qa-smoke-20260423-001",
-      "evidence-exp-fast11-measurement-20260424-001",
-      "evidence-exp-fast16-measurement-20260424-001",
-      "evidence-exp-fast21-measurement-20260424-001",
-      "evidence-exp-fast26-measurement-20260424-001",
-      "evidence-exp-fast28-ablation-001",
-      "evidence-exp-fast29-combination-001",
-      "evidence-exp-fast32-cheap-screen-001",
-      "evidence-exp-fast34-combination-001",
-      "evidence-exp-fast35-non-record-001",
-      "evidence-exp-fast37-combination-001"
+      "target-source:2026-04-24T15:31:21Z"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
-    "trustedControlState": "established",
+    "trustedControlState": "verified",
     "bestKnownResult": {
       "candidateId": "exp-fast1-control-20260424-cpu-smoke-001",
       "metricName": "val_bpb",
@@ -82,34 +69,44 @@
     },
     "progressTrend": "unknown",
     "recentCompletedExperiments": [
-      "exp-fast1-control-20260423-001",
-      "exp-fast1-control-20260424-cpu-smoke-001",
-      "exp-fast4-cheap-screen-20260423-attempt2-001",
-      "exp-fast4-qa-smoke-20260423-001",
-      "exp-fast11-measurement-20260424-001",
-      "exp-fast16-measurement-20260424-001",
-      "exp-fast21-measurement-20260424-001",
-      "exp-fast26-measurement-20260424-001",
-      "exp-fast28-ablation-001",
-      "exp-fast29-combination-001",
-      "exp-fast32-cheap-screen-001",
-      "exp-fast34-combination-001",
-      "exp-fast35-non-record-001",
-      "exp-fast37-combination-001"
+      {
+        "evidenceId": "evidence-exp-fast37-combination-001",
+        "candidateId": "exp-fast37-combination-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0999,
+        "observedAt": "2026-04-24T15:31:21Z"
+      },
+      {
+        "evidenceId": "evidence-fast1-control-20260424-cpu-smoke-001",
+        "candidateId": "exp-fast1-control-20260424-cpu-smoke-001",
+        "metricName": "val_bpb",
+        "metricValue": 4.006814843333333,
+        "observedAt": "2026-04-24T13:58:44Z"
+      },
+      {
+        "evidenceId": "evidence-exp-fast35-non-record-001",
+        "candidateId": "exp-fast35-non-record-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0793,
+        "observedAt": "2026-04-24T11:08:17Z"
+      },
+      {
+        "evidenceId": "evidence-exp-fast34-combination-001",
+        "candidateId": "exp-fast34-combination-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0979,
+        "observedAt": "2026-04-24T10:59:35Z"
+      },
+      {
+        "evidenceId": "evidence-exp-fast32-cheap-screen-001",
+        "candidateId": "exp-fast32-cheap-screen-001",
+        "metricName": "benchmark-score",
+        "metricValue": 1.0743,
+        "observedAt": "2026-04-24T10:11:54Z"
+      }
     ],
     "acceptedExperiments": 14,
     "totalExperiments": 14,
-    "promotionGateRejectionCount": 0,
-    "latestPromotionAdjudication": {
-      "candidateId": "evidence-exp-fast37-combination-001",
-      "policyVersion": "pg-constraint-clarity-v1",
-      "decision": "hold",
-      "violatedRules": [],
-      "missingEvidence": [
-        "reproducibility-manifest"
-      ],
-      "ambiguityReasons": [],
-      "promotableStateChange": false
-    }
+    "promotionGateRejectionCount": 0
   }
 }
