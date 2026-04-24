@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "kind": "feature-spec",
+  "taskId": "FAST-24",
+  "title": "Combine promising benchmark motifs for parameter-golf",
+  "taskType": "spike",
+  "workflow": {
+    "name": "feature-spec",
+    "variant": "design-first",
+    "template": "system-default system-feature-spec-design-first"
+  },
+  "behaviorContract": {
+    "lane": "combination",
+    "candidateSeed": "combination-promising-motifs",
+    "maxExperimentsPerCombination": 1,
+    "claimsBenchmarkReadiness": false
+  },
+  "migrationAndOperations": {
+    "dataMigrationRequired": false,
+    "operationalConstraints": [
+      "Use TASK_STORE_DIR as the authoritative task-store binding when selecting combination candidates.",
+      "Append one bounded combination experiment record to authoritative measurement evidence and refresh derived views.",
+      "Keep this spike scoped to evidentiary output without any benchmark-readiness promotion side effects."
+    ]
+  },
+  "architectureHandoff": {
+    "boundaries": [
+      "Task store selection is the single boundary for determining which combination candidate can run next.",
+      "Combination execution in this slice is bounded to one experiment append and view regeneration using existing evidence interfaces.",
+      "Readiness and promotion logic remain outside this FAST-24 slice to prevent hidden scope expansion."
+    ],
+    "interfaces": [
+      "Input: task-store task payload with lane=combination, candidateId, runConfig, traceId, and budgetCaps.",
+      "Input/Output: authoritative evidence interface that appends one combination experiment record and updates summary fields.",
+      "Output: execution outcome payload carrying taskId, candidateId, reasonCode, status, and completedAt for operators."
+    ],
+    "risks": [
+      "Missing lane isolation could allow non-combination work to consume the combination budget.",
+      "Weak evidence write guarantees could leave operator-visible views stale after a successful append.",
+      "Unbounded retries could exhaust compute budget without producing clearer motif-combination signal."
+    ],
+    "implementationReadyDecisions": [
+      "Candidate seed for this spike is fixed to combination-promising-motifs.",
+      "Budget cap is fixed via maxExperimentsPerCombination=1 for this FAST-24 scope.",
+      "Outputs are evidentiary only and explicitly avoid benchmark-readiness claims."
+    ]
+  }
+}
