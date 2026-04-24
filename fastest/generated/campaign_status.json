@@ -23,9 +23,9 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 8,
-    "acceptedExperiments": 8,
-    "mostRecentEvidenceId": "evidence-exp-fast28-ablation-001"
+    "totalExperiments": 9,
+    "acceptedExperiments": 9,
+    "mostRecentEvidenceId": "evidence-exp-fast29-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -35,7 +35,8 @@
     "exp-fast16-measurement-20260424-001",
     "exp-fast21-measurement-20260424-001",
     "exp-fast26-measurement-20260424-001",
-    "exp-fast28-ablation-001"
+    "exp-fast28-ablation-001",
+    "exp-fast29-combination-001"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": {
@@ -45,7 +46,7 @@
     "observedAt": "2026-04-24T02:05:00Z"
   },
   "lastControllerTickAt": "2026-04-24T08:35:32.683Z",
-  "lastProgressAt": "2026-04-24T08:59:20Z",
+  "lastProgressAt": "2026-04-24T09:20:07Z",
   "stalledProgress": false,
   "blockers": [],
   "adapterStatus": {
@@ -62,7 +63,7 @@
     }
   },
   "promotionAdjudication": {
-    "candidateId": "evidence-exp-fast28-ablation-001",
+    "candidateId": "evidence-exp-fast29-combination-001",
     "policyVersion": "pg-constraint-clarity-v1",
     "decision": "hold",
     "violatedRules": [],

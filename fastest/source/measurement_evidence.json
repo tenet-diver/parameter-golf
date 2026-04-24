@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T08:59:20Z",
+  "updatedAt": "2026-04-24T09:20:07Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -11,12 +11,13 @@
       "evidence-exp-fast16-measurement-20260424-001",
       "evidence-exp-fast21-measurement-20260424-001",
       "evidence-exp-fast26-measurement-20260424-001",
-      "evidence-exp-fast28-ablation-001"
+      "evidence-exp-fast28-ablation-001",
+      "evidence-exp-fast29-combination-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 8,
-    "acceptedExperiments": 8,
-    "mostRecentEvidenceId": "evidence-exp-fast28-ablation-001"
+    "totalExperiments": 9,
+    "acceptedExperiments": 9,
+    "mostRecentEvidenceId": "evidence-exp-fast29-combination-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -26,7 +27,8 @@
     "exp-fast16-measurement-20260424-001",
     "exp-fast21-measurement-20260424-001",
     "exp-fast26-measurement-20260424-001",
-    "exp-fast28-ablation-001"
+    "exp-fast28-ablation-001",
+    "exp-fast29-combination-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -202,6 +204,31 @@
       "budgetCaps": {
         "maxRuntimeSeconds": 30,
         "maxAblationExperiments": 1
+      }
+    },
+    {
+      "experimentId": "exp-fast29-combination-001",
+      "evidenceId": "evidence-exp-fast29-combination-001",
+      "lane": "combination",
+      "status": "accepted",
+      "completedAt": "2026-04-24T09:20:07Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0205,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-29:combination:exp-fast29-combination-001",
+      "taskId": "FAST-29",
+      "traceId": "trace-fast29-combination-001",
+      "runConfig": {
+        "seed": 29,
+        "motifIds": [
+          "motif-cheap-screen-a",
+          "motif-ablation-b"
+        ]
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30,
+        "maxCombinationExperiments": 1
       }
     }
   ]

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "feature-spec",
-  "taskId": "FAST-24",
+  "taskId": "FAST-29",
   "title": "Combine promising benchmark motifs for parameter-golf",
   "taskType": "spike",
   "workflow": {
@@ -27,7 +27,7 @@
     "boundaries": [
       "Task store selection is the single boundary for determining which combination candidate can run next.",
       "Combination execution in this slice is bounded to one experiment append and view regeneration using existing evidence interfaces.",
-      "Readiness and promotion logic remain outside this FAST-24 slice to prevent hidden scope expansion."
+      "Readiness and promotion logic remain outside this FAST-29 slice to prevent hidden scope expansion."
     ],
     "interfaces": [
       "Input: task-store task payload with lane=combination, candidateId, runConfig, traceId, and budgetCaps.",
@@ -41,7 +41,7 @@
     ],
     "implementationReadyDecisions": [
       "Candidate seed for this spike is fixed to combination-promising-motifs.",
-      "Budget cap is fixed via maxExperimentsPerCombination=1 for this FAST-24 scope.",
+      "Budget cap is fixed via maxExperimentsPerCombination=1 for this FAST-29 scope.",
       "Outputs are evidentiary only and explicitly avoid benchmark-readiness claims."
     ]
   }

@@ -7,11 +7,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 FEATURE_SPEC_PATH = REPO_ROOT / "planning/combination-feature-spec.json"
 
 
-class Fast24CombinationFeatureSpecContractTest(unittest.TestCase):
-    def test_feature_spec_satisfies_fast24_design_first_contract(self) -> None:
+class Fast29CombinationFeatureSpecContractTest(unittest.TestCase):
+    def test_feature_spec_satisfies_fast29_design_first_contract(self) -> None:
         spec = json.loads(FEATURE_SPEC_PATH.read_text())
 
-        self.assertEqual(spec["taskId"], "FAST-24")
+        self.assertEqual(spec["taskId"], "FAST-29")
         self.assertEqual(spec["title"], "Combine promising benchmark motifs for parameter-golf")
         self.assertEqual(spec["taskType"], "spike")
         self.assertEqual(spec["workflow"]["name"], "feature-spec")
