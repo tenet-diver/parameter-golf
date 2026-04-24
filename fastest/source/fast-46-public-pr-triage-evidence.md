@@ -20,7 +20,7 @@ Triage scope: open public PRs claiming `val_bpb < 1.0785`
 - Coverage status: complete for captured universe in this run (`universeCoverage.coverageStatus = complete-for-captured-universe`)
 
 ## Ranked disposition summary
-- `#1797` (`advance`): strongest legal+runnable evidence packet.
+- `#1797` (`hold`): strongest claim among inspected set, but only open-ref excerpts were captured; no PR file/diff source evidence for legality+runnable gates.
 - `#1801` (`hold`): strong score, runnable evidence present, legality interpretation still review-sensitive.
 - `#1729` (`hold`): index-level strong claim but no per-PR legality/runnable snapshot captured in this run.
 - `#1807` (`hold`): runnable packet present; pre-quant framing and legal interpretation risk.
@@ -30,9 +30,9 @@ Triage scope: open public PRs claiming `val_bpb < 1.0785`
 - `#1722` (`illegal`): SLOT v3 + Pre-Quant TTT title and no direct runnable packet available in this run.
 
 ## Decision
-Decision: advance PR #1797.
+Decision: no candidate advanced.
 
-Rationale: best captured combination of claim quality, legal gating, runnable train/eval evidence, and code completeness from direct PR open-ref evidence.
+Rationale: this run captured PR/index page excerpts only and did not capture PR file/diff source lines proving runnable `train/eval/submission` paths plus legality gates, so all candidates remain `hold`/`blocked`/`illegal`.
 
 ## Evidence record IDs
 - Universe/index: `E-UNIVERSE-INDEX-2026-04-24`

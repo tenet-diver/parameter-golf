@@ -386,9 +386,9 @@
       "claimValBpb": 1.06157,
       "state": "open",
       "claimStrength": "high",
-      "runnableEvidence": "present",
-      "legalityStatus": "legal",
-      "finalDisposition": "advance",
+      "runnableEvidence": "present-but-source-unverified",
+      "legalityStatus": "hold-for-source-proof",
+      "finalDisposition": "hold",
       "evidenceRefs": [
         "E-1797-TITLE-STATE",
         "E-1797-BUDGETS-CAP",
@@ -434,12 +434,14 @@
       "prNumber": 1797,
       "claimedValBpb": 1.06157,
       "claimStrengthScore": 0.87,
-      "legalityRisk": "low",
-      "runnableEvidence": "present",
+      "legalityRisk": "medium",
+      "runnableEvidence": "present-but-source-unverified",
       "codeCompleteness": "high",
-      "legalityStatus": "legal",
-      "finalDisposition": "advance",
-      "blockingReasons": [],
+      "legalityStatus": "hold-for-source-proof",
+      "finalDisposition": "hold",
+      "blockingReasons": [
+        "No PR files/diff evidence captured in this run to prove runnable train/eval/submission paths and legality gates from source text."
+      ],
       "evidenceRefs": {
         "prSnapshotRef": "E-1797-TITLE-STATE",
         "claimRef": "E-1797-LEGALITY-RUNNABLE",
@@ -643,8 +645,8 @@
   ],
   "promotionDecision": {
     "candidatePr": 1797,
-    "advanceOutcome": "advance",
-    "rationale": "Within the captured open <1.0785 universe, #1797 is the strongest candidate with direct open-ref evidence for 3-seed result, cap/budget compliance, score-first legality statements, and runnable command path.",
+    "advanceOutcome": "hold",
+    "rationale": "No candidate is advanced in this run because captured evidence is limited to PR/index open-ref excerpts and does not include direct PR file/diff proof for legality gates plus runnable train/eval/submission paths.",
     "decisionEvidenceRefs": [
       "E-1797-TITLE-STATE",
       "E-1797-BUDGETS-CAP",
@@ -652,6 +654,15 @@
       "E-1797-CODE-COMPLETE"
     ],
     "rejectedOrBlocked": [
+      {
+        "prNumber": 1797,
+        "reason": "missing source-file-level legality and runnable train/eval/submission evidence in captured packet",
+        "evidenceRefs": [
+          "E-1797-BUDGETS-CAP",
+          "E-1797-LEGALITY-RUNNABLE",
+          "E-1797-CODE-COMPLETE"
+        ]
+      },
       {
         "prNumber": 1698,
         "reason": "decimal cap inconsistency",

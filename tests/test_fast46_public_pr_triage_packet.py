@@ -57,7 +57,16 @@ class Fast46PublicPrTriagePacketTest(unittest.TestCase):
             self.assertIsInstance(record.get("prNumber"), int)
             self.assertIsInstance(record.get("capturedAtUtc"), str)
             self.assertIsInstance(record.get("sourceType"), str)
-            self.assertIn(record.get("sourceType"), {"github-open-ref", "github-index-snapshot", "github-open-ref-error"})
+            self.assertIn(
+                record.get("sourceType"),
+                {
+                    "github-open-ref",
+                    "github-index-snapshot",
+                    "github-open-ref-error",
+                    "github-pr-file-snapshot",
+                    "github-pr-diff-snippet",
+                },
+            )
             self.assertIsInstance(record.get("sourceUrl"), str)
             self.assertIn("github.com/openai/parameter-golf", record.get("sourceUrl"))
             self.assertIsInstance(record.get("retrievalCommand"), str)
@@ -89,7 +98,44 @@ class Fast46PublicPrTriagePacketTest(unittest.TestCase):
 
         self.assertEqual(ranked_by_pr[1722].get("legalityStatus"), "illegal")
         self.assertEqual(ranked_by_pr[1722].get("finalDisposition"), "illegal")
-        self.assertEqual(ranked_by_pr[1797].get("finalDisposition"), "advance")
+
+        direct_source_types = {"github-pr-file-snapshot", "github-pr-diff-snippet"}
+        advanced = [
+            entry
+            for entry in ranked
+            if isinstance(entry, dict) and entry.get("finalDisposition") == "advance"
+        ]
+        for entry in advanced:
+            refs = entry["evidenceRefs"]
+            for key in ["legalityRef", "runnableRef", "codeCompletenessRef"]:
+                record = by_id[refs[key]]
+                self.assertIn(
+                    record["sourceType"],
+                    direct_source_types,
+                    (
+                        f"advanced PR #{entry['prNumber']} must have direct PR-source evidence "
+                        f"for {key}; got {record['sourceType']}"
+                    ),
+                )
+                self.assertNotIn("index", record["sourceType"])
+                self.assertNotIn("error", record["sourceType"])
+
+        promotion = packet.get("promotionDecision")
+        self.assertIsInstance(promotion, dict)
+        if promotion.get("advanceOutcome") == "advance":
+            decision_refs = promotion.get("decisionEvidenceRefs")
+            self.assertIsInstance(decision_refs, list)
+            self.assertGreater(len(decision_refs), 0)
+            for evidence_id in decision_refs:
+                self.assertIn(evidence_id, by_id)
+                record = by_id[evidence_id]
+                self.assertIn(
+                    record["sourceType"],
+                    direct_source_types,
+                    "promotion advanceOutcome requires direct PR-source legality/runnable evidence",
+                )
+                self.assertNotIn("index", record["sourceType"])
+                self.assertNotIn("error", record["sourceType"])
 
     def test_fast46_packet_proves_open_low_bpb_universe_coverage(self) -> None:
         packet = self._load_packet()
@@ -131,7 +177,6 @@ class Fast46PublicPrTriagePacketTest(unittest.TestCase):
         note_commands = self._extract_note_commands(note)
         self.assertEqual(packet_commands, note_commands)
 
-        self.assertIn("Decision: advance PR #1797", note)
         self.assertIn("Evidence record IDs", note)
 
 
