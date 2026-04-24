@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T16:32:27Z",
+  "updatedAt": "2026-04-24T16:48:56Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -23,12 +23,13 @@
       "evidence-exp-fast38-non-record-001",
       "reproducibility-manifest",
       "evidence-exp-fast40-combination-001",
-      "evidence-exp-fast41-non-record-001"
+      "evidence-exp-fast41-non-record-001",
+      "evidence-exp-fast39-cheap-screen-001"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 19,
-    "acceptedExperiments": 19,
-    "mostRecentEvidenceId": "evidence-exp-fast41-non-record-001"
+    "totalExperiments": 20,
+    "acceptedExperiments": 20,
+    "mostRecentEvidenceId": "evidence-exp-fast39-cheap-screen-001"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -49,7 +50,8 @@
     "exp-fast37-combination-001",
     "exp-fast38-non-record-001",
     "exp-fast40-combination-001",
-    "exp-fast41-non-record-001"
+    "exp-fast41-non-record-001",
+    "exp-fast39-cheap-screen-001"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -639,6 +641,27 @@
       "promotionRationale": {
         "decision": "reject",
         "reason": "Result is from the non-record exploration lane and is evidentiary-only; benchmark-readiness promotion is intentionally disallowed."
+      }
+    },
+    {
+      "experimentId": "exp-fast39-cheap-screen-001",
+      "evidenceId": "evidence-exp-fast39-cheap-screen-001",
+      "lane": "cheap-screen",
+      "status": "accepted",
+      "completedAt": "2026-04-24T16:48:56Z",
+      "objectiveMetricName": "benchmark-score",
+      "objectiveValue": 1.0506,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-39:cheap-screen:exp-fast39-cheap-screen-001",
+      "taskId": "FAST-39",
+      "traceId": "trace-fast39-cheap-screen-001",
+      "runConfig": {
+        "seed": 39,
+        "sourceTaskId": "FAST-39"
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 30
       }
     }
   ]

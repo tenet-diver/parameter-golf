@@ -1,0 +1,37 @@
+{
+  "taskId": "FAST-39",
+  "title": "Run the next cheap-screen benchmark candidate for parameter-golf",
+  "lane": "cheap-screen",
+  "candidateId": "exp-fast39-cheap-screen-001",
+  "status": "success",
+  "reasonCode": "cheap-screen-success",
+  "completedAt": "2026-04-24T16:48:56Z",
+  "commands": [
+    "python fastest/scripts/run_cheap_screen_candidate.py --task fastest/generated/fast39_cheap_screen_task.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json --output fastest/generated/fast39_cheap_screen_outcome.json"
+  ],
+  "commandOutputs": [
+    "first invocation produced success evidence append; second invocation returned duplicate-task-replay as expected idempotent behavior"
+  ],
+  "artifactPaths": [
+    "fastest/generated/fast39_cheap_screen_task.json",
+    "fastest/generated/fast39_cheap_screen_outcome.json",
+    "fastest/source/measurement_evidence.json",
+    "fastest/generated/campaign_status.json",
+    "fastest/generated/campaign_state.json",
+    "planning/fast39_cheap_screen_execution_packet.json"
+  ],
+  "observedMetric": {
+    "name": "benchmark-score",
+    "value": 1.0506,
+    "previousBestCheapScreen": 1.0891,
+    "metricSource": "fastest/source/measurement_evidence.json"
+  },
+  "promotionRationale": {
+    "decision": "reject",
+    "reason": "Reject promotion because cheap-screen benchmark-score 1.0506 is below the current lane best 1.0891."
+  },
+  "assumptions": [
+    "Authoritative task-store sqlite under /home/codespace/.fastest/... was not readable in this sandbox (sqlite3.OperationalError: unable to open database file), so execution used explicit FAST-39 task payload path.",
+    "Runner metric is deterministic via candidateId+seed hashing in fastest/scripts/run_cheap_screen_candidate.py default runner."
+  ]
+}
