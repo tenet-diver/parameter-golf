@@ -681,11 +681,30 @@
       "traceId": "trace-fast33-ablation-001",
       "runConfig": {
         "seed": 33,
-        "sourceTaskId": "FAST-33"
+        "sourceTaskId": "FAST-33",
+        "candidateId": "exp-fast33-ablation-001"
       },
       "budgetCaps": {
         "maxRuntimeSeconds": 30,
         "maxAblationExperiments": 100
+      },
+      "executionCommands": [
+        "python fastest/scripts/run_bounded_ablation_candidate.py --task fastest/generated/fast33_ablation_task.json --output fastest/generated/fast33_ablation_outcome.json --evidence-path fastest/source/measurement_evidence.json --status-path fastest/generated/campaign_status.json --state-path fastest/generated/campaign_state.json"
+      ],
+      "artifactPaths": [
+        "fastest/generated/fast33_ablation_task.json",
+        "fastest/generated/fast33_ablation_outcome.json",
+        "fastest/source/measurement_evidence.json",
+        "fastest/generated/campaign_status.json",
+        "fastest/generated/campaign_state.json"
+      ],
+      "observedMetricOutput": {
+        "name": "benchmark-score",
+        "value": 1.025
+      },
+      "promotionRationale": {
+        "decision": "reject",
+        "reason": "Candidate did not beat the best-known benchmark-score of 1.0999 from exp-fast37-combination-001."
       }
     }
   ]
