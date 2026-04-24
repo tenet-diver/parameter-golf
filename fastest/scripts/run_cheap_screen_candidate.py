@@ -172,13 +172,21 @@ def _coerce_seed(value: object) -> str:
 
 
 def _resolve_task_store_sqlite(task_store_dir: Path) -> Path:
+    default_sqlite_path = task_store_dir / "task-store.sqlite"
     sqlite_override = os.environ.get(TASK_STORE_SQLITE_FILE_ENV, "").strip()
     if sqlite_override:
-        override_path = Path(sqlite_override)
-        if override_path.is_absolute():
-            return override_path
-        return task_store_dir / override_path
-    return task_store_dir / "task-store.sqlite"
+        override_candidate = Path(sqlite_override)
+        if not override_candidate.is_absolute():
+            override_candidate = task_store_dir / override_candidate
+
+        task_store_root = task_store_dir.resolve()
+        default_resolved = default_sqlite_path.resolve()
+        candidate_resolved = override_candidate.resolve()
+        if candidate_resolved == default_resolved:
+            return candidate_resolved
+        if task_store_root in candidate_resolved.parents:
+            return candidate_resolved
+    return default_sqlite_path
 
 
 def _load_tasks_from_task_store(task_store_dir: Path) -> list[dict]:
