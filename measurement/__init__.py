@@ -5,6 +5,7 @@ from .control_pipeline import (
     publishEvidenceBundle,
     submitControlRun,
 )
+from .regression_gate import validateCandidateRegressionGate
 
 __all__ = [
     "CONTROL_EVIDENCE_SCHEMA_VERSION",
@@ -12,4 +13,5 @@ __all__ = [
     "evaluateControlTrust",
     "publishEvidenceBundle",
     "submitControlRun",
+    "validateCandidateRegressionGate",
 ]

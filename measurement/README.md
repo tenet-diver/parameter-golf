@@ -28,6 +28,13 @@ Each bundle contains:
 - Seed metrics are finite and within drift tolerance.
 - Aggregate metric is finite.
 
+## Candidate Regression Gate
+`validateCandidateRegressionGate(candidate, bundle_path, spec_ref)` is the additive gate for leaderboard-style claims.
+It rejects candidates when:
+- The candidate evaluation dataset, tokenizer, or metric name drifts from the trusted control bundle.
+- Claimed artifact bytes, size limit, compression codec/ratio, or quantization scheme differ from the artifact manifest.
+- A promising metric improvement cannot be reproduced within the declared tolerance.
+
 ## Recovery + Idempotency
 - Duplicate submissions with the same `(campaign_tick_id, spec_hash)` reuse one `bundle_id`.
 - Reused submissions can finalize incomplete evidence bundles by publishing missing metrics/checksums to the same bundle ID.
