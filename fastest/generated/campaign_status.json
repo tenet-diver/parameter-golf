@@ -2,7 +2,7 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-24T17:28:59.415Z",
+  "updatedAt": "2026-04-25T21:25:45.577Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "established",
@@ -23,9 +23,9 @@
     "unassigned": 0
   },
   "progress": {
-    "totalExperiments": 23,
-    "acceptedExperiments": 23,
-    "mostRecentEvidenceId": "evidence-exp-fast44-pr1732-import-001"
+    "totalExperiments": 24,
+    "acceptedExperiments": 24,
+    "mostRecentEvidenceId": "evidence-exp-baseline-tiny-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -50,19 +50,16 @@
     "exp-fast39-cheap-screen-001",
     "exp-fast33-ablation-001",
     "exp-fast42-combination-001",
-    "exp-fast44-pr1732-import-001"
+    "exp-fast44-pr1732-import-001",
+    "exp-baseline-tiny-cpu"
   ],
   "progressTrend": "unknown",
-  "bestKnownResult": {
-    "candidateId": "exp-fast37-combination-001",
-    "metricName": "benchmark-score",
-    "metricValue": 1.0999,
-    "observedAt": "2026-04-24T15:31:21Z"
-  },
+  "bestKnownResult": null,
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-24T19:00:00Z",
+  "lastProgressAt": "2026-04-25T21:42:37Z",
   "stalledProgress": true,
   "blockers": [
+    "No benchmark-verified campaign result exists yet.",
     "Campaign is active but the queue is empty.",
     "Campaign progress is stalled and needs investigation or measurement repair."
   ],

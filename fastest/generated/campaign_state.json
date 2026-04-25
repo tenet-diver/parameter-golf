@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-24T17:28:59.415Z",
+    "updatedAt": "2026-04-25T21:25:45.577Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -52,7 +52,7 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-24T19:00:00Z",
+  "lastProgressAt": "2026-04-25T21:42:37Z",
   "stalledSince": "2026-04-24T16:42:28.156Z",
   "evidenceSummaryCache": {
     "artifactIds": [
@@ -79,17 +79,13 @@
       "evidence-exp-fast39-cheap-screen-001",
       "evidence-exp-fast33-ablation-001",
       "evidence-exp-fast42-combination-001",
-      "evidence-exp-fast44-pr1732-import-001"
+      "evidence-exp-fast44-pr1732-import-001",
+      "evidence-exp-baseline-tiny-cpu"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
     "trustedControlState": "established",
-    "bestKnownResult": {
-      "candidateId": "exp-fast37-combination-001",
-      "metricName": "benchmark-score",
-      "metricValue": 1.0999,
-      "observedAt": "2026-04-24T15:31:21Z"
-    },
+    "bestKnownResult": null,
     "progressTrend": "unknown",
     "recentCompletedExperiments": [
       "exp-fast1-control-20260423-001",
@@ -114,10 +110,11 @@
       "exp-fast39-cheap-screen-001",
       "exp-fast33-ablation-001",
       "exp-fast42-combination-001",
-      "exp-fast44-pr1732-import-001"
+      "exp-fast44-pr1732-import-001",
+      "exp-baseline-tiny-cpu"
     ],
-    "acceptedExperiments": 23,
-    "totalExperiments": 23,
+    "acceptedExperiments": 24,
+    "totalExperiments": 24,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
       "candidateId": "evidence-exp-fast37-combination-001",

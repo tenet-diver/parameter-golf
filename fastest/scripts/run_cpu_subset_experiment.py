@@ -1,0 +1,315 @@
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+try:
+    from fastest.scripts.render_campaign_evidence import (
+        SOURCE_PATH as DEFAULT_EVIDENCE_PATH,
+        STATE_PATH as DEFAULT_STATE_PATH,
+        STATUS_PATH as DEFAULT_STATUS_PATH,
+        apply_measurement_evidence,
+    )
+except ModuleNotFoundError:
+    from render_campaign_evidence import (
+        SOURCE_PATH as DEFAULT_EVIDENCE_PATH,
+        STATE_PATH as DEFAULT_STATE_PATH,
+        STATUS_PATH as DEFAULT_STATUS_PATH,
+        apply_measurement_evidence,
+    )
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_RUN_ROOT = REPO_ROOT / "fastest/generated/cpu_subset_runs"
+FINAL_BPB_RE = re.compile(
+    r"final_int8_zlib_roundtrip_exact\s+val_loss:(?P<loss>[0-9.]+)\s+val_bpb:(?P<bpb>[0-9.]+)"
+)
+
+
+DEFAULT_CPU_ENV = {
+    "DATA_PATH": str(REPO_ROOT / "data/datasets/fineweb10B_sp1024"),
+    "TOKENIZER_PATH": str(REPO_ROOT / "data/tokenizers/fineweb_1024_bpe.model"),
+    "VOCAB_SIZE": "1024",
+    "NUM_LAYERS": "1",
+    "MODEL_DIM": "96",
+    "NUM_HEADS": "4",
+    "NUM_KV_HEADS": "2",
+    "MLP_MULT": "2",
+    "TRAIN_SEQ_LEN": "128",
+    "TRAIN_BATCH_TOKENS": "2048",
+    "VAL_BATCH_SIZE": "4096",
+    "VAL_TOKEN_LIMIT": "8192",
+    "ITERATIONS": "4",
+    "WARMUP_STEPS": "0",
+    "WARMDOWN_ITERS": "0",
+    "VAL_LOSS_EVERY": "2",
+    "TRAIN_LOG_EVERY": "1",
+    "MAX_WALLCLOCK_SECONDS": "600",
+    "ARTIFACT_BUDGET_STRICT": "1",
+}
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text())
+    if not isinstance(payload, dict):
+        raise ValueError(f"{path} root must be an object")
+    return payload
+
+
+def write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(f"{json.dumps(payload, indent=2)}\n")
+
+
+def parse_final_val_bpb(output: str) -> tuple[float, float]:
+    matches = list(FINAL_BPB_RE.finditer(output))
+    if not matches:
+        raise ValueError("train_gpt output did not contain final_int8_zlib_roundtrip_exact val_bpb")
+    match = matches[-1]
+    return float(match.group("loss")), float(match.group("bpb"))
+
+
+def build_cpu_subset_env(candidate: dict[str, Any], run_id: str) -> dict[str, str]:
+    env = dict(DEFAULT_CPU_ENV)
+    overrides = candidate.get("env")
+    if isinstance(overrides, dict):
+        for key, value in overrides.items():
+            if isinstance(key, str) and key and isinstance(value, (str, int, float)):
+                env[key] = str(value)
+    env["RUN_ID"] = run_id
+    env["SEED"] = str(candidate.get("seed", env.get("SEED", "1337")))
+    return env
+
+
+def regenerate_views(evidence_path: Path, status_path: Path, state_path: Path) -> None:
+    source = load_json(evidence_path)
+    status = load_json(status_path)
+    state = load_json(state_path)
+    rendered_status, rendered_state = apply_measurement_evidence(source, status, state)
+    write_json(status_path, rendered_status)
+    write_json(state_path, rendered_state)
+
+
+def artifact_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def append_cpu_subset_evidence(
+    *,
+    candidate: dict[str, Any],
+    run_id: str,
+    completed_at: str,
+    val_loss: float,
+    val_bpb: float,
+    command: list[str],
+    run_dir: Path,
+    train_env: dict[str, str],
+    evidence_path: Path,
+) -> dict[str, Any]:
+    evidence = load_json(evidence_path)
+    records = evidence.setdefault("experimentRecords", [])
+    if not isinstance(records, list):
+        raise ValueError("experimentRecords must be a list")
+
+    candidate_id = str(candidate.get("candidateId") or run_id)
+    task_id = str(candidate.get("taskId") or "manual-cpu-subset")
+    experiment_id = f"exp-{candidate_id}"
+    idempotency_key = f"{task_id}:cpu-subset:{experiment_id}"
+    existing = next(
+        (
+            record
+            for record in records
+            if isinstance(record, dict) and record.get("idempotencyKey") == idempotency_key
+        ),
+        None,
+    )
+    if existing is not None:
+        return existing
+
+    evidence_id = f"evidence-{experiment_id}"
+    record = {
+        "experimentId": experiment_id,
+        "evidenceId": evidence_id,
+        "lane": "cpu-subset",
+        "status": "accepted",
+        "completedAt": completed_at,
+        "objectiveMetricName": "val_bpb",
+        "objectiveValue": val_bpb,
+        "failureCode": None,
+        "failureMessage": None,
+        "idempotencyKey": idempotency_key,
+        "taskId": task_id,
+        "traceId": f"trace-{candidate_id}",
+        "runConfig": {
+            "seed": train_env.get("SEED"),
+            "iterations": int(train_env["ITERATIONS"]),
+            "trainSeqLen": int(train_env["TRAIN_SEQ_LEN"]),
+            "trainBatchTokens": int(train_env["TRAIN_BATCH_TOKENS"]),
+            "valTokenLimit": int(train_env["VAL_TOKEN_LIMIT"]),
+            "modelDim": int(train_env["MODEL_DIM"]),
+            "numLayers": int(train_env["NUM_LAYERS"]),
+        },
+        "budgetCaps": {
+            "maxRuntimeSeconds": int(float(train_env["MAX_WALLCLOCK_SECONDS"])),
+            "hostClass": "cpu-smoke",
+        },
+        "resultClass": "cpu-subset",
+        "verificationClass": "cpu-subset",
+        "classificationReason": (
+            "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for "
+            "ranking cheap ideas, not leaderboard or benchmark-verified progress."
+        ),
+        "observedMetricOutput": {
+            "name": "val_bpb",
+            "value": val_bpb,
+            "valLoss": val_loss,
+            "direction": "lower_is_better",
+        },
+        "executionCommands": [" ".join(command)],
+        "artifactPaths": [
+            artifact_path(run_dir / "stdout.txt"),
+            artifact_path(run_dir / "stderr.txt"),
+            artifact_path(run_dir / "result.json"),
+            artifact_path(run_dir / "final_model.int8.ptz"),
+        ],
+        "promotionRationale": {
+            "decision": "hold",
+            "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+            "missingEvidence": ["benchmark-verified-run"],
+        },
+    }
+    records.append(record)
+
+    summary = evidence.setdefault("summary", {})
+    if isinstance(summary, dict):
+        artifact_ids = summary.get("artifactIds")
+        if not isinstance(artifact_ids, list):
+            artifact_ids = []
+        if evidence_id not in artifact_ids:
+            artifact_ids.append(evidence_id)
+        summary["artifactIds"] = artifact_ids
+        summary["totalExperiments"] = int(summary.get("totalExperiments", 0)) + 1
+        summary["acceptedExperiments"] = int(summary.get("acceptedExperiments", 0)) + 1
+        summary["mostRecentEvidenceId"] = evidence_id
+
+    recent = evidence.get("recentCompletedExperiments")
+    if not isinstance(recent, list):
+        recent = []
+    if experiment_id not in recent:
+        recent.append(experiment_id)
+    evidence["recentCompletedExperiments"] = recent
+    evidence["updatedAt"] = completed_at
+    write_json(evidence_path, evidence)
+    return record
+
+
+def run_cpu_subset_experiment(
+    *,
+    candidate: dict[str, Any],
+    evidence_path: Path,
+    status_path: Path,
+    state_path: Path,
+    run_root: Path,
+) -> dict[str, Any]:
+    candidate_id = str(candidate.get("candidateId") or f"cpu-subset-{utc_now_iso()}")
+    run_id = f"cpu_subset_{candidate_id}".replace("/", "_").replace(":", "_")
+    run_dir = run_root / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    train_env = build_cpu_subset_env(candidate, run_id)
+    command = [sys.executable, str(REPO_ROOT / "train_gpt.py")]
+    env = os.environ.copy()
+    env.update(train_env)
+    completed = subprocess.run(
+        command,
+        cwd=run_dir,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    (run_dir / "stdout.txt").write_text(completed.stdout)
+    (run_dir / "stderr.txt").write_text(completed.stderr)
+    if completed.returncode != 0:
+        result = {
+            "status": "error",
+            "reasonCode": "cpu-subset-run-failed",
+            "returnCode": completed.returncode,
+            "stdoutPath": str((run_dir / "stdout.txt").relative_to(REPO_ROOT)),
+            "stderrPath": str((run_dir / "stderr.txt").relative_to(REPO_ROOT)),
+        }
+        write_json(run_dir / "result.json", result)
+        return result
+
+    val_loss, val_bpb = parse_final_val_bpb(completed.stdout)
+    completed_at = utc_now_iso()
+    record = append_cpu_subset_evidence(
+        candidate=candidate,
+        run_id=run_id,
+        completed_at=completed_at,
+        val_loss=val_loss,
+        val_bpb=val_bpb,
+        command=command,
+        run_dir=run_dir,
+        train_env=train_env,
+        evidence_path=evidence_path,
+    )
+    regenerate_views(evidence_path, status_path, state_path)
+    result = {
+        "status": "success",
+        "reasonCode": "cpu-subset-success",
+        "candidateId": record["experimentId"],
+        "observedMetric": record["observedMetricOutput"],
+        "resultClass": "cpu-subset",
+        "artifactPaths": record["artifactPaths"],
+    }
+    write_json(run_dir / "result.json", result)
+    return result
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run one real CPU-subset Parameter Golf experiment.")
+    parser.add_argument("--candidate", help="Path to candidate JSON. Defaults to a tiny baseline candidate.")
+    parser.add_argument("--evidence-path", default=str(DEFAULT_EVIDENCE_PATH))
+    parser.add_argument("--status-path", default=str(DEFAULT_STATUS_PATH))
+    parser.add_argument("--state-path", default=str(DEFAULT_STATE_PATH))
+    parser.add_argument("--run-root", default=str(DEFAULT_RUN_ROOT))
+    parser.add_argument("--output", help="Optional result JSON output path.")
+    args = parser.parse_args()
+
+    candidate = {
+        "taskId": "manual-cpu-subset",
+        "candidateId": "baseline-tiny-cpu",
+        "seed": 1337,
+    }
+    if args.candidate:
+        candidate = load_json(Path(args.candidate))
+
+    result = run_cpu_subset_experiment(
+        candidate=candidate,
+        evidence_path=Path(args.evidence_path),
+        status_path=Path(args.status_path),
+        state_path=Path(args.state_path),
+        run_root=Path(args.run_root),
+    )
+    if args.output:
+        write_json(Path(args.output), result)
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()

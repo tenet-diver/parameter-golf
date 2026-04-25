@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-25T21:40:00Z",
+  "updatedAt": "2026-04-25T21:42:37Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -27,12 +27,13 @@
       "evidence-exp-fast39-cheap-screen-001",
       "evidence-exp-fast33-ablation-001",
       "evidence-exp-fast42-combination-001",
-      "evidence-exp-fast44-pr1732-import-001"
+      "evidence-exp-fast44-pr1732-import-001",
+      "evidence-exp-baseline-tiny-cpu"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 23,
-    "acceptedExperiments": 23,
-    "mostRecentEvidenceId": "evidence-exp-fast44-pr1732-import-001"
+    "totalExperiments": 24,
+    "acceptedExperiments": 24,
+    "mostRecentEvidenceId": "evidence-exp-baseline-tiny-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -57,7 +58,8 @@
     "exp-fast39-cheap-screen-001",
     "exp-fast33-ablation-001",
     "exp-fast42-combination-001",
-    "exp-fast44-pr1732-import-001"
+    "exp-fast44-pr1732-import-001",
+    "exp-baseline-tiny-cpu"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -900,6 +902,58 @@
         "planning/fast47_pr1797_source_audit_execution_packet.json",
         "fastest/source/fast-47-pr1797-source-audit-evidence.md"
       ]
+    },
+    {
+      "experimentId": "exp-baseline-tiny-cpu",
+      "evidenceId": "evidence-exp-baseline-tiny-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-25T21:42:37Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 4.26207938,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "manual-cpu-subset:cpu-subset:exp-baseline-tiny-cpu",
+      "taskId": "manual-cpu-subset",
+      "traceId": "trace-baseline-tiny-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 4,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 8192,
+        "modelDim": 96,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 4.26207938,
+        "valLoss": 7.32936311,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_baseline-tiny-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_baseline-tiny-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_baseline-tiny-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_baseline-tiny-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "hold",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      }
     }
   ]
 }
