@@ -29,6 +29,24 @@ class Fast47Pr1797SourceAuditPacketTest(unittest.TestCase):
         self.assertIn("E-1797-DISCUSSION", evidence_ids)
         self.assertIn("E-1797-LEGALITY-GATE", evidence_ids)
 
+        assessment = packet.get("runnableLegalityAssessment")
+        self.assertIsInstance(assessment, dict)
+        proof_matrix = assessment.get("proofMatrix")
+        self.assertIsInstance(proof_matrix, list)
+        self.assertEqual(len(proof_matrix), 5)
+        for entry in proof_matrix:
+            self.assertIsInstance(entry, dict)
+            self.assertIn(entry.get("path"), {"train", "eval", "submission", "logs", "discussion"})
+            self.assertIn(entry.get("status"), {"complete", "partial", "missing"})
+            refs = entry.get("evidenceRefs")
+            self.assertIsInstance(refs, list)
+            self.assertTrue(refs)
+            for evidence_id in refs:
+                self.assertIn(evidence_id, evidence_ids)
+            if entry.get("status") != "complete":
+                self.assertIsInstance(entry.get("blockerReasonCode"), str)
+                self.assertTrue(entry.get("blockerReasonCode"))
+
         decision = packet.get("promotionDecision")
         self.assertIsInstance(decision, dict)
         self.assertIn(decision.get("advanceOutcome"), {"advance-to-external-reproduction", "blocked", "hold"})

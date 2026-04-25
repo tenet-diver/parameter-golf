@@ -8,10 +8,10 @@
   "completedAt": "2026-04-25T21:40:00Z",
   "commands": [
     "mcp__codex_apps__github._get_pr_info(repository_full_name=openai/parameter-golf, pr_number=1797)",
-    "web.open https://github.com/openai/parameter-golf/pull/1797",
-    "web.open https://github.com/openai/parameter-golf/pull/1797/files",
-    "web.click turn1view0 id=89",
-    "web.open turn4view1 lineno=400"
+    "web.open https://github.com/openai/parameter-golf/pull/1797 lineno=205",
+    "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=295",
+    "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=299",
+    "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=418"
   ],
   "evidenceRecords": [
     {
@@ -29,8 +29,8 @@
       "capturedAtUtc": "2026-04-25T21:31:00Z",
       "sourceType": "github-pr-files-tree",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files",
-      "excerpt": "PR files tree includes records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157 with README.md, submission.json, train_gpt.py, train_seed1234.log, train_seed314.log, and train_seed42.log."
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=295",
+      "excerpt": "Files tree lines 313-323 show the PR head record folder with README.md, lossless_caps.py, prepare_caseops_data.py, submission.json, train_gpt.py, and train_seed1234/314/42.log artifacts."
     },
     {
       "id": "E-1797-SOURCE-DIFF",
@@ -38,8 +38,8 @@
       "capturedAtUtc": "2026-04-25T21:33:00Z",
       "sourceType": "github-pr-commit-diff-snippet",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b",
-      "retrievalCommand": "web.open turn4view1 lineno=400",
-      "excerpt": "prepare_caseops_data.py diff shows canonical byte-count path: byte_counts = surface_piece_original_byte_counts(...); return np.asarray(list(byte_counts), dtype=np.uint16)."
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=418",
+      "excerpt": "prepare_caseops_data.py diff lines 409-414 show canonical byte-count wiring: byte_counts = surface_piece_original_byte_counts((piece.surface for piece in proto.pieces), text_transform_name=LOSSLESS_CAPS_CASEOPS_V1); return np.asarray(list(byte_counts), dtype=np.uint16)."
     },
     {
       "id": "E-1797-SUBMISSION-METADATA",
@@ -47,8 +47,8 @@
       "capturedAtUtc": "2026-04-25T21:28:00Z",
       "sourceType": "github-pr-conversation-body",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797",
-      "excerpt": "PR body reports 3-seed mean post-TTT val_bpb 1.06157 (std 0.00066), artifact about 15.95MB, and train/eval budget claims under 600s."
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797 lineno=205",
+      "excerpt": "Conversation lines 217-223 report per-seed and mean val_bpb values, and lines 226-228 state artifact <=16,000,000 bytes plus train/eval budget claims <=600s."
     },
     {
       "id": "E-1797-TRAIN-LOGS",
@@ -56,8 +56,8 @@
       "capturedAtUtc": "2026-04-25T21:31:00Z",
       "sourceType": "github-pr-files-tree",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
-      "retrievalCommand": "web.open turn1view0 lineno=320",
-      "excerpt": "Files tree lists train_seed1234.log, train_seed314.log, and train_seed42.log under the 2026-04-24 record directory; direct log body lines were not retrievable in this capture."
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=312",
+      "excerpt": "Files tree lines 321-323 list train_seed1234.log, train_seed314.log, and train_seed42.log under the PR head record directory; direct log body lines were not retrievable."
     },
     {
       "id": "E-1797-DISCUSSION",
@@ -65,8 +65,8 @@
       "capturedAtUtc": "2026-04-25T21:31:00Z",
       "sourceType": "github-pr-discussion-state",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files",
-      "excerpt": "PR files page showed 'Failed to load comments' and 'There was an error while loading', so no additional reviewer discussion evidence was obtainable in this run."
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=295",
+      "excerpt": "Files page lines 252-253 and 256-258 report 'Failed to load comments' and 'There was an error while loading', so reviewer thread content could not be captured."
     },
     {
       "id": "E-1797-LEGALITY-GATE",
@@ -74,8 +74,8 @@
       "capturedAtUtc": "2026-04-25T21:33:00Z",
       "sourceType": "github-pr-commit-message-and-diff",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b",
-      "retrievalCommand": "web.open turn3view1 lineno=312",
-      "excerpt": "Commit message claims previous byte-count walker over-counted by ~8.37% and switches to canonical exporter used by PR #1729, with stated token-for-token sidecar match on sampled docs."
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=299",
+      "excerpt": "Commit message lines 312-323 state previous byte counter over-counted by ~8.37% and the patch switched to canonical sidecar export with token-for-token match on sampled docs."
     }
   ],
   "runnableLegalityAssessment": {
@@ -84,6 +84,51 @@
     "submissionPathEvidence": "partial",
     "legalityGateEvidence": "partial",
     "sourceLevelProofComplete": false,
+    "proofMatrix": [
+      {
+        "path": "train",
+        "status": "partial",
+        "evidenceRefs": [
+          "E-1797-FILES-TREE",
+          "E-1797-SUBMISSION-METADATA"
+        ],
+        "blockerReasonCode": "missing_train_gpt_source_body"
+      },
+      {
+        "path": "eval",
+        "status": "partial",
+        "evidenceRefs": [
+          "E-1797-SUBMISSION-METADATA",
+          "E-1797-LEGALITY-GATE"
+        ],
+        "blockerReasonCode": "missing_eval_source_body"
+      },
+      {
+        "path": "submission",
+        "status": "partial",
+        "evidenceRefs": [
+          "E-1797-FILES-TREE",
+          "E-1797-SUBMISSION-METADATA"
+        ],
+        "blockerReasonCode": "missing_submission_json_body"
+      },
+      {
+        "path": "logs",
+        "status": "partial",
+        "evidenceRefs": [
+          "E-1797-TRAIN-LOGS"
+        ],
+        "blockerReasonCode": "missing_train_log_body_lines"
+      },
+      {
+        "path": "discussion",
+        "status": "partial",
+        "evidenceRefs": [
+          "E-1797-DISCUSSION"
+        ],
+        "blockerReasonCode": "github_files_discussion_load_error"
+      }
+    ],
     "missingProof": [
       "Direct source text of PR head train_gpt.py runnable entrypoints was not captured.",
       "Direct submission.json contents were not captured from PR head files.",

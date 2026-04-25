@@ -868,7 +868,7 @@
         "maxEvalSeconds": 600
       },
       "submissionClass": "public-pr-source-audit",
-      "classificationReason": "Audited PR #1797 with direct PR metadata and commit-diff evidence, but runnable train/eval/submission legality proof is incomplete from captured source text.",
+      "classificationReason": "Audited PR #1797 with direct PR metadata, files-tree, and commit-diff evidence. Source-level runnable legality proof matrix remains partial (missing train_gpt.py body, eval-path body lines, submission.json body, log body lines, and retrievable discussion thread content).",
       "campaignStatus": "blocked",
       "sourceAttribution": {
         "author": "dexhunter",
@@ -887,7 +887,14 @@
       "verificationGate": {
         "status": "blocked",
         "reasonCode": "missing_source_level_runnable_legality_proof",
-        "reason": "PR head train_gpt.py/submission.json/log bodies and full discussion evidence were not fully retrievable in this audit run; do not promote to winning."
+        "reason": "PR head train_gpt.py/submission.json/log bodies and full discussion evidence were not fully retrievable in this audit run; do not promote to winning.",
+        "blockerReasonCodes": [
+          "missing_train_gpt_source_body",
+          "missing_eval_source_body",
+          "missing_submission_json_body",
+          "missing_train_log_body_lines",
+          "github_files_discussion_load_error"
+        ]
       },
       "artifactPaths": [
         "planning/fast47_pr1797_source_audit_execution_packet.json",
