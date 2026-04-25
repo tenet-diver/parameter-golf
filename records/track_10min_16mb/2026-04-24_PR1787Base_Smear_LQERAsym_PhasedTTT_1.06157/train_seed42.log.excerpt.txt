@@ -1,0 +1,5 @@
+PR1797 train_seed42.log excerpt
+- stopping_early: wallclock_cap train_time: 599587ms step: 4948/20000
+- Total submission size quantized+brotli: 15953178 bytes
+- quantized_ttt_phased val_bpb:1.06180824
+- total_eval_time:451.9s

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-25T21:42:37Z",
+  "updatedAt": "2026-04-25T22:40:00Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -850,7 +850,7 @@
       "evidenceId": "evidence-exp-fast47-pr1797-source-audit-001",
       "lane": "legal-evidence:source-level-audit",
       "status": "accepted",
-      "completedAt": "2026-04-25T21:40:00Z",
+      "completedAt": "2026-04-25T22:02:00Z",
       "objectiveMetricName": "val_bpb",
       "objectiveValue": 1.06157,
       "failureCode": null,
@@ -870,8 +870,8 @@
         "maxEvalSeconds": 600
       },
       "submissionClass": "public-pr-source-audit",
-      "classificationReason": "Audited PR #1797 with direct PR metadata, files-tree, and commit-diff evidence. Source-level runnable legality proof matrix remains partial (missing train_gpt.py body, eval-path body lines, submission.json body, log body lines, and retrievable discussion thread content).",
-      "campaignStatus": "blocked",
+      "classificationReason": "Audited PR #1797 using direct PR-head source retrieval for README/submission/prep/train_gpt/logs plus discussion metadata; imported attributed candidate artifacts under records/track_10min_16mb and advanced to external reproduction gating.",
+      "campaignStatus": "advance-to-external-reproduction",
       "sourceAttribution": {
         "author": "dexhunter",
         "githubId": "dexhunter",
@@ -883,24 +883,26 @@
         "deltaBpb": -0.01943
       },
       "reproductionStatus": {
-        "status": "hold",
-        "reason": "External reproduction gate deferred until source-level runnable legality evidence is complete."
+        "status": "needs_external_8xh100_verification",
+        "reason": "Source-level legality evidence is complete; authoritative reproduction still requires external 8xH100 hardware."
       },
       "verificationGate": {
-        "status": "blocked",
-        "reasonCode": "missing_source_level_runnable_legality_proof",
-        "reason": "PR head train_gpt.py/submission.json/log bodies and full discussion evidence were not fully retrievable in this audit run; do not promote to winning.",
-        "blockerReasonCodes": [
-          "missing_train_gpt_source_body",
-          "missing_eval_source_body",
-          "missing_submission_json_body",
-          "missing_train_log_body_lines",
-          "github_files_discussion_load_error"
-        ]
+        "status": "advance-to-external-reproduction",
+        "reasonCode": "source_level_runnable_legality_proof_complete",
+        "reason": "Source-level train/eval/submission/log/discussion evidence was captured directly from PR #1797 head files and discussion; promote to external reproduction lane before any winning decision."
       },
       "artifactPaths": [
         "planning/fast47_pr1797_source_audit_execution_packet.json",
-        "fastest/source/fast-47-pr1797-source-audit-evidence.md"
+        "fastest/source/fast-47-pr1797-source-audit-evidence.md",
+        "fastest/source/measurement_evidence.json",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/ATTRIBUTION.md",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/README.md",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/prepare_caseops_data.py.source_excerpt.md",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py.source_excerpt.md",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed42.log.excerpt.txt",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed314.log.excerpt.txt",
+        "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed1234.log.excerpt.txt"
       ]
     },
     {

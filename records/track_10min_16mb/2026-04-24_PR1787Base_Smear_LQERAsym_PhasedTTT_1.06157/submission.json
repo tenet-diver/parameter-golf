@@ -1,0 +1,40 @@
+{
+  "author": "dexhunter",
+  "github_id": "dexhunter",
+  "name": "PR1787Base + SmearGate + LQER Asymmetric + Phased TTT",
+  "date": "2026-04-24",
+  "track": "10min_16mb",
+  "val_loss": 2.32312,
+  "val_bpb": 1.06157,
+  "val_bpb_std": 0.00066,
+  "seeds": [
+    314,
+    42,
+    1234
+  ],
+  "seed_results": {
+    "314": {
+      "val_bpb": 1.06082659,
+      "artifact_bytes": 15951189,
+      "train_time_s": 599.474,
+      "eval_time_s": 494.8
+    },
+    "42": {
+      "val_bpb": 1.06180824,
+      "artifact_bytes": 15953178,
+      "train_time_s": 599.587,
+      "eval_time_s": 451.9
+    },
+    "1234": {
+      "val_bpb": 1.06208795,
+      "artifact_bytes": 15953718,
+      "train_time_s": 599.643,
+      "eval_time_s": 423.3
+    }
+  },
+  "provenance": {
+    "source_pr": "https://github.com/openai/parameter-golf/pull/1797",
+    "source_head_sha": "04d35edaad74fc88b5ef08a814c94596b616ec1b",
+    "source_path": "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json"
+  }
+}

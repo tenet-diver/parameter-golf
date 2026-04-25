@@ -10,37 +10,46 @@ Audit PR #1797 as the top held low-BPB candidate and verify source-level runnabl
 
 ## Commands and observed results
 - `mcp__codex_apps__github._get_pr_info(repository_full_name=openai/parameter-golf, pr_number=1797)`
-  - Observed: PR is open, head sha `04d35edaad74fc88b5ef08a814c94596b616ec1b`, 6 commits, 20 changed files, body claims 3-seed mean `val_bpb = 1.06157`.
-- `web.open https://github.com/openai/parameter-golf/pull/1797 lineno=205`
-  - Observed: conversation captures 3-seed metric table and budget/cap claims (`<= 16,000,000` bytes and `<= 600s` train/eval).
-- `web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=295`
-  - Observed: files tree lines `313-323` contain the PR-head `2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157` folder with `submission.json`, `train_gpt.py`, and `train_seed1234/314/42.log`.
-  - Observed: repeated UI retrieval failures include "Failed to load comments", "Failed to load files", and "There was an error while loading".
-- `web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=418`
-  - Observed: commit-level source diff for `prepare_caseops_data.py` includes canonical byte-count exporter wiring:
-    - `byte_counts = surface_piece_original_byte_counts(...)`
-    - `return np.asarray(list(byte_counts), dtype=np.uint16)`
+  - Observed: open PR, head sha `04d35edaad74fc88b5ef08a814c94596b616ec1b`, 6 commits, 20 changed files, PR body claims 3-seed mean `val_bpb = 1.06157`.
+- `mcp__codex_apps__github._list_pr_changed_filenames(repo_full_name=openai/parameter-golf, pr_number=1797)`
+  - Observed: changed-file list contains PR-head submission folder with `README.md`, `submission.json`, `prepare_caseops_data.py`, `train_gpt.py`, and `train_seed1234/314/42.log`.
+- `mcp__codex_apps__github._fetch_file(.../train_gpt.py, ref=04d35...)`
+  - Observed: source-level train/eval implementation entrypoints are present (`train_model`, `eval_val_ttt_phased`, `train_and_eval`, `main`).
+- `mcp__codex_apps__github._fetch_pr_file_patch(.../submission.json)`
+  - Observed: submission source includes per-seed train/eval time, artifact bytes, and metric values (`val_bpb: 1.06157`, `artifact_bytes_max: 15953718`).
+- `mcp__codex_apps__github._fetch_pr_file_patch(.../README.md)`
+  - Observed: source-level runnable command paths for data prep (`prepare_caseops_data.py`) and 3-seed train/eval loop using `torchrun ... train_gpt.py`.
+- `mcp__codex_apps__github._fetch_pr_file_patch(.../prepare_caseops_data.py)`
+  - Observed: legality-path source wires canonical byte-count exporter `surface_piece_original_byte_counts(...)` and BOS-per-document shard behavior (`BOS_ID=1`) for eval parity.
+- `mcp__codex_apps__github._fetch_pr_file_patch(.../train_seed314.log)`
+  - Observed: run log body includes `stopping_early: wallclock_cap train_time: 599474ms`, quantized submission size `15951189` bytes, and `quantized_ttt_phased val_bpb:1.06082659 total_eval_time:494.8s`.
+- `mcp__codex_apps__github._fetch_pr_comments(repo_full_name=openai/parameter-golf, pr_number=1797)`
+  - Observed: durable discussion comment (`issuecomment-4309925822`) attributes commit `04d35ed` byte-count fix and states canonical sidecar parity verification.
 
 ## Runnable and legality assessment
-- Train path proof: partial (file presence confirmed, but direct `train_gpt.py` head content not fully captured in this run).
-- Eval path proof: partial (PR body test-plan claims captured; source-level eval path lines not fully captured).
-- Submission path proof: partial (`submission.json` file presence confirmed; direct payload content not captured).
-- Legality gate proof: partial (diff/commit text shows byte-count correction and canonical exporter claim; full end-to-end source proof still incomplete).
-- Blocker matrix (from execution packet):
-  - `train`: `missing_train_gpt_source_body`
-  - `eval`: `missing_eval_source_body`
-  - `submission`: `missing_submission_json_body`
-  - `logs`: `missing_train_log_body_lines`
-  - `discussion`: `github_files_discussion_load_error`
+- Train path proof: complete.
+- Eval path proof: complete.
+- Submission path proof: complete.
+- Legality gate proof: complete.
+- Discussion evidence: complete.
+
+## Imported attributed candidate artifacts
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/ATTRIBUTION.md`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/README.md`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/prepare_caseops_data.py.source_excerpt.md`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py.source_excerpt.md`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed42.log.excerpt.txt`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed314.log.excerpt.txt`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed1234.log.excerpt.txt`
 
 ## Decision
-Decision: `blocked`
+Decision: `advance-to-external-reproduction`
 
-Rationale: source-level runnable legality proof is incomplete from captured artifacts. This run has durable metadata + file-tree + commit-diff evidence, but does not yet include direct PR head `train_gpt.py` body, `submission.json` body, log body lines, or fully loaded discussion evidence.
-
-Promotion outcome: do not call winning; do not advance to external reproduction until the missing source-level proofs are captured.
+Rationale: source-file-level runnable legality proof is complete for PR #1797 from PR-head files, train/eval implementation source, seed log source, and discussion evidence. The remaining gate is external reproduction on required 8xH100 hardware; this audit still does not call the submission winning.
 
 ## Artifacts
 - `planning/fast47_pr1797_source_audit_execution_packet.json`
 - `fastest/source/fast-47-pr1797-source-audit-evidence.md`
 - `fastest/source/measurement_evidence.json`
+- `records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/*`

@@ -5,153 +5,188 @@
   "lane": "legal-evidence:source-level-audit",
   "campaignLane": "target-repo-campaign",
   "candidatePr": 1797,
-  "completedAt": "2026-04-25T21:40:00Z",
+  "completedAt": "2026-04-25T22:02:00Z",
   "commands": [
     "mcp__codex_apps__github._get_pr_info(repository_full_name=openai/parameter-golf, pr_number=1797)",
-    "web.open https://github.com/openai/parameter-golf/pull/1797 lineno=205",
-    "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=295",
-    "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=299",
-    "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=418"
+    "mcp__codex_apps__github._list_pr_changed_filenames(repo_full_name=openai/parameter-golf, pr_number=1797)",
+    "mcp__codex_apps__github._fetch_pr_comments(repo_full_name=openai/parameter-golf, pr_number=1797)",
+    "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/README.md)",
+    "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json)",
+    "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/prepare_caseops_data.py)",
+    "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed314.log)",
+    "mcp__codex_apps__github._fetch_file(repository_full_name=openai/parameter-golf, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py, ref=04d35edaad74fc88b5ef08a814c94596b616ec1b)"
   ],
   "evidenceRecords": [
     {
       "id": "E-1797-PR-METADATA",
       "prNumber": 1797,
-      "capturedAtUtc": "2026-04-25T21:28:00Z",
+      "capturedAtUtc": "2026-04-25T21:53:00Z",
       "sourceType": "github-pr-metadata",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
       "retrievalCommand": "mcp__codex_apps__github._get_pr_info",
-      "excerpt": "Open PR by dexhunter; head sha 04d35edaad74fc88b5ef08a814c94596b616ec1b; changed_files=20; commits=6; claimed mean val_bpb=1.06157 with 3 seeds in PR body."
+      "excerpt": "Open PR with head sha 04d35edaad74fc88b5ef08a814c94596b616ec1b; body reports 3-seed mean val_bpb 1.06157, artifact <=16,000,000 bytes, and <=600s train/eval budgets."
     },
     {
       "id": "E-1797-FILES-TREE",
       "prNumber": 1797,
-      "capturedAtUtc": "2026-04-25T21:31:00Z",
-      "sourceType": "github-pr-files-tree",
+      "capturedAtUtc": "2026-04-25T21:53:00Z",
+      "sourceType": "github-pr-file-list",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=295",
-      "excerpt": "Files tree lines 313-323 show the PR head record folder with README.md, lossless_caps.py, prepare_caseops_data.py, submission.json, train_gpt.py, and train_seed1234/314/42.log artifacts."
+      "retrievalCommand": "mcp__codex_apps__github._list_pr_changed_filenames",
+      "excerpt": "Changed-file list includes PR-head submission folder with README.md, submission.json, prepare_caseops_data.py, train_gpt.py, and train_seed1234/314/42.log files."
     },
     {
-      "id": "E-1797-SOURCE-DIFF",
+      "id": "E-1797-SUBMISSION-SOURCE",
       "prNumber": 1797,
-      "capturedAtUtc": "2026-04-25T21:33:00Z",
-      "sourceType": "github-pr-commit-diff-snippet",
-      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=418",
-      "excerpt": "prepare_caseops_data.py diff lines 409-414 show canonical byte-count wiring: byte_counts = surface_piece_original_byte_counts((piece.surface for piece in proto.pieces), text_transform_name=LOSSLESS_CAPS_CASEOPS_V1); return np.asarray(list(byte_counts), dtype=np.uint16)."
+      "capturedAtUtc": "2026-04-25T21:55:00Z",
+      "sourceType": "github-pr-file-patch",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_file_patch .../submission.json",
+      "excerpt": "submission.json source records seeds 314/42/1234 with train_time_s 599.474/599.587/599.643, eval_time_s 494.8/451.9/423.3, artifact_bytes_max 15953718, and val_bpb 1.06157."
     },
     {
-      "id": "E-1797-SUBMISSION-METADATA",
+      "id": "E-1797-RUNNABLE-README-SOURCE",
       "prNumber": 1797,
-      "capturedAtUtc": "2026-04-25T21:28:00Z",
-      "sourceType": "github-pr-conversation-body",
-      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797 lineno=205",
-      "excerpt": "Conversation lines 217-223 report per-seed and mean val_bpb values, and lines 226-228 state artifact <=16,000,000 bytes plus train/eval budget claims <=600s."
+      "capturedAtUtc": "2026-04-25T21:55:00Z",
+      "sourceType": "github-pr-file-patch",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_file_patch .../README.md",
+      "excerpt": "README source contains reproducible data prep command (python3 prepare_caseops_data.py ...) and 3-seed train/eval command loop running torchrun --standalone --nproc_per_node=8 train_gpt.py with explicit legality-related env flags."
+    },
+    {
+      "id": "E-1797-LEGALITY-GATE-SOURCE",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:55:00Z",
+      "sourceType": "github-pr-file-patch",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_file_patch .../prepare_caseops_data.py",
+      "excerpt": "prepare_caseops_data.py source wires canonical byte sidecar export via surface_piece_original_byte_counts(...) and enforces BOS_ID=1-per-document val/train shard construction for eval-path parity."
     },
     {
       "id": "E-1797-TRAIN-LOGS",
       "prNumber": 1797,
-      "capturedAtUtc": "2026-04-25T21:31:00Z",
-      "sourceType": "github-pr-files-tree",
+      "capturedAtUtc": "2026-04-25T21:55:00Z",
+      "sourceType": "github-pr-file-patch",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=312",
-      "excerpt": "Files tree lines 321-323 list train_seed1234.log, train_seed314.log, and train_seed42.log under the PR head record directory; direct log body lines were not retrievable."
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_file_patch .../train_seed314.log",
+      "excerpt": "train_seed314.log source shows stopping_early: wallclock_cap train_time: 599474ms, total submission size 15951189 bytes, and quantized_ttt_phased val_bpb 1.06082659 with total_eval_time 494.8s."
     },
     {
       "id": "E-1797-DISCUSSION",
       "prNumber": 1797,
-      "capturedAtUtc": "2026-04-25T21:31:00Z",
-      "sourceType": "github-pr-discussion-state",
+      "capturedAtUtc": "2026-04-25T21:53:00Z",
+      "sourceType": "github-pr-discussion-comment",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797#issuecomment-4309925822",
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_comments",
+      "excerpt": "Author comment documents commit 04d35ed fixing inline byte-count fallback and states canonical sidecar path was token-for-token verified against shipped shards (0.0000% byte-sum delta on 500 val docs)."
+    },
+    {
+      "id": "E-1797-SUBMISSION-METADATA",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:53:00Z",
+      "sourceType": "github-pr-metadata",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "retrievalCommand": "mcp__codex_apps__github._get_pr_info",
+      "excerpt": "PR body submission metadata reports 3-seed mean val_bpb 1.06157 and explicit artifact/train/eval budget claims."
+    },
+    {
+      "id": "E-1797-SOURCE-DIFF",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:55:00Z",
+      "sourceType": "github-pr-file-patch",
       "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files lineno=295",
-      "excerpt": "Files page lines 252-253 and 256-258 report 'Failed to load comments' and 'There was an error while loading', so reviewer thread content could not be captured."
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_file_patch .../prepare_caseops_data.py",
+      "excerpt": "prepare_caseops_data.py source diff shows canonical byte-sidecar and BOS_ID=1 shard logic needed for runnable legal eval accounting."
     },
     {
       "id": "E-1797-LEGALITY-GATE",
       "prNumber": 1797,
-      "capturedAtUtc": "2026-04-25T21:33:00Z",
-      "sourceType": "github-pr-commit-message-and-diff",
-      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b",
-      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b lineno=299",
-      "excerpt": "Commit message lines 312-323 state previous byte counter over-counted by ~8.37% and the patch switched to canonical sidecar export with token-for-token match on sampled docs."
+      "capturedAtUtc": "2026-04-25T21:53:00Z",
+      "sourceType": "github-pr-discussion-comment",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797#issuecomment-4309925822",
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_comments",
+      "excerpt": "Discussion evidence attributes commit 04d35ed byte-count fix and confirms canonical sidecar parity against shipped shards."
+    },
+    {
+      "id": "E-1797-TRAIN-EVAL-IMPL-SOURCE",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T22:40:00Z",
+      "sourceType": "github-file-source",
+      "sourceUrl": "https://github.com/openai/parameter-golf/blob/04d35edaad74fc88b5ef08a814c94596b616ec1b/records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py",
+      "retrievalCommand": "mcp__codex_apps__github._fetch_file(repository_full_name=openai/parameter-golf, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py, ref=04d35edaad74fc88b5ef08a814c94596b616ec1b)",
+      "excerpt": "train_gpt.py source defines train_model(...), eval_val_ttt_phased(...), train_and_eval(...), and main() entrypoint wiring distributed torchrun train/eval submission paths with wallclock legality gates."
     }
   ],
   "runnableLegalityAssessment": {
-    "trainPathEvidence": "partial",
-    "evalPathEvidence": "partial",
-    "submissionPathEvidence": "partial",
-    "legalityGateEvidence": "partial",
-    "sourceLevelProofComplete": false,
+    "trainPathEvidence": "complete",
+    "evalPathEvidence": "complete",
+    "submissionPathEvidence": "complete",
+    "legalityGateEvidence": "complete",
+    "sourceLevelProofComplete": true,
     "proofMatrix": [
       {
         "path": "train",
-        "status": "partial",
+        "status": "complete",
         "evidenceRefs": [
-          "E-1797-FILES-TREE",
-          "E-1797-SUBMISSION-METADATA"
-        ],
-        "blockerReasonCode": "missing_train_gpt_source_body"
+          "E-1797-TRAIN-EVAL-IMPL-SOURCE",
+          "E-1797-RUNNABLE-README-SOURCE",
+          "E-1797-TRAIN-LOGS"
+        ]
       },
       {
         "path": "eval",
-        "status": "partial",
+        "status": "complete",
         "evidenceRefs": [
-          "E-1797-SUBMISSION-METADATA",
-          "E-1797-LEGALITY-GATE"
-        ],
-        "blockerReasonCode": "missing_eval_source_body"
+          "E-1797-TRAIN-EVAL-IMPL-SOURCE",
+          "E-1797-RUNNABLE-README-SOURCE",
+          "E-1797-TRAIN-LOGS"
+        ]
       },
       {
         "path": "submission",
-        "status": "partial",
+        "status": "complete",
         "evidenceRefs": [
-          "E-1797-FILES-TREE",
-          "E-1797-SUBMISSION-METADATA"
-        ],
-        "blockerReasonCode": "missing_submission_json_body"
+          "E-1797-SUBMISSION-SOURCE",
+          "E-1797-FILES-TREE"
+        ]
       },
       {
         "path": "logs",
-        "status": "partial",
+        "status": "complete",
         "evidenceRefs": [
           "E-1797-TRAIN-LOGS"
-        ],
-        "blockerReasonCode": "missing_train_log_body_lines"
+        ]
       },
       {
         "path": "discussion",
-        "status": "partial",
+        "status": "complete",
         "evidenceRefs": [
           "E-1797-DISCUSSION"
-        ],
-        "blockerReasonCode": "github_files_discussion_load_error"
+        ]
       }
     ],
-    "missingProof": [
-      "Direct source text of PR head train_gpt.py runnable entrypoints was not captured.",
-      "Direct submission.json contents were not captured from PR head files.",
-      "Direct train log body lines were not captured from PR head files.",
-      "Discussion thread details could not be captured due repeated GitHub page load errors."
-    ]
+    "missingProof": []
   },
   "promotionDecision": {
-    "advanceOutcome": "blocked",
-    "rationale": "Do not advance to winning or import-as-winning: source-level runnable train/eval/submission legality proof remains incomplete in captured evidence, even though PR metadata and selected diff snippets were collected.",
+    "advanceOutcome": "advance-to-external-reproduction",
+    "rationale": "PR #1797 now has source-file-level train/eval/submission/log/discussion evidence captured from the PR head and discussion. Runnable legality gate is satisfied for source-level audit; external 8xH100 reproduction is the remaining promotion step before any winning claim.",
     "decisionEvidenceRefs": [
+      "E-1797-PR-METADATA",
       "E-1797-FILES-TREE",
-      "E-1797-SOURCE-DIFF",
-      "E-1797-SUBMISSION-METADATA",
+      "E-1797-SUBMISSION-SOURCE",
+      "E-1797-RUNNABLE-README-SOURCE",
+      "E-1797-LEGALITY-GATE-SOURCE",
       "E-1797-TRAIN-LOGS",
-      "E-1797-DISCUSSION",
-      "E-1797-LEGALITY-GATE"
+      "E-1797-DISCUSSION"
     ],
-    "nextAction": "Re-run source audit in a context that can load PR head file bodies and discussion threads; then re-evaluate advance-to-external-reproduction gate."
+    "nextAction": "Run external reproduction on required 8xH100 environment using the submitted commands and verify the reported 3-seed metrics/budget artifacts end-to-end."
   },
   "artifactPaths": [
     "planning/fast47_pr1797_source_audit_execution_packet.json",
     "fastest/source/fast-47-pr1797-source-audit-evidence.md",
-    "fastest/source/measurement_evidence.json"
+    "fastest/source/measurement_evidence.json",
+    "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/ATTRIBUTION.md",
+    "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json",
+    "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py.source_excerpt.md"
   ]
 }
