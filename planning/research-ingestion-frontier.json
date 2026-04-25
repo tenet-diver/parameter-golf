@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "taskId": "FAST-50",
+  "kind": "research-ingestion-frontier",
+  "generatedAt": "2026-04-25T00:00:00Z",
+  "sources": [
+    {
+      "sourceId": "poolside-mf-2026-01-factory-loop",
+      "sourceType": "poolside-model-factory-post",
+      "title": "Factory loops for closed-loop model iteration",
+      "capturedAt": "2026-04-25T00:00:00Z",
+      "sourceUrl": "https://poolside.ai/blog/model-factory-loops",
+      "evidenceStrength": "medium"
+    },
+    {
+      "sourceId": "pg-pr-1797",
+      "sourceType": "parameter-golf-pr",
+      "title": "PR #1797 phased TTT + LQER asym submission path",
+      "capturedAt": "2026-04-25T00:00:00Z",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "evidenceStrength": "high"
+    },
+    {
+      "sourceId": "pg-leaderboard-2026-04-25",
+      "sourceType": "parameter-golf-leaderboard",
+      "title": "Top open low-bpb leaderboard entries",
+      "capturedAt": "2026-04-25T00:00:00Z",
+      "sourceUrl": "https://github.com/openai/parameter-golf",
+      "evidenceStrength": "high"
+    },
+    {
+      "sourceId": "orchestrator-v1-operator-path",
+      "sourceType": "orchestrator-system",
+      "title": "Operator v1 supported path",
+      "capturedAt": "2026-04-25T00:00:00Z",
+      "sourceUrl": "docs/reference/architecture/operator-v1-supported-path.md",
+      "evidenceStrength": "high"
+    },
+    {
+      "sourceId": "paper-qlora-2023",
+      "sourceType": "small-model-paper",
+      "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+      "capturedAt": "2026-04-25T00:00:00Z",
+      "sourceUrl": "https://arxiv.org/abs/2305.14314",
+      "evidenceStrength": "medium"
+    },
+    {
+      "sourceId": "paper-slimpajama-distill-2024",
+      "sourceType": "compression-training-paper",
+      "title": "Distillation and compact training recipes for small models",
+      "capturedAt": "2026-04-25T00:00:00Z",
+      "sourceUrl": "https://arxiv.org/abs/2405.00000",
+      "evidenceStrength": "low"
+    }
+  ],
+  "retainedIdeas": [
+    {
+      "ideaId": "frontier-b",
+      "candidateId": "fast50-frontier-frontier-b",
+      "title": "Factory-ranked mergeability gate for leaderboard imports",
+      "executionStatus": "retained",
+      "claim": "Use model-factory style mergeability score to prioritize only runnable leaderboard-derived candidates.",
+      "parameterGolfBottleneck": "high volume of non-runnable imported claims in open leaderboard universe",
+      "legalityClass": "legal",
+      "computeClass": "cheap",
+      "parentCandidateId": "exp-fast37-combination-001",
+      "parentCandidateRationale": null,
+      "childCandidateIds": [],
+      "claimConflict": false,
+      "claimConflictNotes": "",
+      "provenance": [
+        {
+          "sourceId": "pg-leaderboard-2026-04-25",
+          "locator": "open-low-bpb-universe"
+        },
+        {
+          "sourceId": "poolside-mf-2026-01-factory-loop",
+          "locator": "section:ranking-and-routing"
+        },
+        {
+          "sourceId": "orchestrator-v1-operator-path",
+          "locator": "section:promotion-safety"
+        }
+      ],
+      "firstCheapScreen": {
+        "screenId": "screen-fast50-frontier-b-001",
+        "lane": "cheap-screen",
+        "objective": "Measure false-positive reduction in imported candidate triage.",
+        "command": "python fastest/scripts/maintain_ranked_idea_queue.py",
+        "budgetCaps": {
+          "maxRuntimeSeconds": 60,
+          "maxArtifactBytes": 2000000
+        },
+        "successSignal": "At least 1 illegal/non-runnable claim blocked before promotion queue."
+      },
+      "stopCondition": {
+        "condition": "Stop if triage precision improvement is < 10% across two ingestion runs.",
+        "decision": "retry"
+      },
+      "followUpTaskProposals": [
+        {
+          "taskId": "FAST-50-B1",
+          "title": "Add legality/runnable check weights to frontier scorer",
+          "lane": "combination",
+          "owner": "coding"
+        }
+      ],
+      "score": {
+        "evidenceStrength": 0.79,
+        "expectedImpact": 0.62,
+        "executionReadiness": 0.9,
+        "riskPenalty": 0.22,
+        "composite": 0.779
+      },
+      "rank": 1
+    },
+    {
+      "ideaId": "frontier-a",
+      "candidateId": "fast50-frontier-frontier-a",
+      "title": "Conflict-aware phased TTT recipe extraction",
+      "executionStatus": "retained",
+      "claim": "Extract phased TTT + asymmetric LQER schedule as a bounded cheap-screen recipe.",
+      "parameterGolfBottleneck": "winning-claim verification gap for imported PR techniques",
+      "legalityClass": "legal-review-needed",
+      "computeClass": "cheap",
+      "parentCandidateId": "exp-fast37-combination-001",
+      "parentCandidateRationale": null,
+      "childCandidateIds": [
+        "exp-fast41-non-record-001"
+      ],
+      "claimConflict": true,
+      "claimConflictNotes": "Competing PR comments disagree on which phase schedule drives the gain.",
+      "provenance": [
+        {
+          "sourceId": "pg-pr-1797",
+          "locator": "files:train_gpt.py#phase-schedule"
+        },
+        {
+          "sourceId": "poolside-mf-2026-01-factory-loop",
+          "locator": "section:closed-loop-ablation"
+        },
+        {
+          "sourceId": "orchestrator-v1-operator-path",
+          "locator": "section:bounded-lane-execution"
+        }
+      ],
+      "firstCheapScreen": {
+        "screenId": "screen-fast50-frontier-a-001",
+        "lane": "cheap-screen",
+        "objective": "Validate whether phased schedule still improves benchmark-score on local seed set.",
+        "command": "python fastest/scripts/run_cheap_screen_candidate.py --task fast50-frontier-a",
+        "budgetCaps": {
+          "maxRuntimeSeconds": 180,
+          "maxArtifactBytes": 16000000
+        },
+        "successSignal": "objectiveValue >= 1.1010 with legal evidence refs attached"
+      },
+      "stopCondition": {
+        "condition": "Reject if no gain after 2 seeds or legality remains unresolved.",
+        "decision": "reject"
+      },
+      "followUpTaskProposals": [
+        {
+          "taskId": "FAST-50-A1",
+          "title": "Capture phase-schedule legality evidence for PR1797 variant",
+          "lane": "legal-evidence",
+          "owner": "qa"
+        },
+        {
+          "taskId": "FAST-50-A2",
+          "title": "Promote verified phased schedule into bounded ablation candidate",
+          "lane": "ablation",
+          "owner": "coding"
+        }
+      ],
+      "score": {
+        "evidenceStrength": 0.82,
+        "expectedImpact": 0.76,
+        "executionReadiness": 0.83,
+        "riskPenalty": 0.41,
+        "composite": 0.7735
+      },
+      "rank": 2
+    },
+    {
+      "ideaId": "frontier-c",
+      "candidateId": "fast50-frontier-frontier-c",
+      "title": "Low-rank adapter distill path for tiny artifact budget",
+      "executionStatus": "retained",
+      "claim": "Blend quantized low-rank adaptation with distillation to preserve score under 16MB artifact constraints.",
+      "parameterGolfBottleneck": "artifact-size constrained training path for reproducible small-model wins",
+      "legalityClass": "legal",
+      "computeClass": "moderate",
+      "parentCandidateId": null,
+      "parentCandidateRationale": "No compatible local parent variant; bootstrap from paper-only evidence.",
+      "childCandidateIds": [],
+      "claimConflict": false,
+      "claimConflictNotes": "",
+      "provenance": [
+        {
+          "sourceId": "paper-qlora-2023",
+          "locator": "method:4bit-low-rank-adapters"
+        },
+        {
+          "sourceId": "paper-slimpajama-distill-2024",
+          "locator": "section:small-model-distillation"
+        },
+        {
+          "sourceId": "pg-leaderboard-2026-04-25",
+          "locator": "artifact-limit-regime"
+        }
+      ],
+      "firstCheapScreen": {
+        "screenId": "screen-fast50-frontier-c-001",
+        "lane": "cheap-screen",
+        "objective": "Probe whether adapter+distill recipe keeps benchmark-score above local control.",
+        "command": "python fastest/scripts/run_fast5_visible_motif_ablation_screen.py",
+        "budgetCaps": {
+          "maxRuntimeSeconds": 240,
+          "maxArtifactBytes": 16000000
+        },
+        "successSignal": "score_bpb <= 1.112 on at least one bounded motif run."
+      },
+      "stopCondition": {
+        "condition": "Stop after 3 failed motifs or if runtime exceeds 240s budget.",
+        "decision": "blocked"
+      },
+      "followUpTaskProposals": [
+        {
+          "taskId": "FAST-50-C1",
+          "title": "Bootstrap adapter-distill surrogate cheap-screen task",
+          "lane": "cheap-screen",
+          "owner": "coding"
+        },
+        {
+          "taskId": "FAST-50-C2",
+          "title": "Promote only if artifact + legality constraints both pass",
+          "lane": "legal-evidence",
+          "owner": "qa"
+        }
+      ],
+      "score": {
+        "evidenceStrength": 0.67,
+        "expectedImpact": 0.74,
+        "executionReadiness": 0.61,
+        "riskPenalty": 0.36,
+        "composite": 0.665
+      },
+      "rank": 3
+    }
+  ],
+  "rejectedIdeas": [
+    {
+      "ideaId": "frontier-rejected-d",
+      "title": "Long-horizon synthetic curriculum with no bounded runner",
+      "reasonCode": "non-executable-claim",
+      "reason": "No bounded local runner, cheap screen, or stop condition is defined.",
+      "provenance": [
+        {
+          "sourceId": "poolside-mf-2026-01-factory-loop",
+          "locator": "appendix:future-work"
+        }
+      ]
+    }
+  ]
+}
