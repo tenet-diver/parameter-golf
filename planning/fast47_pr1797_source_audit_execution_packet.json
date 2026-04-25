@@ -1,0 +1,112 @@
+{
+  "taskId": "FAST-47",
+  "title": "Fetch source-level runnable legality evidence for PR1797",
+  "status": "completed",
+  "lane": "legal-evidence:source-level-audit",
+  "campaignLane": "target-repo-campaign",
+  "candidatePr": 1797,
+  "completedAt": "2026-04-25T21:40:00Z",
+  "commands": [
+    "mcp__codex_apps__github._get_pr_info(repository_full_name=openai/parameter-golf, pr_number=1797)",
+    "web.open https://github.com/openai/parameter-golf/pull/1797",
+    "web.open https://github.com/openai/parameter-golf/pull/1797/files",
+    "web.click turn1view0 id=89",
+    "web.open turn4view1 lineno=400"
+  ],
+  "evidenceRecords": [
+    {
+      "id": "E-1797-PR-METADATA",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:28:00Z",
+      "sourceType": "github-pr-metadata",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "retrievalCommand": "mcp__codex_apps__github._get_pr_info",
+      "excerpt": "Open PR by dexhunter; head sha 04d35edaad74fc88b5ef08a814c94596b616ec1b; changed_files=20; commits=6; claimed mean val_bpb=1.06157 with 3 seeds in PR body."
+    },
+    {
+      "id": "E-1797-FILES-TREE",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:31:00Z",
+      "sourceType": "github-pr-files-tree",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files",
+      "excerpt": "PR files tree includes records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157 with README.md, submission.json, train_gpt.py, train_seed1234.log, train_seed314.log, and train_seed42.log."
+    },
+    {
+      "id": "E-1797-SOURCE-DIFF",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:33:00Z",
+      "sourceType": "github-pr-commit-diff-snippet",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b",
+      "retrievalCommand": "web.open turn4view1 lineno=400",
+      "excerpt": "prepare_caseops_data.py diff shows canonical byte-count path: byte_counts = surface_piece_original_byte_counts(...); return np.asarray(list(byte_counts), dtype=np.uint16)."
+    },
+    {
+      "id": "E-1797-SUBMISSION-METADATA",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:28:00Z",
+      "sourceType": "github-pr-conversation-body",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797",
+      "excerpt": "PR body reports 3-seed mean post-TTT val_bpb 1.06157 (std 0.00066), artifact about 15.95MB, and train/eval budget claims under 600s."
+    },
+    {
+      "id": "E-1797-TRAIN-LOGS",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:31:00Z",
+      "sourceType": "github-pr-files-tree",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
+      "retrievalCommand": "web.open turn1view0 lineno=320",
+      "excerpt": "Files tree lists train_seed1234.log, train_seed314.log, and train_seed42.log under the 2026-04-24 record directory; direct log body lines were not retrievable in this capture."
+    },
+    {
+      "id": "E-1797-DISCUSSION",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:31:00Z",
+      "sourceType": "github-pr-discussion-state",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
+      "retrievalCommand": "web.open https://github.com/openai/parameter-golf/pull/1797/files",
+      "excerpt": "PR files page showed 'Failed to load comments' and 'There was an error while loading', so no additional reviewer discussion evidence was obtainable in this run."
+    },
+    {
+      "id": "E-1797-LEGALITY-GATE",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T21:33:00Z",
+      "sourceType": "github-pr-commit-message-and-diff",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/commits/04d35edaad74fc88b5ef08a814c94596b616ec1b",
+      "retrievalCommand": "web.open turn3view1 lineno=312",
+      "excerpt": "Commit message claims previous byte-count walker over-counted by ~8.37% and switches to canonical exporter used by PR #1729, with stated token-for-token sidecar match on sampled docs."
+    }
+  ],
+  "runnableLegalityAssessment": {
+    "trainPathEvidence": "partial",
+    "evalPathEvidence": "partial",
+    "submissionPathEvidence": "partial",
+    "legalityGateEvidence": "partial",
+    "sourceLevelProofComplete": false,
+    "missingProof": [
+      "Direct source text of PR head train_gpt.py runnable entrypoints was not captured.",
+      "Direct submission.json contents were not captured from PR head files.",
+      "Direct train log body lines were not captured from PR head files.",
+      "Discussion thread details could not be captured due repeated GitHub page load errors."
+    ]
+  },
+  "promotionDecision": {
+    "advanceOutcome": "blocked",
+    "rationale": "Do not advance to winning or import-as-winning: source-level runnable train/eval/submission legality proof remains incomplete in captured evidence, even though PR metadata and selected diff snippets were collected.",
+    "decisionEvidenceRefs": [
+      "E-1797-FILES-TREE",
+      "E-1797-SOURCE-DIFF",
+      "E-1797-SUBMISSION-METADATA",
+      "E-1797-TRAIN-LOGS",
+      "E-1797-DISCUSSION",
+      "E-1797-LEGALITY-GATE"
+    ],
+    "nextAction": "Re-run source audit in a context that can load PR head file bodies and discussion threads; then re-evaluate advance-to-external-reproduction gate."
+  },
+  "artifactPaths": [
+    "planning/fast47_pr1797_source_audit_execution_packet.json",
+    "fastest/source/fast-47-pr1797-source-audit-evidence.md",
+    "fastest/source/measurement_evidence.json"
+  ]
+}

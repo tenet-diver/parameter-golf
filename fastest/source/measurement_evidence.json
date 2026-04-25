@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-24T19:00:00Z",
+  "updatedAt": "2026-04-25T21:40:00Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -841,6 +841,57 @@
       "artifactPaths": [
         "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/README.md",
         "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/submission.json"
+      ]
+    },
+    {
+      "experimentId": "exp-fast47-pr1797-source-audit-001",
+      "evidenceId": "evidence-exp-fast47-pr1797-source-audit-001",
+      "lane": "legal-evidence:source-level-audit",
+      "status": "accepted",
+      "completedAt": "2026-04-25T21:40:00Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 1.06157,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-47:legal-evidence:source-level-audit:exp-fast47-pr1797-source-audit-001",
+      "taskId": "FAST-47",
+      "traceId": "trace-fast47-pr1797-source-audit-001",
+      "runConfig": {
+        "candidatePr": 1797,
+        "sourcePr": "openai/pr-1797",
+        "sourceHeadSha": "04d35edaad74fc88b5ef08a814c94596b616ec1b",
+        "auditMode": "source-level-runnable-legality-gate"
+      },
+      "budgetCaps": {
+        "artifactLimitBytes": 16000000,
+        "maxTrainSeconds": 600,
+        "maxEvalSeconds": 600
+      },
+      "submissionClass": "public-pr-source-audit",
+      "classificationReason": "Audited PR #1797 with direct PR metadata and commit-diff evidence, but runnable train/eval/submission legality proof is incomplete from captured source text.",
+      "campaignStatus": "blocked",
+      "sourceAttribution": {
+        "author": "dexhunter",
+        "githubId": "dexhunter",
+        "sourcePr": "openai/pr-1797"
+      },
+      "comparison": {
+        "candidateValBpb": 1.06157,
+        "currentMergedSotaValBpb": 1.081,
+        "deltaBpb": -0.01943
+      },
+      "reproductionStatus": {
+        "status": "hold",
+        "reason": "External reproduction gate deferred until source-level runnable legality evidence is complete."
+      },
+      "verificationGate": {
+        "status": "blocked",
+        "reasonCode": "missing_source_level_runnable_legality_proof",
+        "reason": "PR head train_gpt.py/submission.json/log bodies and full discussion evidence were not fully retrievable in this audit run; do not promote to winning."
+      },
+      "artifactPaths": [
+        "planning/fast47_pr1797_source_audit_execution_packet.json",
+        "fastest/source/fast-47-pr1797-source-audit-evidence.md"
       ]
     }
   ]
