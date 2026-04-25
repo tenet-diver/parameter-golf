@@ -55,6 +55,15 @@ DEFAULT_CPU_ENV = {
     "ARTIFACT_BUDGET_STRICT": "1",
 }
 
+RUN_CONFIG_TO_FACTOR_KEY = {
+    "iterations": "ITERATIONS",
+    "trainSeqLen": "TRAIN_SEQ_LEN",
+    "trainBatchTokens": "TRAIN_BATCH_TOKENS",
+    "valTokenLimit": "VAL_TOKEN_LIMIT",
+    "modelDim": "MODEL_DIM",
+    "numLayers": "NUM_LAYERS",
+}
+
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -108,6 +117,134 @@ def artifact_path(path: Path) -> str:
         return str(path)
 
 
+def _is_numeric(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _int_from_env(env: dict[str, str], key: str, default: int) -> int:
+    raw = env.get(key)
+    if raw is None:
+        return default
+    try:
+        return int(float(raw))
+    except ValueError:
+        return default
+
+
+def _cpu_subset_records(records: list[Any]) -> list[dict[str, Any]]:
+    subset: list[dict[str, Any]] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        if record.get("lane") != "cpu-subset":
+            continue
+        if not isinstance(record.get("experimentId"), str):
+            continue
+        subset.append(record)
+    return subset
+
+
+def _resolve_parent_experiment_id(candidate: dict[str, Any], records: list[dict[str, Any]]) -> str | None:
+    parent_experiment_id = candidate.get("parentExperimentId")
+    if isinstance(parent_experiment_id, str) and parent_experiment_id:
+        return parent_experiment_id
+
+    parent_candidate_id = candidate.get("parentCandidateId")
+    if isinstance(parent_candidate_id, str) and parent_candidate_id:
+        return f"exp-{parent_candidate_id}"
+
+    if records:
+        latest = records[-1].get("experimentId")
+        if isinstance(latest, str) and latest:
+            return latest
+    return None
+
+
+def _factor_snapshot_from_env(train_env: dict[str, str]) -> dict[str, str]:
+    snapshot: dict[str, str] = {}
+    for key in sorted(train_env.keys()):
+        if key.isupper() and isinstance(train_env[key], str):
+            snapshot[key] = train_env[key]
+    return snapshot
+
+
+def _factor_snapshot_from_record(record: dict[str, Any]) -> dict[str, str]:
+    model_factory = record.get("modelFactory")
+    if isinstance(model_factory, dict):
+        normalized = model_factory.get("normalizedFactors")
+        if isinstance(normalized, dict):
+            snapshot = {str(key): str(value) for key, value in normalized.items()}
+            if snapshot:
+                return snapshot
+
+    run_config = record.get("runConfig")
+    if not isinstance(run_config, dict):
+        return {}
+
+    snapshot: dict[str, str] = {}
+    for run_key, factor_key in RUN_CONFIG_TO_FACTOR_KEY.items():
+        value = run_config.get(run_key)
+        if value is None:
+            continue
+        snapshot[factor_key] = str(value)
+    return snapshot
+
+
+def _changed_factors(parent: dict[str, str], current: dict[str, str]) -> list[dict[str, str]]:
+    changed: list[dict[str, str]] = []
+    for key in sorted(set(parent.keys()) | set(current.keys())):
+        parent_value = parent.get(key)
+        current_value = current.get(key)
+        if parent_value == current_value:
+            continue
+        changed.append(
+            {
+                "factor": key,
+                "parentValue": parent_value if parent_value is not None else "unset",
+                "candidateValue": current_value if current_value is not None else "unset",
+            }
+        )
+    return changed
+
+
+def _build_ranking_table(
+    records: list[dict[str, Any]],
+    current_experiment_id: str,
+    current_objective_value: float,
+) -> dict[str, Any]:
+    ranking_rows: list[dict[str, Any]] = []
+    for record in records:
+        objective_value = record.get("objectiveValue")
+        experiment_id = record.get("experimentId")
+        if not _is_numeric(objective_value):
+            continue
+        if not isinstance(experiment_id, str) or not experiment_id:
+            continue
+        ranking_rows.append({"experimentId": experiment_id, "objectiveValue": float(objective_value)})
+    ranking_rows.append({"experimentId": current_experiment_id, "objectiveValue": current_objective_value})
+
+    ranked = sorted(ranking_rows, key=lambda row: (row["objectiveValue"], row["experimentId"]))
+    best = ranked[0]["objectiveValue"]
+    candidate_rank = len(ranked)
+    for index, row in enumerate(ranked, start=1):
+        row["rank"] = index
+        row["deltaToBest"] = round(row["objectiveValue"] - best, 12)
+        if row["experimentId"] == current_experiment_id:
+            candidate_rank = index
+    return {
+        "metricName": "val_bpb",
+        "direction": "lower_is_better",
+        "candidateRank": candidate_rank,
+        "totalCandidates": len(ranked),
+        "rows": ranked,
+    }
+
+
+def _proposal_task_id(task_id: str, candidate_id: str) -> str:
+    suffix = re.sub(r"[^a-zA-Z0-9-]+", "-", candidate_id).strip("-").lower() or "candidate"
+    return f"{task_id}-{suffix}-follow-up"
+
+
 def append_cpu_subset_evidence(
     *,
     candidate: dict[str, Any],
@@ -140,7 +277,25 @@ def append_cpu_subset_evidence(
     if existing is not None:
         return existing
 
+    cpu_records = _cpu_subset_records(records)
     evidence_id = f"evidence-{experiment_id}"
+    parent_experiment_id = _resolve_parent_experiment_id(candidate, cpu_records)
+    parent_record = next(
+        (
+            record
+            for record in cpu_records
+            if isinstance(record.get("experimentId"), str) and record["experimentId"] == parent_experiment_id
+        ),
+        None,
+    )
+    current_factors = _factor_snapshot_from_env(train_env)
+    parent_factors = _factor_snapshot_from_record(parent_record) if parent_record else {}
+    ranking_table = _build_ranking_table(cpu_records, experiment_id, val_bpb)
+    candidate_rank = int(ranking_table["candidateRank"])
+    follow_up_lane = "cheap-screen" if candidate_rank == 1 else "cpu-subset"
+    promotion_decision = "propose-follow-up" if candidate_rank == 1 else "hold"
+    retirement_decision = "retain" if candidate_rank <= 3 else "retire"
+
     record = {
         "experimentId": experiment_id,
         "evidenceId": evidence_id,
@@ -156,16 +311,23 @@ def append_cpu_subset_evidence(
         "traceId": f"trace-{candidate_id}",
         "runConfig": {
             "seed": train_env.get("SEED"),
-            "iterations": int(train_env["ITERATIONS"]),
-            "trainSeqLen": int(train_env["TRAIN_SEQ_LEN"]),
-            "trainBatchTokens": int(train_env["TRAIN_BATCH_TOKENS"]),
-            "valTokenLimit": int(train_env["VAL_TOKEN_LIMIT"]),
-            "modelDim": int(train_env["MODEL_DIM"]),
-            "numLayers": int(train_env["NUM_LAYERS"]),
+            "iterations": _int_from_env(train_env, "ITERATIONS", 0),
+            "trainSeqLen": _int_from_env(train_env, "TRAIN_SEQ_LEN", 0),
+            "trainBatchTokens": _int_from_env(train_env, "TRAIN_BATCH_TOKENS", 0),
+            "valTokenLimit": _int_from_env(train_env, "VAL_TOKEN_LIMIT", 0),
+            "modelDim": _int_from_env(train_env, "MODEL_DIM", 0),
+            "numLayers": _int_from_env(train_env, "NUM_LAYERS", 0),
         },
         "budgetCaps": {
-            "maxRuntimeSeconds": int(float(train_env["MAX_WALLCLOCK_SECONDS"])),
+            "maxRuntimeSeconds": _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0),
             "hostClass": "cpu-smoke",
+        },
+        "runtimeValidationCaps": {
+            "maxRuntimeSeconds": _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0),
+            "iterations": _int_from_env(train_env, "ITERATIONS", 0),
+            "valTokenLimit": _int_from_env(train_env, "VAL_TOKEN_LIMIT", 0),
+            "valBatchSize": _int_from_env(train_env, "VAL_BATCH_SIZE", 0),
+            "validationClass": "cpu-subset",
         },
         "resultClass": "cpu-subset",
         "verificationClass": "cpu-subset",
@@ -173,6 +335,41 @@ def append_cpu_subset_evidence(
             "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for "
             "ranking cheap ideas, not leaderboard or benchmark-verified progress."
         ),
+        "lineage": {
+            "source": "model-factory",
+            "parentExperimentId": parent_experiment_id,
+            "changedFactors": _changed_factors(parent_factors, current_factors),
+        },
+        "modelFactory": {
+            "owner": "cpu-subset-runner",
+            "normalizedFactors": current_factors,
+        },
+        "rankingTable": ranking_table,
+        "modelFactoryDecision": {
+            "promotionDecision": promotion_decision,
+            "retirementDecision": retirement_decision,
+            "reason": (
+                "Candidate ranking is derived from CPU-subset val_bpb only; retain top-ranked "
+                "directions for lane-attributed follow-up while keeping benchmark progress gated."
+            ),
+        },
+        "followUpTaskProposal": {
+            "sourceLane": "cpu-subset",
+            "lane": follow_up_lane,
+            "taskId": _proposal_task_id(task_id, candidate_id),
+            "candidateId": candidate_id,
+            "parentExperimentId": parent_experiment_id,
+            "title": f"Follow up CPU-subset candidate {candidate_id}",
+            "summary": (
+                f"Candidate rank {candidate_rank}/{ranking_table['totalCandidates']} on CPU-subset val_bpb; "
+                f"proposal lane is {follow_up_lane}."
+            ),
+            "runtimeValidationCaps": {
+                "maxRuntimeSeconds": _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0),
+                "valTokenLimit": _int_from_env(train_env, "VAL_TOKEN_LIMIT", 0),
+            },
+        },
+        "benchmarkProgressEligible": False,
         "observedMetricOutput": {
             "name": "val_bpb",
             "value": val_bpb,
