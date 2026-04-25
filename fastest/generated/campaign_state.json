@@ -10,7 +10,7 @@
       "direction": "maximize"
     },
     "createdAt": "2026-04-23T19:51:12.797Z",
-    "updatedAt": "2026-04-25T22:27:51.416Z",
+    "updatedAt": "2026-04-25T22:33:09.218Z",
     "campaignState": "active",
     "metadata": {
       "benchmarkTrack": "parameter-golf",
@@ -52,11 +52,11 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-25T22:27:08Z",
+  "lastProgressAt": "2026-04-25T22:30:45Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
-      "target-source:benchmark-verified-v1:2026-04-25T22:27:08Z"
+      "target-source:benchmark-verified-v1:2026-04-25T22:30:45Z"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
@@ -64,8 +64,8 @@
     "bestKnownResult": null,
     "progressTrend": "unknown",
     "recentCompletedExperiments": [],
-    "acceptedExperiments": 35,
-    "totalExperiments": 35,
+    "acceptedExperiments": 36,
+    "totalExperiments": 36,
     "promotionGateRejectionCount": 0
   }
 }

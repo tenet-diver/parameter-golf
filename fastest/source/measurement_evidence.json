@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-25T22:27:08Z",
+  "updatedAt": "2026-04-25T22:30:45Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -39,12 +39,13 @@
       "evidence-exp-lr-half-32iter-tiny-cpu",
       "evidence-exp-lr-half-64iter-tiny-cpu",
       "evidence-exp-lr-half-128iter-tiny-cpu",
-      "evidence-exp-lr-half-256iter-tiny-cpu"
+      "evidence-exp-lr-half-256iter-tiny-cpu",
+      "evidence-exp-lr-half-256iter-val32k-tiny-cpu"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 35,
-    "acceptedExperiments": 35,
-    "mostRecentEvidenceId": "evidence-exp-lr-half-256iter-tiny-cpu"
+    "totalExperiments": 36,
+    "acceptedExperiments": 36,
+    "mostRecentEvidenceId": "evidence-exp-lr-half-256iter-val32k-tiny-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -81,7 +82,8 @@
     "exp-lr-half-32iter-tiny-cpu",
     "exp-lr-half-64iter-tiny-cpu",
     "exp-lr-half-128iter-tiny-cpu",
-    "exp-lr-half-256iter-tiny-cpu"
+    "exp-lr-half-256iter-tiny-cpu",
+    "exp-lr-half-256iter-val32k-tiny-cpu"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -1542,6 +1544,58 @@
         "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-tiny-cpu/stderr.txt",
         "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-tiny-cpu/result.json",
         "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-tiny-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "hold",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      }
+    },
+    {
+      "experimentId": "exp-lr-half-256iter-val32k-tiny-cpu",
+      "evidenceId": "evidence-exp-lr-half-256iter-val32k-tiny-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-25T22:30:45Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 2.70817084,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-48:cpu-subset:exp-lr-half-256iter-val32k-tiny-cpu",
+      "taskId": "FAST-48",
+      "traceId": "trace-lr-half-256iter-val32k-tiny-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 256,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 32768,
+        "modelDim": 96,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 2.70817084,
+        "valLoss": 4.67766428,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-val32k-tiny-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-val32k-tiny-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-val32k-tiny-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-val32k-tiny-cpu/final_model.int8.ptz"
       ],
       "promotionRationale": {
         "decision": "hold",

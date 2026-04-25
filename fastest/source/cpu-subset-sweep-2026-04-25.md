@@ -25,10 +25,13 @@ Results, lower `val_bpb` is better:
 | lr-half-64iter-tiny-cpu | 64 | 0.5 | 2.95971435 |
 | lr-half-128iter-tiny-cpu | 128 | 0.5 | 2.80297923 |
 | lr-half-256iter-tiny-cpu | 256 | 0.5 | 2.67928586 |
+| lr-half-256iter-val32k-tiny-cpu | 256 | 0.5 | 2.70817084 |
 
 Current cheap-screen winner: `lr-half-256iter-tiny-cpu`.
+Validation-stability check: `lr-half-256iter-val32k-tiny-cpu` held the same direction with a 32k-token validation cap at `2.70817084`.
 
 Interpretation:
 - The default tiny-run rates were too aggressive for this reduced CPU screen.
 - Half-rate training improves consistently as iteration count increases through 256 tiny iterations.
+- The 256-iteration half-rate candidate remains strong under a larger 32k-token validation cap.
 - The next real CPU-only step is to test whether the half-rate direction survives a larger subset or a modest architecture increase while staying under the 10-minute CPU budget.

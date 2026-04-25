@@ -1,0 +1,15 @@
+{
+  "taskId": "FAST-48",
+  "candidateId": "lr-half-256iter-val32k-tiny-cpu",
+  "seed": 1337,
+  "env": {
+    "ITERATIONS": "256",
+    "VAL_TOKEN_LIMIT": "32768",
+    "VAL_BATCH_SIZE": "8192",
+    "EMBED_LR": "0.3",
+    "HEAD_LR": "0.004",
+    "TIED_EMBED_LR": "0.025",
+    "MATRIX_LR": "0.02",
+    "SCALAR_LR": "0.02"
+  }
+}
