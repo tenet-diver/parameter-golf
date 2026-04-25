@@ -175,6 +175,80 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             self.assertEqual(record["resultClass"], "cpu-subset")
             self.assertEqual(record["verificationClass"], "cpu-subset")
 
+    def test_excludes_sensitive_env_keys_from_model_factor_serialization(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "kind": "parameter-golf-measurement-evidence",
+                        "updatedAt": "2026-04-25T00:00:00Z",
+                        "summary": {
+                            "artifactIds": ["evidence-exp-parent-cpu"],
+                            "trustedControlState": "established",
+                            "totalExperiments": 1,
+                            "acceptedExperiments": 1,
+                            "mostRecentEvidenceId": "evidence-exp-parent-cpu",
+                        },
+                        "recentCompletedExperiments": ["exp-parent-cpu"],
+                        "experimentRecords": [
+                            {
+                                "experimentId": "exp-parent-cpu",
+                                "evidenceId": "evidence-exp-parent-cpu",
+                                "lane": "cpu-subset",
+                                "status": "accepted",
+                                "objectiveMetricName": "val_bpb",
+                                "objectiveValue": 4.4,
+                                "modelFactory": {
+                                    "owner": "cpu-subset-runner",
+                                    "normalizedFactors": {
+                                        "MODEL_DIM": "96",
+                                        "OPENAI_API_KEY": "parent-secret",
+                                    },
+                                },
+                            }
+                        ],
+                    },
+                )
+            )
+            run_dir = root / "fastest/generated/cpu_subset_runs/cpu_subset_child"
+            run_dir.mkdir(parents=True)
+
+            candidate = {
+                "taskId": "FAST-49",
+                "candidateId": "child-cpu",
+                "parentExperimentId": "exp-parent-cpu",
+                "seed": 7,
+                "env": {
+                    "MODEL_DIM": "128",
+                    "OPENAI_API_KEY": "child-secret",
+                    "AWS_SECRET_ACCESS_KEY": "child-aws-secret",
+                },
+            }
+            train_env = build_cpu_subset_env(candidate, "cpu_subset_child")
+            record = append_cpu_subset_evidence(
+                candidate=candidate,
+                run_id="cpu_subset_child",
+                completed_at="2026-04-25T01:00:00Z",
+                val_loss=4.0,
+                val_bpb=4.1,
+                command=["python", "train_gpt.py"],
+                run_dir=run_dir,
+                train_env=train_env,
+                evidence_path=evidence_path,
+            )
+
+            serialized_factors = record["modelFactory"]["normalizedFactors"]
+            self.assertNotIn("OPENAI_API_KEY", serialized_factors)
+            self.assertNotIn("AWS_SECRET_ACCESS_KEY", serialized_factors)
+            self.assertEqual(serialized_factors["MODEL_DIM"], "128")
+
+            changed_factor_names = {entry["factor"] for entry in record["lineage"]["changedFactors"]}
+            self.assertNotIn("OPENAI_API_KEY", changed_factor_names)
+            self.assertNotIn("AWS_SECRET_ACCESS_KEY", changed_factor_names)
+
 
 if __name__ == "__main__":
     unittest.main()

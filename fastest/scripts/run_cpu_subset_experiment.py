@@ -64,6 +64,30 @@ RUN_CONFIG_TO_FACTOR_KEY = {
     "numLayers": "NUM_LAYERS",
 }
 
+CPU_SUBSET_ENV_OVERRIDE_ALLOWLIST = frozenset(DEFAULT_CPU_ENV.keys()) | frozenset({"SEED"})
+CPU_SUBSET_SERIALIZED_FACTOR_ALLOWLIST = frozenset(
+    {
+        "ARTIFACT_BUDGET_STRICT",
+        "ITERATIONS",
+        "MAX_WALLCLOCK_SECONDS",
+        "MLP_MULT",
+        "MODEL_DIM",
+        "NUM_HEADS",
+        "NUM_KV_HEADS",
+        "NUM_LAYERS",
+        "SEED",
+        "TRAIN_BATCH_TOKENS",
+        "TRAIN_LOG_EVERY",
+        "TRAIN_SEQ_LEN",
+        "VAL_BATCH_SIZE",
+        "VAL_LOSS_EVERY",
+        "VAL_TOKEN_LIMIT",
+        "VOCAB_SIZE",
+        "WARMDOWN_ITERS",
+        "WARMUP_STEPS",
+    }
+)
+
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -94,7 +118,11 @@ def build_cpu_subset_env(candidate: dict[str, Any], run_id: str) -> dict[str, st
     overrides = candidate.get("env")
     if isinstance(overrides, dict):
         for key, value in overrides.items():
-            if isinstance(key, str) and key and isinstance(value, (str, int, float)):
+            if (
+                isinstance(key, str)
+                and key in CPU_SUBSET_ENV_OVERRIDE_ALLOWLIST
+                and isinstance(value, (str, int, float))
+            ):
                 env[key] = str(value)
     env["RUN_ID"] = run_id
     env["SEED"] = str(candidate.get("seed", env.get("SEED", "1337")))
@@ -163,7 +191,11 @@ def _resolve_parent_experiment_id(candidate: dict[str, Any], records: list[dict[
 def _factor_snapshot_from_env(train_env: dict[str, str]) -> dict[str, str]:
     snapshot: dict[str, str] = {}
     for key in sorted(train_env.keys()):
-        if key.isupper() and isinstance(train_env[key], str):
+        if (
+            key in CPU_SUBSET_SERIALIZED_FACTOR_ALLOWLIST
+            and key.isupper()
+            and isinstance(train_env[key], str)
+        ):
             snapshot[key] = train_env[key]
     return snapshot
 
@@ -173,7 +205,11 @@ def _factor_snapshot_from_record(record: dict[str, Any]) -> dict[str, str]:
     if isinstance(model_factory, dict):
         normalized = model_factory.get("normalizedFactors")
         if isinstance(normalized, dict):
-            snapshot = {str(key): str(value) for key, value in normalized.items()}
+            snapshot = {
+                str(key): str(value)
+                for key, value in normalized.items()
+                if isinstance(key, str) and key in CPU_SUBSET_SERIALIZED_FACTOR_ALLOWLIST
+            }
             if snapshot:
                 return snapshot
 
