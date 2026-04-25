@@ -56,7 +56,7 @@ def _idea_sources() -> list[dict[str, Any]]:
             "sourceType": "parameter-golf-leaderboard",
             "title": "Top open low-bpb leaderboard entries",
             "capturedAt": "2026-04-25T00:00:00Z",
-            "sourceUrl": "https://github.com/openai/parameter-golf",
+            "sourceUrl": "https://github.com/openai/parameter-golf/tree/main/records/track_10min_16mb",
             "evidenceStrength": "high",
         },
         {
@@ -76,12 +76,12 @@ def _idea_sources() -> list[dict[str, Any]]:
             "evidenceStrength": "medium",
         },
         {
-            "sourceId": "paper-slimpajama-distill-2024",
+            "sourceId": "paper-distilbert-2019",
             "sourceType": "compression-training-paper",
-            "title": "Distillation and compact training recipes for small models",
+            "title": "DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter",
             "capturedAt": "2026-04-25T00:00:00Z",
-            "sourceUrl": "https://arxiv.org/abs/2405.00000",
-            "evidenceStrength": "low",
+            "sourceUrl": "https://arxiv.org/abs/1910.01108",
+            "evidenceStrength": "high",
         },
     ]
 
@@ -149,7 +149,10 @@ def _raw_ideas() -> list[dict[str, Any]]:
             "claimConflict": False,
             "claimConflictNotes": "",
             "provenance": [
-                {"sourceId": "pg-leaderboard-2026-04-25", "locator": "open-low-bpb-universe"},
+                {
+                    "sourceId": "pg-leaderboard-2026-04-25",
+                    "locator": "record:records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+                },
                 {"sourceId": "poolside-mf-2026-01-factory-loop", "locator": "section:ranking-and-routing"},
                 {"sourceId": "orchestrator-v1-operator-path", "locator": "section:promotion-safety"},
             ],
@@ -194,8 +197,11 @@ def _raw_ideas() -> list[dict[str, Any]]:
             "claimConflictNotes": "",
             "provenance": [
                 {"sourceId": "paper-qlora-2023", "locator": "method:4bit-low-rank-adapters"},
-                {"sourceId": "paper-slimpajama-distill-2024", "locator": "section:small-model-distillation"},
-                {"sourceId": "pg-leaderboard-2026-04-25", "locator": "artifact-limit-regime"},
+                {"sourceId": "paper-distilbert-2019", "locator": "section:knowledge-distillation-pretraining"},
+                {
+                    "sourceId": "pg-leaderboard-2026-04-25",
+                    "locator": "record:records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+                },
             ],
             "firstCheapScreen": {
                 "screenId": "screen-fast50-frontier-c-001",

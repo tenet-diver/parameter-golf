@@ -1,4 +1,5 @@
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -13,6 +14,29 @@ class Fast50ResearchIngestionFrontierContractTest(unittest.TestCase):
 
         self.assertEqual(frontier.get("taskId"), "FAST-50")
         self.assertEqual(frontier.get("kind"), "research-ingestion-frontier")
+
+        sources = frontier.get("sources")
+        self.assertIsInstance(sources, list)
+        source_by_id = {source["sourceId"]: source for source in sources if isinstance(source, dict) and source.get("sourceId")}
+
+        self.assertNotIn(
+            "paper-slimpajama-distill-2024",
+            source_by_id,
+            "Placeholder/non-credible paper source must not appear in FAST-50 frontier provenance.",
+        )
+        for source in sources:
+            if not isinstance(source, dict):
+                continue
+            source_type = source.get("sourceType")
+            if source_type not in {"small-model-paper", "compression-training-paper"}:
+                continue
+            source_url = source.get("sourceUrl", "")
+            is_arxiv_abs = bool(re.match(r"^https://arxiv\.org/abs/(?:\d{4}\.\d{5}|\d{7})(?:v\d+)?$", source_url))
+            is_doi = source_url.startswith("https://doi.org/")
+            self.assertTrue(
+                is_arxiv_abs or is_doi,
+                f"Paper source must use a credible arXiv abs or DOI URL: {source.get('sourceId')}",
+            )
 
         retained = frontier.get("retainedIdeas")
         self.assertIsInstance(retained, list)
@@ -44,6 +68,15 @@ class Fast50ResearchIngestionFrontierContractTest(unittest.TestCase):
                 self.assertIsInstance(source_ref, dict)
                 self.assertIsInstance(source_ref.get("sourceId"), str)
                 self.assertTrue(source_ref.get("sourceId"))
+                source = source_by_id.get(source_ref["sourceId"])
+                if source and source.get("sourceType") == "parameter-golf-leaderboard":
+                    locator = source_ref.get("locator", "")
+                    self.assertIsInstance(locator, str)
+                    self.assertRegex(
+                        locator,
+                        r"^(entry|record|commit|path):",
+                        "Leaderboard provenance locator must be concrete (entry/record/commit/path).",
+                    )
 
             self.assertIsInstance(idea.get("firstCheapScreen"), dict)
             self.assertTrue(idea["firstCheapScreen"].get("screenId"))
