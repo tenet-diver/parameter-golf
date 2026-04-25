@@ -2,12 +2,12 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-25T22:38:58.362Z",
+  "updatedAt": "2026-04-25T23:16:45.703Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
-  "trustedControlState": "established",
+  "trustedControlState": "verified",
   "queueHealth": {
-    "pendingTaskCount": 2,
+    "pendingTaskCount": 4,
     "inFlightTaskCount": 0,
     "stalledSince": null
   },
@@ -20,54 +20,14 @@
     "scale-check": 0,
     "benchmark-rehearsal": 0,
     "non-record-exploration": 0,
-    "unassigned": 2
+    "unassigned": 4
   },
   "progress": {
     "totalExperiments": 39,
     "acceptedExperiments": 39,
-    "mostRecentEvidenceId": "evidence-exp-lr-half-256iter-d256-cpu"
+    "mostRecentEvidenceId": null
   },
-  "recentCompletedExperiments": [
-    "exp-fast1-control-20260423-001",
-    "exp-fast1-control-20260424-cpu-smoke-001",
-    "exp-fast4-cheap-screen-20260423-attempt2-001",
-    "exp-fast4-qa-smoke-20260423-001",
-    "exp-fast11-measurement-20260424-001",
-    "exp-fast16-measurement-20260424-001",
-    "exp-fast21-measurement-20260424-001",
-    "exp-fast26-measurement-20260424-001",
-    "exp-fast28-ablation-001",
-    "exp-fast29-combination-001",
-    "exp-fast32-cheap-screen-001",
-    "exp-fast34-combination-001",
-    "exp-fast35-non-record-001",
-    "fast36-candidate-002",
-    "fast36-candidate-003",
-    "exp-fast37-combination-001",
-    "exp-fast38-non-record-001",
-    "exp-fast40-combination-001",
-    "exp-fast41-non-record-001",
-    "exp-fast39-cheap-screen-001",
-    "exp-fast33-ablation-001",
-    "exp-fast42-combination-001",
-    "exp-fast44-pr1732-import-001",
-    "exp-baseline-tiny-cpu",
-    "exp-lr-half-tiny-cpu",
-    "exp-lr-quarter-tiny-cpu",
-    "exp-lr-half-8iter-tiny-cpu",
-    "exp-lr-quarter-8iter-tiny-cpu",
-    "exp-lr-eighth-8iter-tiny-cpu",
-    "exp-lr-quarter-16iter-tiny-cpu",
-    "exp-lr-half-16iter-tiny-cpu",
-    "exp-lr-half-32iter-tiny-cpu",
-    "exp-lr-half-64iter-tiny-cpu",
-    "exp-lr-half-128iter-tiny-cpu",
-    "exp-lr-half-256iter-tiny-cpu",
-    "exp-lr-half-256iter-val32k-tiny-cpu",
-    "exp-lr-half-256iter-d128-cpu",
-    "exp-lr-half-256iter-d192-cpu",
-    "exp-lr-half-256iter-d256-cpu"
-  ],
+  "recentCompletedExperiments": [],
   "progressTrend": "unknown",
   "bestKnownResult": null,
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
@@ -78,25 +38,16 @@
     "Open campaign tasks are not lane-attributed yet, so lane-floor accounting is still approximate."
   ],
   "adapterStatus": {
-    "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
+    "summary": "Parameter Golf campaign healthy enough for continued benchmark-directed search.",
     "details": {
       "environmentClass": "cpu-smoke",
-      "trustedControlState": "established",
-      "pendingTaskCount": "2",
+      "trustedControlState": "verified",
+      "pendingTaskCount": "4",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
       "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
-      "readiness": "baseline-established"
+      "readiness": "advancing"
     }
-  },
-  "promotionAdjudication": {
-    "candidateId": "evidence-exp-fast37-combination-001",
-    "policyVersion": "pg-constraint-clarity-v1",
-    "decision": "promote",
-    "violatedRules": [],
-    "missingEvidence": [],
-    "ambiguityReasons": [],
-    "promotableStateChange": true
   }
 }
