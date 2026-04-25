@@ -231,6 +231,65 @@ class Fast3ConstraintClarityContractTest(unittest.TestCase):
         self.assertEqual(adjudication["candidateId"], "evidence-best-combination-001")
         self.assertEqual(adjudication["decision"], "promote")
 
+    def test_apply_measurement_evidence_blocks_cpu_subset_from_benchmark_progress(self) -> None:
+        source = {
+            "updatedAt": "2026-04-25T22:30:00Z",
+            "summary": {
+                "artifactIds": [
+                    "evidence-exp-lr-half-256iter-d256-cpu",
+                ],
+                "trustedControlState": "established",
+                "totalExperiments": 1,
+                "acceptedExperiments": 1,
+                "mostRecentEvidenceId": "evidence-exp-lr-half-256iter-d256-cpu",
+            },
+            "recentCompletedExperiments": [
+                "exp-lr-half-256iter-d256-cpu",
+            ],
+            "promotionPolicy": {
+                "policyVersion": POLICY_VERSION,
+                "requiredEvidence": [
+                    "trusted-baseline-evidence",
+                    "benchmark-measurement-evidence",
+                ],
+                "legalitySignals": {
+                    "status": "legal",
+                    "violations": [],
+                    "conflicts": [],
+                },
+                "minimumAcceptedExperiments": 1,
+            },
+            "experimentRecords": [
+                {
+                    "experimentId": "exp-lr-half-256iter-d256-cpu",
+                    "evidenceId": "evidence-exp-lr-half-256iter-d256-cpu",
+                    "lane": "cpu-subset",
+                    "verificationClass": "cpu-subset",
+                    "benchmarkProgressEligible": False,
+                }
+            ],
+        }
+        status = {
+            "progress": {
+                "totalExperiments": 0,
+                "acceptedExperiments": 0,
+                "mostRecentEvidenceId": None,
+            },
+            "blockers": [],
+            "adapterStatus": {"details": {}},
+        }
+        state = {
+            "campaign": {"metadata": {"artifactBudgetPolicy": "required-before-promotion"}},
+            "evidenceSummaryCache": {},
+        }
+
+        rendered_status, _ = apply_measurement_evidence(source, status, state)
+        adjudication = rendered_status["promotionAdjudication"]
+
+        self.assertEqual(adjudication["candidateId"], "evidence-exp-lr-half-256iter-d256-cpu")
+        self.assertIn("benchmark-measurement-evidence", adjudication["missingEvidence"])
+        self.assertNotEqual(adjudication["decision"], "promote")
+
 
 if __name__ == "__main__":
     unittest.main()

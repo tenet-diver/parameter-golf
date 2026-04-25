@@ -255,6 +255,39 @@ def _promotion_candidate_id(source: dict, summary: dict) -> str | None:
     return summary.get("mostRecentEvidenceId")
 
 
+def _record_for_evidence_id(source: dict, evidence_id: str) -> dict | None:
+    records = source.get("experimentRecords")
+    if not isinstance(records, list):
+        return None
+
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        if record.get("evidenceId") == evidence_id:
+            return record
+    return None
+
+
+def _is_benchmark_measurement_evidence(source: dict, summary: dict) -> bool:
+    evidence_id = summary.get("mostRecentEvidenceId")
+    if not isinstance(evidence_id, str) or not evidence_id:
+        return False
+
+    record = _record_for_evidence_id(source, evidence_id)
+    if record is None:
+        return True
+
+    verification_class = record.get("verificationClass")
+    if isinstance(verification_class, str):
+        return verification_class == "benchmark-verified"
+
+    progress_eligible = record.get("benchmarkProgressEligible")
+    if isinstance(progress_eligible, bool):
+        return progress_eligible
+
+    return True
+
+
 def adjudicate_promotion(candidate: dict) -> dict:
     policy_version = candidate.get("policyVersion", DEFAULT_POLICY_VERSION)
     required_evidence = _normalized_string_list(candidate.get("requiredEvidence"))
@@ -349,7 +382,7 @@ def apply_measurement_evidence(source: dict, status: dict, state: dict) -> tuple
     provided_evidence = _normalized_string_list(summary.get("artifactIds"))
     if summary.get("trustedControlState") in {"verified", "established"}:
         provided_evidence.append("trusted-baseline-evidence")
-    if summary.get("mostRecentEvidenceId"):
+    if _is_benchmark_measurement_evidence(source, summary):
         provided_evidence.append("benchmark-measurement-evidence")
 
     policy_version = promotion_policy.get("policyVersion", DEFAULT_POLICY_VERSION)
