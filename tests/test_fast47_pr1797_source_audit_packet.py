@@ -34,6 +34,13 @@ class Fast47Pr1797SourceAuditPacketTest(unittest.TestCase):
             any("train_gpt.py" in command for command in commands),
             "FAST-47 packet must capture direct train_gpt.py source/diff retrieval.",
         )
+        self.assertTrue(
+            any(
+                "_fetch_pr_file_patch" in command and "train_gpt.py" in command
+                for command in commands
+            ),
+            "FAST-47 packet must capture train_gpt.py PR diff retrieval.",
+        )
 
         evidence_records = packet.get("evidenceRecords")
         self.assertIsInstance(evidence_records, list)
@@ -47,6 +54,7 @@ class Fast47Pr1797SourceAuditPacketTest(unittest.TestCase):
         self.assertIn("E-1797-DISCUSSION", evidence_ids)
         self.assertIn("E-1797-LEGALITY-GATE", evidence_ids)
         self.assertIn("E-1797-TRAIN-EVAL-IMPL-SOURCE", evidence_ids)
+        self.assertIn("E-1797-TRAIN-EVAL-IMPL-DIFF", evidence_ids)
 
         by_id = {
             record["id"]: record
@@ -56,6 +64,9 @@ class Fast47Pr1797SourceAuditPacketTest(unittest.TestCase):
         train_eval_impl = by_id["E-1797-TRAIN-EVAL-IMPL-SOURCE"]
         self.assertIn("train_gpt.py", train_eval_impl.get("retrievalCommand", ""))
         self.assertIn("train/eval", train_eval_impl.get("excerpt", ""))
+        train_eval_impl_diff = by_id["E-1797-TRAIN-EVAL-IMPL-DIFF"]
+        self.assertIn("train_gpt.py", train_eval_impl_diff.get("retrievalCommand", ""))
+        self.assertIn("diff", train_eval_impl_diff.get("sourceType", ""))
 
         assessment = packet.get("runnableLegalityAssessment")
         self.assertIsInstance(assessment, dict)
@@ -75,6 +86,7 @@ class Fast47Pr1797SourceAuditPacketTest(unittest.TestCase):
             refs = by_path[key].get("evidenceRefs")
             self.assertIsInstance(refs, list)
             self.assertIn("E-1797-TRAIN-EVAL-IMPL-SOURCE", refs)
+            self.assertIn("E-1797-TRAIN-EVAL-IMPL-DIFF", refs)
 
         for entry in proof_matrix:
             self.assertIsInstance(entry, dict)

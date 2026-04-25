@@ -15,6 +15,8 @@ Audit PR #1797 as the top held low-BPB candidate and verify source-level runnabl
   - Observed: changed-file list contains PR-head submission folder with `README.md`, `submission.json`, `prepare_caseops_data.py`, `train_gpt.py`, and `train_seed1234/314/42.log`.
 - `mcp__codex_apps__github._fetch_file(.../train_gpt.py, ref=04d35...)`
   - Observed: source-level train/eval implementation entrypoints are present (`train_model`, `eval_val_ttt_phased`, `train_and_eval`, `main`).
+- `mcp__codex_apps__github._fetch_pr_file_patch(.../train_gpt.py)`
+  - Observed: PR file-patch retrieval confirms `train_gpt.py` is part of the PR-level source diff set used for runnable legality audit.
 - `mcp__codex_apps__github._fetch_pr_file_patch(.../submission.json)`
   - Observed: submission source includes per-seed train/eval time, artifact bytes, and metric values (`val_bpb: 1.06157`, `artifact_bytes_max: 15953718`).
 - `mcp__codex_apps__github._fetch_pr_file_patch(.../README.md)`

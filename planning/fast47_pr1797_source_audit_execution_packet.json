@@ -14,6 +14,7 @@
     "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json)",
     "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/prepare_caseops_data.py)",
     "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_seed314.log)",
+    "mcp__codex_apps__github._fetch_pr_file_patch(repo_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py)",
     "mcp__codex_apps__github._fetch_file(repository_full_name=openai/parameter-golf, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py, ref=04d35edaad74fc88b5ef08a814c94596b616ec1b)"
   ],
   "evidenceRecords": [
@@ -115,6 +116,15 @@
       "sourceUrl": "https://github.com/openai/parameter-golf/blob/04d35edaad74fc88b5ef08a814c94596b616ec1b/records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py",
       "retrievalCommand": "mcp__codex_apps__github._fetch_file(repository_full_name=openai/parameter-golf, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py, ref=04d35edaad74fc88b5ef08a814c94596b616ec1b)",
       "excerpt": "train_gpt.py source defines train_model(...), eval_val_ttt_phased(...), train_and_eval(...), and main() entrypoint wiring distributed torchrun train/eval submission paths with wallclock legality gates."
+    },
+    {
+      "id": "E-1797-TRAIN-EVAL-IMPL-DIFF",
+      "prNumber": 1797,
+      "capturedAtUtc": "2026-04-25T22:48:00Z",
+      "sourceType": "github-pr-file-patch-diff",
+      "sourceUrl": "https://github.com/openai/parameter-golf/pull/1797/files",
+      "retrievalCommand": "mcp__codex_apps__github._fetch_pr_file_patch(repository_full_name=openai/parameter-golf, pr_number=1797, path=records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/train_gpt.py)",
+      "excerpt": "PR file-patch retrieval for train_gpt.py confirms the train/eval implementation file is part of the PR-level source diff set for runnable legality audit; source content is anchored by E-1797-TRAIN-EVAL-IMPL-SOURCE."
     }
   ],
   "runnableLegalityAssessment": {
@@ -129,6 +139,7 @@
         "status": "complete",
         "evidenceRefs": [
           "E-1797-TRAIN-EVAL-IMPL-SOURCE",
+          "E-1797-TRAIN-EVAL-IMPL-DIFF",
           "E-1797-RUNNABLE-README-SOURCE",
           "E-1797-TRAIN-LOGS"
         ]
@@ -138,6 +149,7 @@
         "status": "complete",
         "evidenceRefs": [
           "E-1797-TRAIN-EVAL-IMPL-SOURCE",
+          "E-1797-TRAIN-EVAL-IMPL-DIFF",
           "E-1797-RUNNABLE-README-SOURCE",
           "E-1797-TRAIN-LOGS"
         ]
@@ -176,6 +188,7 @@
       "E-1797-SUBMISSION-SOURCE",
       "E-1797-RUNNABLE-README-SOURCE",
       "E-1797-LEGALITY-GATE-SOURCE",
+      "E-1797-TRAIN-EVAL-IMPL-DIFF",
       "E-1797-TRAIN-LOGS",
       "E-1797-DISCUSSION"
     ],
