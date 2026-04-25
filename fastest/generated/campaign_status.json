@@ -2,7 +2,7 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-25T22:33:09.218Z",
+  "updatedAt": "2026-04-25T22:37:16.179Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
   "trustedControlState": "verified",
@@ -23,15 +23,15 @@
     "unassigned": 2
   },
   "progress": {
-    "totalExperiments": 36,
-    "acceptedExperiments": 36,
+    "totalExperiments": 38,
+    "acceptedExperiments": 38,
     "mostRecentEvidenceId": null
   },
   "recentCompletedExperiments": [],
   "progressTrend": "unknown",
   "bestKnownResult": null,
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-25T22:30:45Z",
+  "lastProgressAt": "2026-04-25T22:36:58Z",
   "stalledProgress": false,
   "blockers": [
     "No benchmark-verified campaign result exists yet.",
