@@ -1,0 +1,12 @@
+{
+  "taskId": "manual-cpu-subset",
+  "candidateId": "lr-quarter-tiny-cpu",
+  "seed": 1337,
+  "env": {
+    "EMBED_LR": "0.15",
+    "HEAD_LR": "0.002",
+    "TIED_EMBED_LR": "0.0125",
+    "MATRIX_LR": "0.01",
+    "SCALAR_LR": "0.01"
+  }
+}

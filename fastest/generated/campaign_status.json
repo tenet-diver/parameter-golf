@@ -2,14 +2,14 @@
   "campaignId": "campaign-parameter-golf-49bd735409",
   "benchmarkAdapterId": "parameter-golf",
   "targetRepositoryRoot": "/workspaces/parameter-golf",
-  "updatedAt": "2026-04-25T21:25:45.577Z",
+  "updatedAt": "2026-04-25T22:27:51.416Z",
   "campaignState": "active",
   "environmentClass": "cpu-smoke",
-  "trustedControlState": "established",
+  "trustedControlState": "verified",
   "queueHealth": {
-    "pendingTaskCount": 0,
+    "pendingTaskCount": 1,
     "inFlightTaskCount": 0,
-    "stalledSince": "2026-04-24T16:42:28.156Z"
+    "stalledSince": null
   },
   "queueDepthByLane": {
     "measurement": 0,
@@ -20,69 +20,34 @@
     "scale-check": 0,
     "benchmark-rehearsal": 0,
     "non-record-exploration": 0,
-    "unassigned": 0
+    "unassigned": 1
   },
   "progress": {
-    "totalExperiments": 24,
-    "acceptedExperiments": 24,
-    "mostRecentEvidenceId": "evidence-exp-baseline-tiny-cpu"
+    "totalExperiments": 35,
+    "acceptedExperiments": 35,
+    "mostRecentEvidenceId": null
   },
-  "recentCompletedExperiments": [
-    "exp-fast1-control-20260423-001",
-    "exp-fast1-control-20260424-cpu-smoke-001",
-    "exp-fast4-cheap-screen-20260423-attempt2-001",
-    "exp-fast4-qa-smoke-20260423-001",
-    "exp-fast11-measurement-20260424-001",
-    "exp-fast16-measurement-20260424-001",
-    "exp-fast21-measurement-20260424-001",
-    "exp-fast26-measurement-20260424-001",
-    "exp-fast28-ablation-001",
-    "exp-fast29-combination-001",
-    "exp-fast32-cheap-screen-001",
-    "exp-fast34-combination-001",
-    "exp-fast35-non-record-001",
-    "fast36-candidate-002",
-    "fast36-candidate-003",
-    "exp-fast37-combination-001",
-    "exp-fast38-non-record-001",
-    "exp-fast40-combination-001",
-    "exp-fast41-non-record-001",
-    "exp-fast39-cheap-screen-001",
-    "exp-fast33-ablation-001",
-    "exp-fast42-combination-001",
-    "exp-fast44-pr1732-import-001",
-    "exp-baseline-tiny-cpu"
-  ],
+  "recentCompletedExperiments": [],
   "progressTrend": "unknown",
   "bestKnownResult": null,
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-25T21:42:37Z",
-  "stalledProgress": true,
+  "lastProgressAt": "2026-04-25T22:27:08Z",
+  "stalledProgress": false,
   "blockers": [
     "No benchmark-verified campaign result exists yet.",
-    "Campaign is active but the queue is empty.",
-    "Campaign progress is stalled and needs investigation or measurement repair."
+    "Open campaign tasks are not lane-attributed yet, so lane-floor accounting is still approximate."
   ],
   "adapterStatus": {
-    "summary": "Trusted control baseline established; keep Parameter Golf work centered on measurement and cheap-screen validation.",
+    "summary": "Parameter Golf campaign healthy enough for continued benchmark-directed search.",
     "details": {
       "environmentClass": "cpu-smoke",
-      "trustedControlState": "established",
-      "pendingTaskCount": "0",
+      "trustedControlState": "verified",
+      "pendingTaskCount": "1",
       "inFlightTaskCount": "0",
       "progressTrend": "unknown",
-      "stalledProgress": "true",
+      "stalledProgress": "false",
       "benchmarkTrack": "parameter-golf",
-      "readiness": "baseline-established"
+      "readiness": "advancing"
     }
-  },
-  "promotionAdjudication": {
-    "candidateId": "evidence-exp-fast37-combination-001",
-    "policyVersion": "pg-constraint-clarity-v1",
-    "decision": "promote",
-    "violatedRules": [],
-    "missingEvidence": [],
-    "ambiguityReasons": [],
-    "promotableStateChange": true
   }
 }
