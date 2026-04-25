@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-25T22:36:58Z",
+  "updatedAt": "2026-04-25T22:46:38Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -42,12 +42,13 @@
       "evidence-exp-lr-half-256iter-tiny-cpu",
       "evidence-exp-lr-half-256iter-val32k-tiny-cpu",
       "evidence-exp-lr-half-256iter-d128-cpu",
-      "evidence-exp-lr-half-256iter-d192-cpu"
+      "evidence-exp-lr-half-256iter-d192-cpu",
+      "evidence-exp-lr-half-256iter-d256-cpu"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 38,
-    "acceptedExperiments": 38,
-    "mostRecentEvidenceId": "evidence-exp-lr-half-256iter-d192-cpu"
+    "totalExperiments": 39,
+    "acceptedExperiments": 39,
+    "mostRecentEvidenceId": "evidence-exp-lr-half-256iter-d256-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -87,7 +88,8 @@
     "exp-lr-half-256iter-tiny-cpu",
     "exp-lr-half-256iter-val32k-tiny-cpu",
     "exp-lr-half-256iter-d128-cpu",
-    "exp-lr-half-256iter-d192-cpu"
+    "exp-lr-half-256iter-d192-cpu",
+    "exp-lr-half-256iter-d256-cpu"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -1704,6 +1706,58 @@
         "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-d192-cpu/stderr.txt",
         "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-d192-cpu/result.json",
         "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-d192-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "hold",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      }
+    },
+    {
+      "experimentId": "exp-lr-half-256iter-d256-cpu",
+      "evidenceId": "evidence-exp-lr-half-256iter-d256-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-25T22:46:38Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 2.60080495,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "manual-cpu-subset:cpu-subset:exp-lr-half-256iter-d256-cpu",
+      "taskId": "manual-cpu-subset",
+      "traceId": "trace-lr-half-256iter-d256-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 256,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 8192,
+        "modelDim": 256,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 2.60080495,
+        "valLoss": 4.47252202,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-d256-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-d256-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-d256-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_lr-half-256iter-d256-cpu/final_model.int8.ptz"
       ],
       "promotionRationale": {
         "decision": "hold",

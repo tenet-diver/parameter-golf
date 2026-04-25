@@ -1,0 +1,16 @@
+{
+  "taskId": "manual-cpu-subset",
+  "candidateId": "lr-half-256iter-d256-cpu",
+  "seed": 1337,
+  "env": {
+    "ITERATIONS": "256",
+    "MODEL_DIM": "256",
+    "NUM_HEADS": "8",
+    "NUM_KV_HEADS": "4",
+    "EMBED_LR": "0.3",
+    "HEAD_LR": "0.004",
+    "TIED_EMBED_LR": "0.025",
+    "MATRIX_LR": "0.02",
+    "SCALAR_LR": "0.02"
+  }
+}
