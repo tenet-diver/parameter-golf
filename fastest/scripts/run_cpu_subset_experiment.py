@@ -40,6 +40,7 @@ DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH = (
 TRUST_RECEIPT_SCHEMA = "parameter-golf-trust-receipt/v1"
 TRUST_RECEIPT_ISSUER = "parameter-golf-model-factory-trust-authority"
 TRUST_RECEIPT_SIGNATURE_PREFIX = "local-signed-bundle:"
+TRUST_RECEIPT_CRYPTO_SIGNATURE_PREFIX = "cryptographic-signed-bundle:"
 FINAL_BPB_RE = re.compile(
     r"final_int8_zlib_roundtrip_exact\s+val_loss:(?P<loss>[0-9.]+)\s+val_bpb:(?P<bpb>[0-9.]+)"
 )
@@ -570,6 +571,7 @@ def _trust_receipt_error(
     entry: dict[str, Any],
     expected_subject: str,
     trusted_roots: set[str] | None = None,
+    trust_root_policy: dict[str, Any] | None = None,
 ) -> str | None:
     receipt = entry.get("receipt")
     if not isinstance(receipt, dict):
@@ -581,9 +583,17 @@ def _trust_receipt_error(
     if receipt.get("subject") != expected_subject:
         return "receipt-subject-mismatch"
     signature = receipt.get("signature")
-    if not isinstance(signature, str) or not signature.startswith(TRUST_RECEIPT_SIGNATURE_PREFIX):
+    if not isinstance(signature, str):
         return "receipt-signature-invalid"
-    signature_subject = signature[len(TRUST_RECEIPT_SIGNATURE_PREFIX) :]
+    signature_subject: str
+    local_signature_mode = False
+    if signature.startswith(TRUST_RECEIPT_SIGNATURE_PREFIX):
+        local_signature_mode = True
+        signature_subject = signature[len(TRUST_RECEIPT_SIGNATURE_PREFIX) :]
+    elif signature.startswith(TRUST_RECEIPT_CRYPTO_SIGNATURE_PREFIX):
+        signature_subject = signature[len(TRUST_RECEIPT_CRYPTO_SIGNATURE_PREFIX) :]
+    else:
+        return "receipt-signature-invalid"
     if signature_subject != expected_subject:
         return "receipt-signature-subject-mismatch"
     trusted_root = receipt.get("trustedRoot")
@@ -591,6 +601,32 @@ def _trust_receipt_error(
         return "receipt-trusted-root-missing"
     if trusted_roots is not None and trusted_root not in trusted_roots:
         return "receipt-trusted-root-untrusted"
+    if local_signature_mode:
+        if not isinstance(trust_root_policy, dict):
+            return "receipt-residual-risk-acceptance-missing"
+        residual_risk = trust_root_policy.get("residualRiskAcceptance")
+        if not isinstance(residual_risk, dict):
+            return "receipt-residual-risk-acceptance-missing"
+        if residual_risk.get("scope") != "cpu-subset":
+            return "receipt-residual-risk-acceptance-invalid-scope"
+        accepted_by = residual_risk.get("acceptedBy")
+        if not isinstance(accepted_by, str) or not accepted_by:
+            return "receipt-residual-risk-acceptance-invalid-approver"
+        monitoring_owner = residual_risk.get("monitoringOwner")
+        if not isinstance(monitoring_owner, str) or not monitoring_owner:
+            return "receipt-residual-risk-acceptance-monitoring-missing"
+        expires_at_raw = residual_risk.get("expiresAt")
+        if not isinstance(expires_at_raw, str) or not expires_at_raw:
+            return "receipt-residual-risk-acceptance-expiry-invalid"
+        expires_at_normalized = expires_at_raw.replace("Z", "+00:00")
+        try:
+            expires_at = datetime.fromisoformat(expires_at_normalized)
+        except ValueError:
+            return "receipt-residual-risk-acceptance-expiry-invalid"
+        if expires_at.tzinfo is None:
+            return "receipt-residual-risk-acceptance-expiry-invalid"
+        if expires_at.astimezone(timezone.utc) <= datetime.now(timezone.utc):
+            return "receipt-residual-risk-acceptance-expired"
     return None
 
 
@@ -704,8 +740,14 @@ def _resolve_runner_attestation(
             "reasonCode": "attestation-provenance-unverified",
             "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
         }
+    trust_root_policy = registry.get("trustRootPolicy")
     trusted_roots = _trusted_roots_from_registry(registry)
-    receipt_error = _trust_receipt_error(entry, attestation_ref, trusted_roots)
+    receipt_error = _trust_receipt_error(
+        entry,
+        attestation_ref,
+        trusted_roots,
+        trust_root_policy,
+    )
     if receipt_error is not None:
         return {
             "status": "unresolved",
@@ -775,8 +817,14 @@ def _resolve_parent_lineage(
             "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
             "parentFrontierId": None,
         }
+    trust_root_policy = registry.get("trustRootPolicy")
     trusted_roots = _trusted_roots_from_registry(registry)
-    receipt_error = _trust_receipt_error(entry, parent_experiment_id, trusted_roots)
+    receipt_error = _trust_receipt_error(
+        entry,
+        parent_experiment_id,
+        trusted_roots,
+        trust_root_policy,
+    )
     if receipt_error is not None:
         return {
             "status": "unresolved",

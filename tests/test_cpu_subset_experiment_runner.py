@@ -349,6 +349,197 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                             "environment": "production",
                             "allowBypass": False,
                             "trustedRoots": ["registry:lineage-prod-root"],
+                            "residualRiskAcceptance": {
+                                "scope": "cpu-subset",
+                                "acceptedBy": "operator",
+                                "expiresAt": "2099-01-01T00:00:00Z",
+                                "monitoringOwner": "model-factory-oncall",
+                            },
+                        },
+                        "parentLineage": {
+                            "exp-parent-cpu": {
+                                "parentFrontierId": "deepseek-v4-muon-tuning",
+                                "provenanceVerified": True,
+                                "receipt": trust_receipt(
+                                    "exp-parent-cpu",
+                                    "registry:lineage-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+            run_dir = root / "fastest/generated/cpu_subset_runs/cpu_subset_child"
+            run_dir.mkdir(parents=True)
+            (run_dir / "deterministic_rerun.json").write_text(
+                json.dumps(
+                    {
+                        "source": "cpu-subset-runner",
+                        "status": "passed",
+                        "evidenceRef": "deterministic-rerun-cpu_subset_child",
+                    }
+                )
+            )
+            (run_dir / "seed_variance.json").write_text(
+                json.dumps(
+                    {
+                        "source": "cpu-subset-runner",
+                        "status": "passed",
+                        "evidenceRef": "seed-variance-cpu_subset_child",
+                    }
+                )
+            )
+            train_env = build_cpu_subset_env(
+                {"seed": 7, "env": {"MODEL_DIM": "128", "VAL_TOKEN_LIMIT": "16384"}},
+                "cpu_subset_child",
+            )
+            runner_verification = cpu_subset_runner._mint_runner_verification(
+                run_id="cpu_subset_child",
+                completed_at="2026-04-25T01:00:00Z",
+                val_loss=4.0,
+                val_bpb=4.1,
+                command=["python", "train_gpt.py"],
+                run_dir=run_dir,
+                train_env=train_env,
+            )
+            trusted_attestation_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                            "residualRiskAcceptance": {
+                                "scope": "cpu-subset",
+                                "acceptedBy": "operator",
+                                "expiresAt": "2099-01-01T00:00:00Z",
+                                "monitoringOwner": "model-factory-oncall",
+                            },
+                        },
+                        "runnerAttestations": {
+                            runner_verification["attestationRef"]: {
+                                "runId": "cpu_subset_child",
+                                "attestationRef": runner_verification["attestationRef"],
+                                "source": "cpu-subset-runner",
+                                "provenanceVerified": True,
+                                "resultClass": "cpu-subset",
+                                "verificationClass": "cpu-subset",
+                                "receipt": trust_receipt(
+                                    runner_verification["attestationRef"],
+                                    "registry:attestation-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+
+            with patch.object(
+                cpu_subset_runner,
+                "DEFAULT_TRUSTED_PARENT_REGISTRY_PATH",
+                trusted_registry_path,
+            ), patch.object(
+                cpu_subset_runner,
+                "DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH",
+                trusted_attestation_registry_path,
+            ):
+                record = append_cpu_subset_evidence(
+                    candidate={
+                        "taskId": "FAST-49",
+                        "candidateId": "child-cpu",
+                        "parentExperimentId": "exp-parent-cpu",
+                        "parentFrontierId": "forged-frontier-id",
+                        "seed": 7,
+                        "env": {"MODEL_DIM": "128", "VAL_TOKEN_LIMIT": "16384"},
+                    },
+                    run_id="cpu_subset_child",
+                    completed_at="2026-04-25T01:00:00Z",
+                    val_loss=4.0,
+                    val_bpb=4.1,
+                    command=["python", "train_gpt.py"],
+                    run_dir=run_dir,
+                    train_env=train_env,
+                    evidence_path=evidence_path,
+                )
+
+            self.assertEqual(record["lineage"]["parentExperimentId"], "exp-parent-cpu")
+            self.assertEqual(record["lineage"]["parentFrontierId"], "deepseek-v4-muon-tuning")
+            self.assertEqual(record["lineageResolution"]["status"], "resolved")
+            self.assertEqual(record["attestationResolution"]["status"], "resolved")
+            changed_factors = record["lineage"]["changedFactors"]
+            self.assertIn(
+                {"factor": "MODEL_DIM", "parentValue": "96", "candidateValue": "128"},
+                changed_factors,
+            )
+            self.assertIn(
+                {"factor": "VAL_TOKEN_LIMIT", "parentValue": "8192", "candidateValue": "16384"},
+                changed_factors,
+            )
+            self.assertEqual(record["runtimeValidationCaps"]["maxRuntimeSeconds"], 600)
+            self.assertEqual(record["runtimeValidationCaps"]["valTokenLimit"], 16384)
+            self.assertEqual(record["runtimeValidationCaps"]["validationClass"], "cpu-subset")
+            self.assertEqual(record["rankingTable"]["candidateRank"], 1)
+            self.assertEqual(record["rankingTable"]["totalCandidates"], 2)
+            self.assertEqual(record["modelFactoryDecision"]["promotionDecision"], "propose-follow-up")
+            self.assertEqual(record["modelFactoryDecision"]["retirementDecision"], "retain")
+            self.assertEqual(record["followUpTaskProposal"]["lane"], "cheap-screen")
+            self.assertEqual(record["followUpTaskProposal"]["sourceLane"], "cpu-subset")
+            self.assertTrue(record["followUpTaskProposal"]["taskId"].startswith("FAST-49-"))
+            self.assertEqual(record["followUpTaskProposal"]["measuredEvidenceRef"], "evidence-exp-child-cpu")
+            self.assertEqual(record["resultClass"], "cpu-subset")
+            self.assertEqual(record["verificationClass"], "cpu-subset")
+
+    def test_fails_closed_when_local_receipts_have_no_operator_risk_acceptance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            trusted_registry_path = root / "trusted_parent_lineage_registry.json"
+            trusted_attestation_registry_path = root / "trusted_runner_attestation_registry.json"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "kind": "parameter-golf-measurement-evidence",
+                        "updatedAt": "2026-04-25T00:00:00Z",
+                        "summary": {
+                            "artifactIds": ["evidence-exp-parent-cpu"],
+                            "trustedControlState": "established",
+                            "totalExperiments": 1,
+                            "acceptedExperiments": 1,
+                            "mostRecentEvidenceId": "evidence-exp-parent-cpu",
+                        },
+                        "recentCompletedExperiments": ["exp-parent-cpu"],
+                        "experimentRecords": [
+                            {
+                                "experimentId": "exp-parent-cpu",
+                                "evidenceId": "evidence-exp-parent-cpu",
+                                "lane": "cpu-subset",
+                                "status": "accepted",
+                                "objectiveMetricName": "val_bpb",
+                                "objectiveValue": 4.4,
+                                "runConfig": {
+                                    "seed": "1337",
+                                    "iterations": 4,
+                                    "trainSeqLen": 128,
+                                    "trainBatchTokens": 2048,
+                                    "valTokenLimit": 8192,
+                                    "modelDim": 96,
+                                    "numLayers": 1,
+                                },
+                            }
+                        ],
+                    },
+                )
+            )
+            trusted_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:lineage-prod-root"],
                         },
                         "parentLineage": {
                             "exp-parent-cpu": {
@@ -434,10 +625,9 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             ):
                 record = append_cpu_subset_evidence(
                     candidate={
-                        "taskId": "FAST-49",
+                        "taskId": "FAST-52",
                         "candidateId": "child-cpu",
                         "parentExperimentId": "exp-parent-cpu",
-                        "parentFrontierId": "forged-frontier-id",
                         "seed": 7,
                         "env": {"MODEL_DIM": "128", "VAL_TOKEN_LIMIT": "16384"},
                     },
@@ -451,32 +641,13 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                     evidence_path=evidence_path,
                 )
 
-            self.assertEqual(record["lineage"]["parentExperimentId"], "exp-parent-cpu")
-            self.assertEqual(record["lineage"]["parentFrontierId"], "deepseek-v4-muon-tuning")
-            self.assertEqual(record["lineageResolution"]["status"], "resolved")
-            self.assertEqual(record["attestationResolution"]["status"], "resolved")
-            changed_factors = record["lineage"]["changedFactors"]
-            self.assertIn(
-                {"factor": "MODEL_DIM", "parentValue": "96", "candidateValue": "128"},
-                changed_factors,
+            self.assertEqual(record["modelFactoryDecision"]["promotionDecision"], "hold")
+            self.assertEqual(record["verificationStatus"], "verification_failed_trust")
+            self.assertIsNone(record["followUpTaskProposal"])
+            self.assertEqual(
+                record["attestationResolution"]["reasonCode"],
+                "attestation-receipt-residual-risk-acceptance-missing",
             )
-            self.assertIn(
-                {"factor": "VAL_TOKEN_LIMIT", "parentValue": "8192", "candidateValue": "16384"},
-                changed_factors,
-            )
-            self.assertEqual(record["runtimeValidationCaps"]["maxRuntimeSeconds"], 600)
-            self.assertEqual(record["runtimeValidationCaps"]["valTokenLimit"], 16384)
-            self.assertEqual(record["runtimeValidationCaps"]["validationClass"], "cpu-subset")
-            self.assertEqual(record["rankingTable"]["candidateRank"], 1)
-            self.assertEqual(record["rankingTable"]["totalCandidates"], 2)
-            self.assertEqual(record["modelFactoryDecision"]["promotionDecision"], "propose-follow-up")
-            self.assertEqual(record["modelFactoryDecision"]["retirementDecision"], "retain")
-            self.assertEqual(record["followUpTaskProposal"]["lane"], "cheap-screen")
-            self.assertEqual(record["followUpTaskProposal"]["sourceLane"], "cpu-subset")
-            self.assertTrue(record["followUpTaskProposal"]["taskId"].startswith("FAST-49-"))
-            self.assertEqual(record["followUpTaskProposal"]["measuredEvidenceRef"], "evidence-exp-child-cpu")
-            self.assertEqual(record["resultClass"], "cpu-subset")
-            self.assertEqual(record["verificationClass"], "cpu-subset")
 
     def test_fails_closed_when_candidate_declares_untrusted_verification_or_lineage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
