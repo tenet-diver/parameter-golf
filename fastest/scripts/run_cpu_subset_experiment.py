@@ -34,6 +34,9 @@ DEFAULT_RUN_ROOT = REPO_ROOT / "fastest/generated/cpu_subset_runs"
 CPU_SUBSET_MAX_WALLCLOCK_SECONDS = 600
 CPU_SUBSET_CAP_POLICY_SOURCE = "runner-fixed-fast-51"
 DEFAULT_TRUSTED_PARENT_REGISTRY_PATH = REPO_ROOT / "fastest/source/trusted_parent_lineage_registry.json"
+DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH = (
+    REPO_ROOT / "fastest/source/trusted_runner_attestation_registry.json"
+)
 FINAL_BPB_RE = re.compile(
     r"final_int8_zlib_roundtrip_exact\s+val_loss:(?P<loss>[0-9.]+)\s+val_bpb:(?P<bpb>[0-9.]+)"
 )
@@ -555,6 +558,79 @@ def _load_trusted_parent_registry(registry_path: Path) -> dict[str, Any] | None:
     return payload
 
 
+def _resolve_runner_attestation(
+    *,
+    attestation_ref: str | None,
+    run_id: str,
+    registry_path: Path,
+) -> dict[str, Any]:
+    if not attestation_ref:
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-missing",
+            "attestationRegistryRef": None,
+        }
+    registry = _load_trusted_parent_registry(registry_path)
+    if registry is None:
+        return {
+            "status": "unresolved",
+            "reasonCode": "trusted-attestation-registry-unavailable",
+            "attestationRegistryRef": None,
+        }
+    runner_attestations = registry.get("runnerAttestations")
+    if not isinstance(runner_attestations, dict):
+        return {
+            "status": "unresolved",
+            "reasonCode": "trusted-attestation-registry-invalid-runner-attestations",
+            "attestationRegistryRef": None,
+        }
+    entry = runner_attestations.get(attestation_ref)
+    if not isinstance(entry, dict):
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-unresolved",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
+    expected_run_id = entry.get("runId")
+    if not isinstance(expected_run_id, str) or not expected_run_id:
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-missing-run-id",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
+    if expected_run_id != run_id:
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-run-id-mismatch",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
+    source = entry.get("source")
+    if source != "cpu-subset-runner":
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-untrusted-source",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
+    expected_attestation_ref = entry.get("attestationRef")
+    if expected_attestation_ref != attestation_ref:
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-ref-mismatch",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
+    if not bool(entry.get("provenanceVerified")):
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-provenance-unverified",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
+    return {
+        "status": "resolved",
+        "reasonCode": "attestation-resolved",
+        "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+    }
+
+
 def _resolve_parent_lineage(
     *,
     parent_experiment_id: str | None,
@@ -727,7 +803,6 @@ def append_cpu_subset_evidence(
     run_dir: Path,
     train_env: dict[str, str],
     evidence_path: Path,
-    trusted_parent_registry_path: Path = DEFAULT_TRUSTED_PARENT_REGISTRY_PATH,
 ) -> dict[str, Any]:
     evidence = load_json(evidence_path)
     records = evidence.setdefault("experimentRecords", [])
@@ -762,7 +837,7 @@ def append_cpu_subset_evidence(
     )
     parent_lineage = _resolve_parent_lineage(
         parent_experiment_id=parent_experiment_id,
-        registry_path=trusted_parent_registry_path,
+        registry_path=DEFAULT_TRUSTED_PARENT_REGISTRY_PATH,
     )
     parent_frontier_id = parent_lineage["parentFrontierId"]
     runner_verification = _mint_runner_verification(
@@ -774,6 +849,14 @@ def append_cpu_subset_evidence(
         run_dir=run_dir,
         train_env=train_env,
     )
+    attestation_resolution = _resolve_runner_attestation(
+        attestation_ref=runner_verification.get("attestationRef"),
+        run_id=run_id,
+        registry_path=DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH,
+    )
+    runner_verification["provenanceVerified"] = attestation_resolution["status"] == "resolved"
+    runner_verification["attestationRegistryRef"] = attestation_resolution["attestationRegistryRef"]
+    runner_verification["attestationResolutionReasonCode"] = attestation_resolution["reasonCode"]
     runner_gate = _evaluate_runner_verification(runner_verification)
     trust_gates_satisfied = (
         runner_gate["status"] == "passed" and parent_lineage["status"] == "resolved"
@@ -813,6 +896,7 @@ def append_cpu_subset_evidence(
             "measuredEvidenceRef": evidence_id,
         }
     ranking_table["attestationRef"] = runner_gate["attestationRef"]
+    ranking_table["attestationRegistryRef"] = attestation_resolution["attestationRegistryRef"]
     ranking_table["lineageResolutionRef"] = parent_lineage["lineageResolutionRef"]
     ranking_table["verificationStatus"] = verification_status
     ranking_table["resultClass"] = "cpu-subset"
@@ -878,6 +962,7 @@ def append_cpu_subset_evidence(
         },
         "lineageResolution": parent_lineage,
         "attestationRef": runner_gate["attestationRef"],
+        "attestationResolution": attestation_resolution,
         "runnerVerificationGate": runner_gate,
         "modelFactory": {
             "owner": "cpu-subset-runner",
