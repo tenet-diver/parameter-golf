@@ -23,9 +23,9 @@
     "unassigned": 4
   },
   "progress": {
-    "totalExperiments": 43,
-    "acceptedExperiments": 43,
-    "mostRecentEvidenceId": "evidence-exp-fast51-muon-warmup80"
+    "totalExperiments": 46,
+    "acceptedExperiments": 46,
+    "mostRecentEvidenceId": "evidence-exp-fast53-attn-qk-norm-per-head-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -70,12 +70,15 @@
     "exp-fast51-adamw-exempt-qproj",
     "exp-fast51-muon-backend7",
     "exp-fast51-muon-baseline",
-    "exp-fast51-muon-warmup80"
+    "exp-fast51-muon-warmup80",
+    "exp-fast53-attn-baseline-cpu",
+    "exp-fast53-attn-qk-rmsnorm-cpu",
+    "exp-fast53-attn-qk-norm-per-head-cpu"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": null,
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-26T01:13:36Z",
+  "lastProgressAt": "2026-04-26T01:49:03Z",
   "stalledProgress": false,
   "blockers": [
     "No benchmark-verified campaign result exists yet.",

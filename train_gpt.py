@@ -60,6 +60,8 @@ class Hyperparameters:
     train_seq_len = int(os.environ.get("TRAIN_SEQ_LEN", 1024))
     max_wallclock_seconds = float(os.environ.get("MAX_WALLCLOCK_SECONDS", 600.0))
     qk_gain_init = float(os.environ.get("QK_GAIN_INIT", 1.5))
+    attn_norm_mode = os.environ.get("ATTN_NORM_MODE", "baseline").strip().lower()
+    attn_norm_eps = float(os.environ.get("ATTN_NORM_EPS", 1e-6))
 
     # Model shape.
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
@@ -582,6 +584,8 @@ class CausalSelfAttention(nn.Module):
         num_kv_heads: int,
         rope_base: float,
         qk_gain_init: float,
+        attn_norm_mode: str,
+        attn_norm_eps: float,
     ):
         super().__init__()
         if dim % num_heads != 0:
@@ -599,20 +603,37 @@ class CausalSelfAttention(nn.Module):
         self.c_v = CastedLinear(dim, kv_dim, bias=False)
         self.proj = CastedLinear(dim, dim, bias=False)
         self.proj._zero_init = True
+        if attn_norm_mode not in {"baseline", "qk_rmsnorm", "qk_norm_per_head"}:
+            raise ValueError(f"Unsupported ATTN_NORM_MODE={attn_norm_mode!r}")
+        if attn_norm_eps <= 0.0:
+            raise ValueError(f"ATTN_NORM_EPS must be > 0, got {attn_norm_eps}")
+        self.attn_norm_mode = attn_norm_mode
+        self.attn_norm_eps = attn_norm_eps
         self.q_gain = nn.Parameter(torch.full((num_heads,), qk_gain_init, dtype=torch.float32))
         self.rotary = Rotary(self.head_dim, base=rope_base)
+
+    def _normalize_qk(self, q: Tensor, k: Tensor) -> tuple[Tensor, Tensor]:
+        if self.attn_norm_mode == "qk_rmsnorm":
+            q = F.rms_norm(q, (q.size(-1),), eps=self.attn_norm_eps)
+            k = F.rms_norm(k, (k.size(-1),), eps=self.attn_norm_eps)
+            return q, k
+        if self.attn_norm_mode == "qk_norm_per_head":
+            q = F.normalize(q, p=2.0, dim=-1, eps=self.attn_norm_eps)
+            k = F.normalize(k, p=2.0, dim=-1, eps=self.attn_norm_eps)
+            return q, k
+        return q, k
 
     def forward(self, x: Tensor) -> Tensor:
         bsz, seqlen, dim = x.shape
         q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim).transpose(1, 2)
         k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
         v = self.c_v(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
-        q = F.rms_norm(q, (q.size(-1),))
-        k = F.rms_norm(k, (k.size(-1),))
         cos, sin = self.rotary(seqlen, x.device, q.dtype)
         q = apply_rotary_emb(q, cos, sin)
         k = apply_rotary_emb(k, cos, sin)
-        q = q * self.q_gain.to(dtype=q.dtype)[None, :, None, None]
+        q, k = self._normalize_qk(q, k)
+        if self.attn_norm_mode == "baseline":
+            q = q * self.q_gain.to(dtype=q.dtype)[None, :, None, None]
         y = F.scaled_dot_product_attention(
             q,
             k,
@@ -648,13 +669,17 @@ class Block(nn.Module):
         mlp_mult: int,
         rope_base: float,
         qk_gain_init: float,
+        attn_norm_mode: str,
+        attn_norm_eps: float,
         parallel_residual: bool,
     ):
         super().__init__()
         self.parallel_residual = parallel_residual
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
-        self.attn = CausalSelfAttention(dim, num_heads, num_kv_heads, rope_base, qk_gain_init)
+        self.attn = CausalSelfAttention(
+            dim, num_heads, num_kv_heads, rope_base, qk_gain_init, attn_norm_mode, attn_norm_eps
+        )
         self.mlp = MLP(dim, mlp_mult)
         self.attn_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
         self.mlp_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
@@ -701,6 +726,8 @@ class GPT(nn.Module):
         logit_softcap: float,
         rope_base: float,
         qk_gain_init: float,
+        attn_norm_mode: str,
+        attn_norm_eps: float,
         parallel_residual: bool,
         encoder_layer_order: str,
         decoder_layer_order: str,
@@ -738,6 +765,8 @@ class GPT(nn.Module):
                     mlp_mult,
                     rope_base,
                     qk_gain_init,
+                    attn_norm_mode,
+                    attn_norm_eps,
                     parallel_residual,
                 )
                 for i in range(num_layers)
@@ -912,6 +941,8 @@ def main() -> None:
         logit_softcap=args.logit_softcap,
         rope_base=args.rope_base,
         qk_gain_init=args.qk_gain_init,
+        attn_norm_mode=args.attn_norm_mode,
+        attn_norm_eps=args.attn_norm_eps,
         parallel_residual=args.parallel_residual,
         encoder_layer_order=args.encoder_layer_order,
         decoder_layer_order=args.decoder_layer_order,
@@ -978,7 +1009,10 @@ def main() -> None:
     log0(f"model_params:{n_params}")
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
     log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
-    log0(f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads}")
+    log0(
+        f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads} "
+        f"attn_norm_mode:{args.attn_norm_mode} attn_norm_eps:{args.attn_norm_eps}"
+    )
     log0(
         f"layer_order:encoder={base_model.encoder_layer_order} "
         f"decoder={base_model.decoder_layer_order} "

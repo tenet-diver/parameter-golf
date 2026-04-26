@@ -36,9 +36,36 @@ FINAL_BPB_RE = re.compile(
 )
 
 
+def _resolve_shared_repo_root() -> Path:
+    for parent in REPO_ROOT.parents:
+        if parent.name == "parameter-golf":
+            return parent
+    return REPO_ROOT
+
+
+def _resolve_default_data_path() -> Path:
+    local = REPO_ROOT / "data/datasets/fineweb10B_sp1024"
+    if local.exists():
+        return local
+    shared = _resolve_shared_repo_root() / "data/datasets/fineweb10B_sp1024"
+    if shared.exists():
+        return shared
+    return local
+
+
+def _resolve_default_tokenizer_path() -> Path:
+    local = REPO_ROOT / "data/tokenizers/fineweb_1024_bpe.model"
+    if local.exists():
+        return local
+    shared = _resolve_shared_repo_root() / "data/tokenizers/fineweb_1024_bpe.model"
+    if shared.exists():
+        return shared
+    return local
+
+
 DEFAULT_CPU_ENV = {
-    "DATA_PATH": str(REPO_ROOT / "data/datasets/fineweb10B_sp1024"),
-    "TOKENIZER_PATH": str(REPO_ROOT / "data/tokenizers/fineweb_1024_bpe.model"),
+    "DATA_PATH": str(_resolve_default_data_path()),
+    "TOKENIZER_PATH": str(_resolve_default_tokenizer_path()),
     "VOCAB_SIZE": "1024",
     "NUM_LAYERS": "1",
     "MODEL_DIM": "96",
@@ -54,6 +81,8 @@ DEFAULT_CPU_ENV = {
     "WARMDOWN_ITERS": "0",
     "VAL_LOSS_EVERY": "2",
     "TRAIN_LOG_EVERY": "1",
+    "ATTN_NORM_MODE": "baseline",
+    "ATTN_NORM_EPS": "1e-6",
     "MAX_WALLCLOCK_SECONDS": str(CPU_SUBSET_MAX_WALLCLOCK_SECONDS),
     "ARTIFACT_BUDGET_STRICT": "1",
 }
@@ -83,6 +112,8 @@ CPU_SUBSET_ENV_OVERRIDE_ALLOWLIST = (
 )
 CPU_SUBSET_SERIALIZED_FACTOR_ALLOWLIST = frozenset(
     {
+        "ATTN_NORM_EPS",
+        "ATTN_NORM_MODE",
         "ARTIFACT_BUDGET_STRICT",
         "CONTROL_TENSOR_NAME_PATTERNS",
         "ITERATIONS",

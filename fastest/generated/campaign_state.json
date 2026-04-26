@@ -52,7 +52,7 @@
   },
   "environmentClass": "cpu-smoke",
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-26T01:13:36Z",
+  "lastProgressAt": "2026-04-26T01:49:03Z",
   "stalledSince": null,
   "evidenceSummaryCache": {
     "artifactIds": [
@@ -99,7 +99,10 @@
       "evidence-exp-fast51-adamw-exempt-qproj",
       "evidence-exp-fast51-muon-backend7",
       "evidence-exp-fast51-muon-baseline",
-      "evidence-exp-fast51-muon-warmup80"
+      "evidence-exp-fast51-muon-warmup80",
+      "evidence-exp-fast53-attn-baseline-cpu",
+      "evidence-exp-fast53-attn-qk-rmsnorm-cpu",
+      "evidence-exp-fast53-attn-qk-norm-per-head-cpu"
     ],
     "objectiveMetricName": "benchmark-score",
     "objectiveDirection": "maximize",
@@ -149,10 +152,13 @@
       "exp-fast51-adamw-exempt-qproj",
       "exp-fast51-muon-backend7",
       "exp-fast51-muon-baseline",
-      "exp-fast51-muon-warmup80"
+      "exp-fast51-muon-warmup80",
+      "exp-fast53-attn-baseline-cpu",
+      "exp-fast53-attn-qk-rmsnorm-cpu",
+      "exp-fast53-attn-qk-norm-per-head-cpu"
     ],
-    "acceptedExperiments": 43,
-    "totalExperiments": 43,
+    "acceptedExperiments": 46,
+    "totalExperiments": 46,
     "promotionGateRejectionCount": 0,
     "latestPromotionAdjudication": {
       "candidateId": "evidence-exp-fast37-combination-001",

@@ -83,6 +83,22 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
         self.assertEqual(env["MUON_MOMENTUM_WARMUP_STEPS"], "120")
         self.assertEqual(env["CONTROL_TENSOR_NAME_PATTERNS"], "attn_scale,q_gain,mlp_scale")
 
+    def test_accepts_attention_norm_mode_env_overrides(self) -> None:
+        env = build_cpu_subset_env(
+            {
+                "candidateId": "attn-norm",
+                "seed": 17,
+                "env": {
+                    "ATTN_NORM_MODE": "qk_rmsnorm",
+                    "ATTN_NORM_EPS": "1e-5",
+                },
+            },
+            "cpu_subset_attn_norm",
+        )
+
+        self.assertEqual(env["ATTN_NORM_MODE"], "qk_rmsnorm")
+        self.assertEqual(env["ATTN_NORM_EPS"], "1e-5")
+
     def test_sanitizes_candidate_id_for_run_directory(self) -> None:
         self.assertEqual(sanitize_candidate_id("../muon:trial/../../bad"), "muon-trial-bad")
         self.assertEqual(sanitize_candidate_id(""), "candidate")
@@ -452,6 +468,82 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             self.assertIn(
                 {"factor": "MUON_BACKEND_STEPS", "parentValue": "5", "candidateValue": "7"},
                 changed_factors,
+            )
+
+    def test_serializes_attention_norm_factors_into_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "kind": "parameter-golf-measurement-evidence",
+                        "updatedAt": "2026-04-25T00:00:00Z",
+                        "summary": {
+                            "artifactIds": ["evidence-exp-parent-cpu"],
+                            "trustedControlState": "established",
+                            "totalExperiments": 1,
+                            "acceptedExperiments": 1,
+                            "mostRecentEvidenceId": "evidence-exp-parent-cpu",
+                        },
+                        "recentCompletedExperiments": ["exp-parent-cpu"],
+                        "experimentRecords": [
+                            {
+                                "experimentId": "exp-parent-cpu",
+                                "evidenceId": "evidence-exp-parent-cpu",
+                                "lane": "cpu-subset",
+                                "status": "accepted",
+                                "objectiveMetricName": "val_bpb",
+                                "objectiveValue": 4.4,
+                                "modelFactory": {
+                                    "owner": "cpu-subset-runner",
+                                    "normalizedFactors": {
+                                        "ATTN_NORM_MODE": "baseline",
+                                        "ATTN_NORM_EPS": "1e-06",
+                                    },
+                                },
+                            }
+                        ],
+                    },
+                )
+            )
+            run_dir = root / "fastest/generated/cpu_subset_runs/cpu_subset_attn_norm"
+            run_dir.mkdir(parents=True)
+
+            candidate = {
+                "taskId": "FAST-53",
+                "candidateId": "attn-norm-qk-rmsnorm",
+                "parentExperimentId": "exp-parent-cpu",
+                "seed": 13,
+                "env": {
+                    "ATTN_NORM_MODE": "qk_rmsnorm",
+                    "ATTN_NORM_EPS": "1e-5",
+                },
+            }
+            train_env = build_cpu_subset_env(candidate, "cpu_subset_attn_norm")
+            record = append_cpu_subset_evidence(
+                candidate=candidate,
+                run_id="cpu_subset_attn_norm",
+                completed_at="2026-04-25T01:00:00Z",
+                val_loss=4.0,
+                val_bpb=4.1,
+                command=["python", "train_gpt.py"],
+                run_dir=run_dir,
+                train_env=train_env,
+                evidence_path=evidence_path,
+            )
+
+            serialized_factors = record["modelFactory"]["normalizedFactors"]
+            self.assertEqual(serialized_factors["ATTN_NORM_MODE"], "qk_rmsnorm")
+            self.assertEqual(serialized_factors["ATTN_NORM_EPS"], "1e-5")
+            self.assertIn(
+                {
+                    "factor": "ATTN_NORM_MODE",
+                    "parentValue": "baseline",
+                    "candidateValue": "qk_rmsnorm",
+                },
+                record["lineage"]["changedFactors"],
             )
 
 

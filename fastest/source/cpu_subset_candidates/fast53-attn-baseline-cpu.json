@@ -1,0 +1,13 @@
+{
+  "taskId": "FAST-53",
+  "candidateId": "fast53-attn-baseline-cpu",
+  "parentFrontierId": "deepseek-v4-qk-rmsnorm",
+  "seed": 1337,
+  "env": {
+    "ITERATIONS": "256",
+    "VAL_TOKEN_LIMIT": "32768",
+    "VAL_BATCH_SIZE": "8192",
+    "ATTN_NORM_MODE": "baseline",
+    "ATTN_NORM_EPS": "1e-6"
+  }
+}
