@@ -8,9 +8,9 @@
     ],
     "residualRiskAcceptance": {
       "scope": "cpu-subset",
-      "acceptedBy": "operator-note:bb848b01-20e3-463e-9b3a-2f4c7f4f05d8",
-      "monitoringOwner": "security:model-factory-evidence",
-      "expiresAt": "2026-06-30T23:59:59Z"
+      "acceptedBy": "fastest-task-store://parameter-golf/tasks/FAST-52/notes/bb848b01-20e3-463e-92af-77d72e4f775c",
+      "monitoringOwner": "meta-supervisor",
+      "expiresAt": "2026-05-10T00:00:00Z"
     }
   },
   "parentLineage": {
