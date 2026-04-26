@@ -1,0 +1,13 @@
+groupKey,count,completed,bestCandidate,bestValBpb,medianValBpb,meanValBpb,bestStepAvgMs,bestInt8SubmissionBytes,bestArtifactHeadroomBytes
+diffusion_like_soft_targets_need_native_objective,1,1,text_diffusion_proxy,3.75282305,3.75282305,3.75282305,967.02,612599,15587957
+conditional_capacity_merits_native_moe,1,1,moe_proxy_wide_mlp,4.0461647,4.0461647,4.0461647,1698.04,770207,15589604
+long_context_qk_norm_improves_byte_compression,1,1,qk_rmsnorm_longctx,4.06662657,4.06662657,4.06662657,3702.94,544508,15693438
+depth_recurrence_increases_compute_per_parameter,1,1,depth_recurrence_loop45,4.06764226,4.06764226,4.06764226,596.83,544440,15693438
+baseline_control,1,1,ar_baseline_int8,4.07025636,4.07025636,4.07025636,735.05,544599,15693438
+depth_beats_width_at_fixed_artifact_budget,1,1,narrow_deep,4.07025636,4.07025636,4.07025636,1046.0,544599,15693438
+quantization_artifact_cost,1,1,ar_nonquant_reference,4.07025636,4.07025636,4.07025636,1176.56,544599,15693438
+width_beats_depth_at_fixed_artifact_budget,1,1,wide_shallow,4.07025636,4.07025636,4.07025636,747.0,544599,15693438
+latent_prediction_scaffold_merits_native_jepa,1,1,jepa_style_encoder_decoder_proxy,4.07036567,4.07036567,4.07036567,806.96,544603,15693438
+cheap_sequence_mixing_can_trade_attention_for_depth,1,1,ssm_proxy_linear_attention_budget,4.07261945,4.07261945,4.07261945,1196.0,544462,15693438
+parallel_residual_improves_optimization,1,1,parallel_residual_qk5,4.07463801,4.07463801,4.07463801,1663.67,555086,15693438
+swiglu_clamps_improve_capacity_stability,1,1,swiglu_clamped,4.0911505,4.0911505,4.0911505,1600.32,662360,15693438

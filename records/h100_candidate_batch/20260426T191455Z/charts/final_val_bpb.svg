@@ -1,0 +1,40 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1100' height='498' viewBox='0 0 1100 498'>
+<rect width='100%' height='100%' fill='white'/>
+<text x='24' y='36' font-family='Arial' font-size='22' font-weight='700'>H100 candidate final val_bpb</text>
+<text x='24' y='90' font-family='Arial' font-size='14'>1. text_diffusion_proxy (text_diffusion_proxy)</text>
+<rect x='420' y='74' width='740' height='22' fill='#2ca02c' opacity='0.85'/>
+<text x='1170' y='90' font-family='Arial' font-size='14'>3.752823</text>
+<text x='24' y='124' font-family='Arial' font-size='14'>2. moe_proxy_wide_mlp (moe_proxy)</text>
+<rect x='420' y='108' width='254' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='684' y='124' font-family='Arial' font-size='14'>4.046165</text>
+<text x='24' y='158' font-family='Arial' font-size='14'>3. qk_rmsnorm_longctx (long_context_ar)</text>
+<rect x='420' y='142' width='220' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='650' y='158' font-family='Arial' font-size='14'>4.066627</text>
+<text x='24' y='192' font-family='Arial' font-size='14'>4. depth_recurrence_loop45 (universal_transformer_proxy)</text>
+<rect x='420' y='176' width='218' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='648' y='192' font-family='Arial' font-size='14'>4.067642</text>
+<text x='24' y='226' font-family='Arial' font-size='14'>5. ar_baseline_int8 (autoregressive)</text>
+<rect x='420' y='210' width='214' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='644' y='226' font-family='Arial' font-size='14'>4.070256</text>
+<text x='24' y='260' font-family='Arial' font-size='14'>6. ar_nonquant_reference (autoregressive)</text>
+<rect x='420' y='244' width='214' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='644' y='260' font-family='Arial' font-size='14'>4.070256</text>
+<text x='24' y='294' font-family='Arial' font-size='14'>7. narrow_deep (autoregressive_shape)</text>
+<rect x='420' y='278' width='214' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='644' y='294' font-family='Arial' font-size='14'>4.070256</text>
+<text x='24' y='328' font-family='Arial' font-size='14'>8. wide_shallow (autoregressive_shape)</text>
+<rect x='420' y='312' width='214' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='644' y='328' font-family='Arial' font-size='14'>4.070256</text>
+<text x='24' y='362' font-family='Arial' font-size='14'>9. jepa_style_encoder_decoder_proxy (jepa_proxy)</text>
+<rect x='420' y='346' width='214' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='644' y='362' font-family='Arial' font-size='14'>4.070366</text>
+<text x='24' y='396' font-family='Arial' font-size='14'>10. ssm_proxy_linear_attention_budget (state_space_proxy)</text>
+<rect x='420' y='380' width='210' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='640' y='396' font-family='Arial' font-size='14'>4.072619</text>
+<text x='24' y='430' font-family='Arial' font-size='14'>11. parallel_residual_qk5 (autoregressive)</text>
+<rect x='420' y='414' width='207' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='637' y='430' font-family='Arial' font-size='14'>4.074638</text>
+<text x='24' y='464' font-family='Arial' font-size='14'>12. swiglu_clamped (autoregressive_mlp)</text>
+<rect x='420' y='448' width='180' height='22' fill='#1f77b4' opacity='0.85'/>
+<text x='610' y='464' font-family='Arial' font-size='14'>4.091151</text>
+</svg>

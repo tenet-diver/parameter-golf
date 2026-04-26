@@ -1,0 +1,63 @@
+{
+  "id": "ar_nonquant_reference",
+  "family": "autoregressive",
+  "quantization": "raw-fp32-reference-plus-int8-eval",
+  "hypothesis": "quantization_artifact_cost",
+  "hypothesisTags": [
+    "control",
+    "raw_checkpoint",
+    "artifact_size"
+  ],
+  "description": "Same training as baseline, kept to compare raw checkpoint size against quantized artifact size.",
+  "hardware": {
+    "capturedAt": "2026-04-26T19:14:55Z",
+    "hostname": "codespaces-bde58a",
+    "platform": "Linux-6.8.0-1044-azure-x86_64-with-glibc2.39",
+    "python": "3.12.1",
+    "cudaVisibleDevices": null,
+    "gpus": [],
+    "nvidiaSmiAvailable": false
+  },
+  "status": "completed",
+  "returnCode": 0,
+  "timedOut": false,
+  "terminationReason": "completed",
+  "elapsedSeconds": 11.0,
+  "runDir": "/workspaces/parameter-golf/records/h100_candidate_batch/20260426T191455Z/runs/02_ar_nonquant_reference",
+  "command": [
+    "/home/codespace/.python/current/bin/python",
+    "/workspaces/parameter-golf/train_gpt.py"
+  ],
+  "env": {
+    "ARTIFACT_BUDGET_STRICT": "0",
+    "DATA_PATH": "/workspaces/parameter-golf/data/datasets/fineweb10B_sp1024",
+    "MAX_WALLCLOCK_SECONDS": "0",
+    "RUN_ID": "h100_batch_20260426T191455Z_02_ar_nonquant_reference",
+    "RUN_NOTE": "nonquant-reference",
+    "SKIP_PRE_QUANT_FINAL_EVAL": "1",
+    "TOKENIZER_PATH": "/workspaces/parameter-golf/data/tokenizers/fineweb_1024_bpe.model",
+    "TRAIN_LOG_EVERY": "1",
+    "VAL_LOSS_EVERY": "0",
+    "VOCAB_SIZE": "1024"
+  },
+  "rawCheckpointKept": false,
+  "rawCheckpointPath": null,
+  "quantizedArtifactPath": "/workspaces/parameter-golf/records/h100_candidate_batch/20260426T191455Z/runs/02_ar_nonquant_reference/final_model.int8.ptz",
+  "quantizedArtifactBytes": 487743,
+  "finalValLoss": 7.04012978,
+  "finalValBpb": 4.07025636,
+  "modelParams": 361608,
+  "completedSteps": 2,
+  "targetIterations": 2,
+  "lastTrainLoss": 7.3371,
+  "trainTimeMs": 2353.0,
+  "stepAvgMs": 1176.56,
+  "rawSubmissionBytes": 1511529,
+  "int8SubmissionBytes": 544599,
+  "peakAllocatedMiB": null,
+  "peakReservedMiB": null,
+  "artifactBudgetState": "within-budget",
+  "artifactBudgetBytes": 306562,
+  "artifactBudgetLimitBytes": 16000000,
+  "artifactBudgetHeadroomBytes": 15693438
+}

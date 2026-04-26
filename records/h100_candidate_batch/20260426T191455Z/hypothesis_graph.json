@@ -1,0 +1,367 @@
+{
+  "schema": "parameter-golf-hypothesis-graph/v1",
+  "nodes": [
+    {
+      "id": "objective",
+      "kind": "objective",
+      "label": "Lower validation BPB"
+    },
+    {
+      "id": "constraint",
+      "kind": "constraint",
+      "label": "10 min, 1xH100, 16MB artifact"
+    },
+    {
+      "id": "family:text_diffusion_proxy",
+      "kind": "family",
+      "label": "text_diffusion_proxy"
+    },
+    {
+      "id": "hypothesis:diffusion_like_soft_targets_need_native_objective",
+      "kind": "hypothesis",
+      "label": "diffusion_like_soft_targets_need_native_objective"
+    },
+    {
+      "id": "candidate:text_diffusion_proxy",
+      "kind": "candidate",
+      "label": "text_diffusion_proxy"
+    },
+    {
+      "id": "family:moe_proxy",
+      "kind": "family",
+      "label": "moe_proxy"
+    },
+    {
+      "id": "hypothesis:conditional_capacity_merits_native_moe",
+      "kind": "hypothesis",
+      "label": "conditional_capacity_merits_native_moe"
+    },
+    {
+      "id": "candidate:moe_proxy_wide_mlp",
+      "kind": "candidate",
+      "label": "moe_proxy_wide_mlp"
+    },
+    {
+      "id": "family:long_context_ar",
+      "kind": "family",
+      "label": "long_context_ar"
+    },
+    {
+      "id": "hypothesis:long_context_qk_norm_improves_byte_compression",
+      "kind": "hypothesis",
+      "label": "long_context_qk_norm_improves_byte_compression"
+    },
+    {
+      "id": "candidate:qk_rmsnorm_longctx",
+      "kind": "candidate",
+      "label": "qk_rmsnorm_longctx"
+    },
+    {
+      "id": "family:universal_transformer_proxy",
+      "kind": "family",
+      "label": "universal_transformer_proxy"
+    },
+    {
+      "id": "hypothesis:depth_recurrence_increases_compute_per_parameter",
+      "kind": "hypothesis",
+      "label": "depth_recurrence_increases_compute_per_parameter"
+    },
+    {
+      "id": "candidate:depth_recurrence_loop45",
+      "kind": "candidate",
+      "label": "depth_recurrence_loop45"
+    },
+    {
+      "id": "family:autoregressive",
+      "kind": "family",
+      "label": "autoregressive"
+    },
+    {
+      "id": "hypothesis:baseline_control",
+      "kind": "hypothesis",
+      "label": "baseline_control"
+    },
+    {
+      "id": "candidate:ar_baseline_int8",
+      "kind": "candidate",
+      "label": "ar_baseline_int8"
+    },
+    {
+      "id": "hypothesis:quantization_artifact_cost",
+      "kind": "hypothesis",
+      "label": "quantization_artifact_cost"
+    },
+    {
+      "id": "candidate:ar_nonquant_reference",
+      "kind": "candidate",
+      "label": "ar_nonquant_reference"
+    },
+    {
+      "id": "family:autoregressive_shape",
+      "kind": "family",
+      "label": "autoregressive_shape"
+    },
+    {
+      "id": "hypothesis:depth_beats_width_at_fixed_artifact_budget",
+      "kind": "hypothesis",
+      "label": "depth_beats_width_at_fixed_artifact_budget"
+    },
+    {
+      "id": "candidate:narrow_deep",
+      "kind": "candidate",
+      "label": "narrow_deep"
+    },
+    {
+      "id": "hypothesis:width_beats_depth_at_fixed_artifact_budget",
+      "kind": "hypothesis",
+      "label": "width_beats_depth_at_fixed_artifact_budget"
+    },
+    {
+      "id": "candidate:wide_shallow",
+      "kind": "candidate",
+      "label": "wide_shallow"
+    },
+    {
+      "id": "family:jepa_proxy",
+      "kind": "family",
+      "label": "jepa_proxy"
+    },
+    {
+      "id": "hypothesis:latent_prediction_scaffold_merits_native_jepa",
+      "kind": "hypothesis",
+      "label": "latent_prediction_scaffold_merits_native_jepa"
+    },
+    {
+      "id": "candidate:jepa_style_encoder_decoder_proxy",
+      "kind": "candidate",
+      "label": "jepa_style_encoder_decoder_proxy"
+    },
+    {
+      "id": "family:state_space_proxy",
+      "kind": "family",
+      "label": "state_space_proxy"
+    },
+    {
+      "id": "hypothesis:cheap_sequence_mixing_can_trade_attention_for_depth",
+      "kind": "hypothesis",
+      "label": "cheap_sequence_mixing_can_trade_attention_for_depth"
+    },
+    {
+      "id": "candidate:ssm_proxy_linear_attention_budget",
+      "kind": "candidate",
+      "label": "ssm_proxy_linear_attention_budget"
+    },
+    {
+      "id": "hypothesis:parallel_residual_improves_optimization",
+      "kind": "hypothesis",
+      "label": "parallel_residual_improves_optimization"
+    },
+    {
+      "id": "candidate:parallel_residual_qk5",
+      "kind": "candidate",
+      "label": "parallel_residual_qk5"
+    },
+    {
+      "id": "family:autoregressive_mlp",
+      "kind": "family",
+      "label": "autoregressive_mlp"
+    },
+    {
+      "id": "hypothesis:swiglu_clamps_improve_capacity_stability",
+      "kind": "hypothesis",
+      "label": "swiglu_clamps_improve_capacity_stability"
+    },
+    {
+      "id": "candidate:swiglu_clamped",
+      "kind": "candidate",
+      "label": "swiglu_clamped"
+    }
+  ],
+  "edges": [
+    {
+      "source": "constraint",
+      "target": "objective",
+      "relation": "bounds"
+    },
+    {
+      "source": "family:text_diffusion_proxy",
+      "target": "hypothesis:diffusion_like_soft_targets_need_native_objective",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:diffusion_like_soft_targets_need_native_objective",
+      "target": "candidate:text_diffusion_proxy",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:text_diffusion_proxy",
+      "target": "objective",
+      "relation": "best"
+    },
+    {
+      "source": "family:moe_proxy",
+      "target": "hypothesis:conditional_capacity_merits_native_moe",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:conditional_capacity_merits_native_moe",
+      "target": "candidate:moe_proxy_wide_mlp",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:moe_proxy_wide_mlp",
+      "target": "objective",
+      "relation": "promising"
+    },
+    {
+      "source": "family:long_context_ar",
+      "target": "hypothesis:long_context_qk_norm_improves_byte_compression",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:long_context_qk_norm_improves_byte_compression",
+      "target": "candidate:qk_rmsnorm_longctx",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:qk_rmsnorm_longctx",
+      "target": "objective",
+      "relation": "promising"
+    },
+    {
+      "source": "family:universal_transformer_proxy",
+      "target": "hypothesis:depth_recurrence_increases_compute_per_parameter",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:depth_recurrence_increases_compute_per_parameter",
+      "target": "candidate:depth_recurrence_loop45",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:depth_recurrence_loop45",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:autoregressive",
+      "target": "hypothesis:baseline_control",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:baseline_control",
+      "target": "candidate:ar_baseline_int8",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:ar_baseline_int8",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:autoregressive",
+      "target": "hypothesis:quantization_artifact_cost",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:quantization_artifact_cost",
+      "target": "candidate:ar_nonquant_reference",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:ar_nonquant_reference",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:autoregressive_shape",
+      "target": "hypothesis:depth_beats_width_at_fixed_artifact_budget",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:depth_beats_width_at_fixed_artifact_budget",
+      "target": "candidate:narrow_deep",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:narrow_deep",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:autoregressive_shape",
+      "target": "hypothesis:width_beats_depth_at_fixed_artifact_budget",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:width_beats_depth_at_fixed_artifact_budget",
+      "target": "candidate:wide_shallow",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:wide_shallow",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:jepa_proxy",
+      "target": "hypothesis:latent_prediction_scaffold_merits_native_jepa",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:latent_prediction_scaffold_merits_native_jepa",
+      "target": "candidate:jepa_style_encoder_decoder_proxy",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:jepa_style_encoder_decoder_proxy",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:state_space_proxy",
+      "target": "hypothesis:cheap_sequence_mixing_can_trade_attention_for_depth",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:cheap_sequence_mixing_can_trade_attention_for_depth",
+      "target": "candidate:ssm_proxy_linear_attention_budget",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:ssm_proxy_linear_attention_budget",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:autoregressive",
+      "target": "hypothesis:parallel_residual_improves_optimization",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:parallel_residual_improves_optimization",
+      "target": "candidate:parallel_residual_qk5",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:parallel_residual_qk5",
+      "target": "objective",
+      "relation": "measured"
+    },
+    {
+      "source": "family:autoregressive_mlp",
+      "target": "hypothesis:swiglu_clamps_improve_capacity_stability",
+      "relation": "frames"
+    },
+    {
+      "source": "hypothesis:swiglu_clamps_improve_capacity_stability",
+      "target": "candidate:swiglu_clamped",
+      "relation": "tested_by"
+    },
+    {
+      "source": "candidate:swiglu_clamped",
+      "target": "objective",
+      "relation": "measured"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+groupKey,count,completed,bestCandidate,bestValBpb,medianValBpb,meanValBpb,bestStepAvgMs,bestInt8SubmissionBytes,bestArtifactHeadroomBytes
+int8-zlib-artifact,11,11,text_diffusion_proxy,3.75282305,4.07025636,4.041163571818182,967.02,612599,15587957
+raw-fp32-reference-plus-int8-eval,1,1,ar_nonquant_reference,4.07025636,4.07025636,4.07025636,1176.56,544599,15693438

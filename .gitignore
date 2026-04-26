@@ -13,3 +13,4 @@ logs/
 fastest/generated/
 final_model*.pt
 final_model*.ptz
+!records/h100_candidate_batch/**/final_model.int8.ptz

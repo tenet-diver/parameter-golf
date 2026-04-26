@@ -1,0 +1,32 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='900' height='560' viewBox='0 0 900 560'>
+<rect width='100%' height='100%' fill='white'/>
+<text x='24' y='36' font-family='Arial' font-size='22' font-weight='700'>Speed versus final val_bpb</text>
+<line x1='80' y1='470' x2='800' y2='470' stroke='#333'/>
+<line x1='80' y1='90' x2='80' y2='470' stroke='#333'/>
+<text x='350' y='525' font-family='Arial' font-size='14'>step average (ms)</text>
+<text x='18' y='80' font-family='Arial' font-size='14'>val_bpb</text>
+<circle cx='165.8' cy='470.0' r='7' fill='#d62728' opacity='0.8'/>
+<text x='175.8' y='474.0' font-family='Arial' font-size='12'>text_diffusion_proxy</text>
+<circle cx='335.3' cy='140.5' r='7' fill='#d62728' opacity='0.8'/>
+<text x='345.3' y='144.5' font-family='Arial' font-size='12'>moe_proxy_wide_mlp</text>
+<circle cx='800.0' cy='117.5' r='7' fill='#d62728' opacity='0.8'/>
+<text x='810.0' y='121.5' font-family='Arial' font-size='12'>qk_rmsnorm_longctx</text>
+<circle cx='80.0' cy='116.4' r='7' fill='#d62728' opacity='0.8'/>
+<text x='90.0' y='120.4' font-family='Arial' font-size='12'>depth_recurrence_loop45</text>
+<circle cx='112.0' cy='113.5' r='7' fill='#d62728' opacity='0.8'/>
+<text x='122.0' y='117.5' font-family='Arial' font-size='12'>ar_baseline_int8</text>
+<circle cx='214.4' cy='113.5' r='7' fill='#d62728' opacity='0.8'/>
+<text x='224.4' y='117.5' font-family='Arial' font-size='12'>ar_nonquant_reference</text>
+<circle cx='184.1' cy='113.5' r='7' fill='#d62728' opacity='0.8'/>
+<text x='194.1' y='117.5' font-family='Arial' font-size='12'>narrow_deep</text>
+<circle cx='114.8' cy='113.5' r='7' fill='#d62728' opacity='0.8'/>
+<text x='124.8' y='117.5' font-family='Arial' font-size='12'>wide_shallow</text>
+<circle cx='128.7' cy='113.3' r='7' fill='#d62728' opacity='0.8'/>
+<text x='138.7' y='117.3' font-family='Arial' font-size='12'>jepa_style_encoder_decoder_proxy</text>
+<circle cx='218.9' cy='110.8' r='7' fill='#d62728' opacity='0.8'/>
+<text x='228.9' y='114.8' font-family='Arial' font-size='12'>ssm_proxy_linear_attention_budget</text>
+<circle cx='327.3' cy='108.5' r='7' fill='#d62728' opacity='0.8'/>
+<text x='337.3' y='112.5' font-family='Arial' font-size='12'>parallel_residual_qk5</text>
+<circle cx='312.6' cy='90.0' r='7' fill='#d62728' opacity='0.8'/>
+<text x='322.6' y='94.0' font-family='Arial' font-size='12'>swiglu_clamped</text>
+</svg>

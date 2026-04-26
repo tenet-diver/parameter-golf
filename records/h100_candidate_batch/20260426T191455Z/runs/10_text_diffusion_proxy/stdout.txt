@@ -1,0 +1,29 @@
+logs/h100_batch_20260426T191455Z_10_text_diffusion_proxy.txt
+val_bpb:enabled tokenizer_kind=sentencepiece tokenizer_path=/workspaces/parameter-golf/data/tokenizers/fineweb_1024_bpe.model
+train_loader:dataset:fineweb10B_sp1024 train_shards:1
+val_loader:shards pattern=/workspaces/parameter-golf/data/datasets/fineweb10B_sp1024/fineweb_val_*.bin tokens:4096
+val_loader:token_limit:4096
+model_params:492680
+world_size:1 grad_accum_steps:8
+sdp_backends:cudnn=False flash=True mem_efficient=False math=False
+attention_mode:gqa num_heads:4 num_kv_heads:2 attn_norm_mode:baseline attn_norm_eps:1e-06
+layer_order:encoder=[0] decoder=[1] virtual_depth:2
+tie_embeddings:False embed_lr:0.6 head_lr:0.008 matrix_lr:0.04 scalar_lr:0.04
+train_batch_tokens:8192 train_seq_len:128 iterations:2 warmup_steps:0 max_wallclock_seconds:0.000
+artifact_budget:state:within-budget total_bytes:412043 limit_bytes:16000000 headroom_bytes:15587957 quantization:int8-per-row-zlib-projection compression_ratio:0.78
+artifact_budget_component:name:embeddings params:131072 raw_quantized_bytes:135232 estimated_bytes:105481
+artifact_budget_component:name:attention_blocks params:98304 raw_quantized_bytes:101888 estimated_bytes:79473
+artifact_budget_component:name:mlp_blocks params:131072 raw_quantized_bytes:134400 estimated_bytes:104832
+artifact_budget_component:name:control_tensors params:514 raw_quantized_bytes:1412 estimated_bytes:1412
+artifact_budget_component:name:output_head params:131072 raw_quantized_bytes:135232 estimated_bytes:105481
+seed:1337
+step:1/2 train_loss:6.9315 train_time:877ms step_avg:876.89ms
+step:2/2 train_loss:6.8375 train_time:1934ms step_avg:967.02ms
+peak memory allocated: cpu-run
+Serialized model: 1979218 bytes
+Code size: 56856 bytes
+Total submission size: 2036074 bytes
+Serialized model int8+zlib: 555743 bytes (payload:729632 raw_torch:737624 payload_ratio:2.70x)
+Total submission size int8+zlib: 612599 bytes
+final_int8_zlib_roundtrip val_loss:6.4911 val_bpb:3.7528 eval_time:204ms
+final_int8_zlib_roundtrip_exact val_loss:6.49108040 val_bpb:3.75282305

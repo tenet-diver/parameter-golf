@@ -1,0 +1,9 @@
+{
+  "capturedAt": "2026-04-26T19:14:55Z",
+  "hostname": "codespaces-bde58a",
+  "platform": "Linux-6.8.0-1044-azure-x86_64-with-glibc2.39",
+  "python": "3.12.1",
+  "cudaVisibleDevices": null,
+  "gpus": [],
+  "nvidiaSmiAvailable": false
+}
