@@ -1,0 +1,69 @@
+{
+  "taskId": "FAST-54",
+  "recordId": "fast54-swiglu-clamping-cpu-subset-2026-04-26",
+  "recordedAt": "2026-04-26T03:01:33Z",
+  "frontierId": "deepseek-v4-swiglu-clamping",
+  "lane": "architecture-stability",
+  "resultClass": "cpu-subset",
+  "verificationClass": "cpu-subset",
+  "runtimeCapSeconds": 600,
+  "validationCapTokens": 32768,
+  "pairedCandidates": [
+    {
+      "candidateId": "fast54-swiglu-control-cpu",
+      "experimentId": "exp-fast54-swiglu-control-cpu",
+      "condition": "control",
+      "activationMode": "swiglu",
+      "clampEnabled": false,
+      "metric": {
+        "name": "val_bpb",
+        "value": 2.73757892,
+        "valLoss": 4.72845912
+      },
+      "stability": {
+        "maxTrainLoss": 7.5313,
+        "trainLossSpikeCountGt2xFinal": 0
+      },
+      "artifacts": {
+        "stdout": "fastest/generated/cpu_subset_runs/cpu_subset_fast54-swiglu-control-cpu/stdout.txt",
+        "stderr": "fastest/generated/cpu_subset_runs/cpu_subset_fast54-swiglu-control-cpu/stderr.txt",
+        "result": "fastest/generated/cpu_subset_runs/cpu_subset_fast54-swiglu-control-cpu/result.json"
+      }
+    },
+    {
+      "candidateId": "fast54-swiglu-clamped-cpu",
+      "experimentId": "exp-fast54-swiglu-clamped-cpu",
+      "condition": "treatment",
+      "activationMode": "swiglu",
+      "clampEnabled": true,
+      "clampMode": "deepseek_v4",
+      "swigluLinearClampMin": -10,
+      "swigluLinearClampMax": 10,
+      "swigluGateClampMax": 10,
+      "metric": {
+        "name": "val_bpb",
+        "value": 2.73744696,
+        "valLoss": 4.72823119
+      },
+      "stability": {
+        "maxTrainLoss": 7.5313,
+        "trainLossSpikeCountGt2xFinal": 0
+      },
+      "artifacts": {
+        "stdout": "fastest/generated/cpu_subset_runs/cpu_subset_fast54-swiglu-clamped-cpu/stdout.txt",
+        "stderr": "fastest/generated/cpu_subset_runs/cpu_subset_fast54-swiglu-clamped-cpu/stderr.txt",
+        "result": "fastest/generated/cpu_subset_runs/cpu_subset_fast54-swiglu-clamped-cpu/result.json"
+      }
+    }
+  ],
+  "comparison": {
+    "deltaValBpb": -0.00013196,
+    "deltaValLoss": -0.00022793,
+    "lossSpikeDelta": 0,
+    "interpretation": "On this tiny CPU-subset screen, DeepSeek-v4 SwiGLU clamping is neutral-to-slightly-positive with no observed train-loss spike reduction signal."
+  },
+  "governance": {
+    "benchmarkProgressClaim": false,
+    "note": "CPU-subset evidence only; do not use as benchmark or leaderboard progress evidence."
+  }
+}

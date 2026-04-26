@@ -38,3 +38,30 @@ Interpretation:
 - The 256-iteration half-rate candidate remains strong under a larger 32k-token validation cap.
 - Increasing model width from dim 96 to 128 and 192 improved the same half-rate 256-iteration screen, with dim 192 best so far at `2.61832018`.
 - The next real CPU-only step is to test whether the half-rate direction survives a larger subset or a modest architecture increase while staying under the 10-minute CPU budget.
+
+## FAST-54 SwiGLU clamping paired CPU-subset screen (2026-04-26)
+
+Frontier record: `deepseek-v4-swiglu-clamping` (DeepSeek V4 report direction).
+Task: `FAST-54`, lane `architecture-stability`, runtime cap `600s`, validation cap `32768` tokens.
+
+Paired setup:
+- Control: `swiglu`, clamping disabled.
+- Treatment: `swiglu`, `deepseek_v4` clamping enabled (`linear [-10, 10]`, `gate <= 10`).
+- Shared config: seed `1337`, iterations `256`, val batch size `8192`, result/verification class `cpu-subset`.
+
+Measured output:
+
+| Candidate | val_loss | val_bpb | max train_loss | train_loss spikes (>2x final train_loss) |
+| --- | ---: | ---: | ---: | ---: |
+| fast54-swiglu-control-cpu | 4.72845912 | 2.73757892 | 7.5313 | 0 |
+| fast54-swiglu-clamped-cpu | 4.72823119 | 2.73744696 | 7.5313 | 0 |
+
+Delta (`clamped - control`):
+- `val_bpb`: `-0.00013196` (slight improvement).
+- `val_loss`: `-0.00022793` (slight improvement).
+- Loss-spike proxy: unchanged (`0` vs `0`).
+
+Decision from measured CPU-subset evidence only:
+- Ranking rows in `measurement_evidence.json`: control rank `6/24`, clamped rank `6/25`.
+- Runner decision: `promotionDecision=hold`, `retirementDecision=retire` for both FAST-54 runs.
+- This is not benchmark or leaderboard progress; it is a CPU-subset stability screen signal only.

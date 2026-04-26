@@ -1,0 +1,14 @@
+{
+  "taskId": "FAST-54",
+  "candidateId": "fast54-swiglu-control-cpu",
+  "parentFrontierId": "deepseek-v4-swiglu-clamping",
+  "seed": 1337,
+  "activationMode": "swiglu",
+  "swigluClampEnabled": false,
+  "swigluClampMode": "disabled",
+  "env": {
+    "ITERATIONS": "256",
+    "VAL_TOKEN_LIMIT": "32768",
+    "VAL_BATCH_SIZE": "8192"
+  }
+}
