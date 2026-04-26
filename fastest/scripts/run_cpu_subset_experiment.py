@@ -565,7 +565,11 @@ def _trusted_registry_policy_error(payload: dict[str, Any]) -> str | None:
     return None
 
 
-def _trust_receipt_error(entry: dict[str, Any], expected_subject: str) -> str | None:
+def _trust_receipt_error(
+    entry: dict[str, Any],
+    expected_subject: str,
+    trusted_roots: set[str] | None = None,
+) -> str | None:
     receipt = entry.get("receipt")
     if not isinstance(receipt, dict):
         return "receipt-missing"
@@ -581,6 +585,8 @@ def _trust_receipt_error(entry: dict[str, Any], expected_subject: str) -> str | 
     trusted_root = receipt.get("trustedRoot")
     if not isinstance(trusted_root, str) or not trusted_root:
         return "receipt-trusted-root-missing"
+    if trusted_roots is not None and trusted_root not in trusted_roots:
+        return "receipt-trusted-root-untrusted"
     return None
 
 
@@ -597,6 +603,16 @@ def _load_trusted_parent_registry(registry_path: Path) -> tuple[dict[str, Any] |
     if trust_root_policy_error is not None:
         return None, trust_root_policy_error
     return payload, None
+
+
+def _trusted_roots_from_registry(registry: dict[str, Any]) -> set[str]:
+    trust_root_policy = registry.get("trustRootPolicy")
+    if not isinstance(trust_root_policy, dict):
+        return set()
+    trusted_roots = trust_root_policy.get("trustedRoots")
+    if not isinstance(trusted_roots, list):
+        return set()
+    return {root for root in trusted_roots if isinstance(root, str) and root}
 
 
 def _resolve_runner_attestation(
@@ -670,7 +686,8 @@ def _resolve_runner_attestation(
             "reasonCode": "attestation-provenance-unverified",
             "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
         }
-    receipt_error = _trust_receipt_error(entry, attestation_ref)
+    trusted_roots = _trusted_roots_from_registry(registry)
+    receipt_error = _trust_receipt_error(entry, attestation_ref, trusted_roots)
     if receipt_error is not None:
         return {
             "status": "unresolved",
@@ -733,7 +750,8 @@ def _resolve_parent_lineage(
             "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
             "parentFrontierId": None,
         }
-    receipt_error = _trust_receipt_error(entry, parent_experiment_id)
+    trusted_roots = _trusted_roots_from_registry(registry)
+    receipt_error = _trust_receipt_error(entry, parent_experiment_id, trusted_roots)
     if receipt_error is not None:
         return {
             "status": "unresolved",
