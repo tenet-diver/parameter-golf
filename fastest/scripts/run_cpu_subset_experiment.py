@@ -585,7 +585,7 @@ def _trust_receipt_error(
     def runtime_operator_acceptance_error(residual_risk: dict[str, Any]) -> str | None:
         accepted_by = residual_risk.get("acceptedBy")
         if not isinstance(accepted_by, str) or not accepted_by.startswith("fastest-task-store://"):
-            return None
+            return "receipt-residual-risk-acceptance-invalid-approver"
         acceptance_ref = residual_risk.get("acceptanceRef")
         if not isinstance(acceptance_ref, str) or not acceptance_ref:
             return "receipt-residual-risk-acceptance-ref-missing"
