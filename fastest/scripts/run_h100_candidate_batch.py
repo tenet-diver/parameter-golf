@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 import platform
+import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -65,6 +66,17 @@ BASE_ENV = {
     "SKIP_PRE_QUANT_FINAL_EVAL": "1",
 }
 
+STANDARD_IMPLEMENTATIONS = {"autoregressive_gpt", "routed_moe_gpt"}
+LEGACY_DEFAULT_IMPLEMENTATION = "autoregressive_gpt"
+UNSUPPORTED_ARCHITECTURE_CLAIMS = (
+    "jepa",
+    "text diffusion",
+    "text_diffusion",
+    "state space",
+    "state-space",
+    "ssm",
+)
+
 def utc_slug() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
@@ -81,8 +93,83 @@ def load_candidates(path: Path | None) -> list[dict[str, Any]]:
             raise ValueError(f"candidate #{index} is not an object")
         if not isinstance(item.get("id"), str) or not item["id"]:
             raise ValueError(f"candidate #{index} must have a non-empty id")
-        candidates.append(item)
+        candidates.append(normalize_candidate_manifest(item, index))
     return candidates
+
+
+def normalize_candidate_manifest(item: dict[str, Any], index: int) -> dict[str, Any]:
+    candidate = dict(item)
+    env = candidate.get("env", {})
+    if env is None:
+        env = {}
+    if not isinstance(env, dict):
+        raise ValueError(f"candidate #{index} env must be an object")
+    env = {str(key): str(value) for key, value in env.items()}
+
+    implementation = candidate.get("implementation")
+    if implementation is not None and not isinstance(implementation, str):
+        raise ValueError(f"candidate #{index} implementation must be a string")
+    implementation = implementation.strip() if isinstance(implementation, str) else ""
+
+    if not implementation:
+        env_implementation = env.get("CANDIDATE_IMPL", "").strip()
+        if env_implementation:
+            implementation = env_implementation
+        elif candidate.get("command") is None:
+            implementation = LEGACY_DEFAULT_IMPLEMENTATION
+            warnings.warn(
+                f"legacy candidate manifest {candidate['id']!r} did not declare an implementation; "
+                f"defaulting to {implementation!r}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
+    validate_candidate_architecture_claim(candidate, implementation)
+
+    if implementation:
+        candidate["implementation"] = implementation
+        if candidate.get("command") is None and implementation in STANDARD_IMPLEMENTATIONS:
+            env_implementation = env.get("CANDIDATE_IMPL", "").strip()
+            if env_implementation and env_implementation != implementation:
+                raise ValueError(
+                    f"candidate {candidate['id']!r} has implementation {implementation!r} "
+                    f"but env CANDIDATE_IMPL={env_implementation!r}"
+                )
+            if not env_implementation:
+                env["CANDIDATE_IMPL"] = implementation
+                warnings.warn(
+                    f"legacy candidate manifest {candidate['id']!r} did not route CANDIDATE_IMPL; "
+                    f"defaulting to {implementation!r}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+    candidate["env"] = env
+    return candidate
+
+
+def validate_candidate_architecture_claim(candidate: dict[str, Any], implementation: str) -> None:
+    claim_text = " ".join(
+        str(candidate.get(key, ""))
+        for key in ("id", "family", "hypothesis", "description", "implementation")
+    ).lower()
+    tags = candidate.get("hypothesisTags", [])
+    if isinstance(tags, list):
+        claim_text = f"{claim_text} {' '.join(str(tag).lower() for tag in tags)}"
+    elif isinstance(tags, str):
+        claim_text = f"{claim_text} {tags.lower()}"
+
+    for claim in UNSUPPORTED_ARCHITECTURE_CLAIMS:
+        if claim in claim_text:
+            raise ValueError(
+                f"candidate {candidate['id']!r} has unsupported architecture claim {claim!r}; "
+                "native implementation is not registered"
+            )
+    if "moe" in claim_text or "mixture_of_experts" in claim_text:
+        if implementation != "routed_moe_gpt":
+            raise ValueError(
+                f"candidate {candidate['id']!r} has unsupported architecture claim 'moe' "
+                f"for implementation {implementation or 'unspecified'!r}"
+            )
 
 
 def safe_id(raw: str) -> str:

@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+import warnings
 from pathlib import Path
 
 from fastest.scripts import run_h100_candidate_batch as batch_runner
@@ -79,7 +80,10 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             candidate_file = root / "candidates.json"
-            candidate_file.write_text('[{"id": "x", "env": {"MODEL_DIM": 128}}]\n')
+            candidate_file.write_text(
+                '[{"id": "x", "implementation": "autoregressive_gpt", '
+                '"env": {"CANDIDATE_IMPL": "autoregressive_gpt", "MODEL_DIM": 128}}]\n'
+            )
 
             candidates = load_candidates(candidate_file)
             self.assertEqual(candidates[0]["id"], "x")
@@ -98,6 +102,42 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
                 ],
             )
             self.assertIn("finalValBpb", csv_path.read_text())
+
+    def test_load_candidates_warns_and_normalizes_safe_legacy_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            candidate_file = Path(tmp) / "candidates.json"
+            candidate_file.write_text(
+                '[{"id": "legacy_ar", "family": "autoregressive", "env": {"MODEL_DIM": 128}}]\n',
+                encoding="utf-8",
+            )
+
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always")
+                candidates = load_candidates(candidate_file)
+
+            self.assertEqual(candidates[0]["implementation"], "autoregressive_gpt")
+            self.assertEqual(candidates[0]["env"]["CANDIDATE_IMPL"], "autoregressive_gpt")
+            self.assertTrue(any("legacy candidate manifest" in str(warning.message) for warning in caught))
+
+    def test_load_candidates_rejects_unsafe_proxy_architecture_claims(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            candidate_file = Path(tmp) / "candidates.json"
+            candidate_file.write_text(
+                """
+                [
+                  {
+                    "id": "jepa_style_encoder_decoder_proxy",
+                    "family": "jepa",
+                    "description": "Config-only JEPA proxy routed through GPT",
+                    "env": {"CANDIDATE_IMPL": "autoregressive_gpt"}
+                  }
+                ]
+                """,
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "unsupported architecture claim"):
+                load_candidates(candidate_file)
 
     def test_default_candidates_come_from_real_registry_without_proxy_labels(self) -> None:
         candidates = load_candidates(None)
