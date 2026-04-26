@@ -33,6 +33,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RUN_ROOT = REPO_ROOT / "fastest/generated/cpu_subset_runs"
 CPU_SUBSET_MAX_WALLCLOCK_SECONDS = 600
 CPU_SUBSET_CAP_POLICY_SOURCE = "runner-fixed-fast-51"
+DEFAULT_CONTROL_TENSOR_NAME_PATTERNS = (
+    "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights"
+)
 DEFAULT_TRUSTED_PARENT_REGISTRY_PATH = REPO_ROOT / "fastest/source/trusted_parent_lineage_registry.json"
 DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH = (
     REPO_ROOT / "fastest/source/trusted_runner_attestation_registry.json"
@@ -101,6 +104,7 @@ DEFAULT_CPU_ENV = {
     "TRAIN_LOG_EVERY": "1",
     "ATTN_NORM_MODE": "baseline",
     "ATTN_NORM_EPS": "1e-6",
+    "CONTROL_TENSOR_NAME_PATTERNS": DEFAULT_CONTROL_TENSOR_NAME_PATTERNS,
     "MAX_WALLCLOCK_SECONDS": str(CPU_SUBSET_MAX_WALLCLOCK_SECONDS),
     "ARTIFACT_BUDGET_STRICT": "1",
 }
@@ -136,9 +140,38 @@ CPU_SUBSET_SWIGLU_ENV_KEYS = frozenset(
 )
 ALLOWED_ACTIVATION_MODES = frozenset({"relu2", "swiglu"})
 ALLOWED_SWIGLU_CLAMP_MODES = frozenset({"disabled", "deepseek_v4"})
+ALLOWED_TRUST_GATE_MODES = frozenset({"strict", "operator-approved-fallback"})
 DEFAULT_SWIGLU_LINEAR_CLAMP_MIN = -10.0
 DEFAULT_SWIGLU_LINEAR_CLAMP_MAX = 10.0
 DEFAULT_SWIGLU_GATE_CLAMP_MAX = 10.0
+MIN_MUON_UPDATE_SCALE = 1e-6
+MAX_MUON_UPDATE_SCALE = 1.0
+MIN_MUON_MOMENTUM = 0.0
+MAX_MUON_MOMENTUM = 1.0
+MIN_MUON_BACKEND_STEPS = 1
+MAX_MUON_BACKEND_STEPS = 4096
+MIN_MUON_MOMENTUM_WARMUP_STEPS = 0
+MUON_SELECTOR_PATTERN = re.compile(r"^[a-zA-Z0-9_.-]+$")
+ALLOWED_ADAMW_EXEMPTION_SELECTORS = frozenset(
+    {
+        "attn_scale",
+        "attn_scales",
+        "mlp_scale",
+        "mlp_scales",
+        "resid_mix",
+        "resid_mixes",
+        "q_gain",
+        "skip_weight",
+        "skip_weights",
+        "tok_embeddings",
+        "token_embeddings",
+        "embedding",
+        "embeddings",
+        "lm_head",
+        "head",
+        "rmsnorm",
+    }
+)
 
 CPU_SUBSET_ENV_OVERRIDE_ALLOWLIST = (
     frozenset(DEFAULT_CPU_ENV.keys())
@@ -233,6 +266,41 @@ def build_cpu_subset_env(candidate: dict[str, Any], run_id: str) -> dict[str, st
     env["SWIGLU_LINEAR_CLAMP_MIN"] = str(resolved["swigluLinearClampMin"])
     env["SWIGLU_LINEAR_CLAMP_MAX"] = str(resolved["swigluLinearClampMax"])
     env["SWIGLU_GATE_CLAMP_MAX"] = str(resolved["swigluGateClampMax"])
+
+    def _stringify_preserving_input(raw_value: Any, fallback: Any) -> str:
+        if isinstance(raw_value, str):
+            return raw_value.strip()
+        if isinstance(raw_value, (int, float)) and not isinstance(raw_value, bool):
+            return str(raw_value)
+        return str(fallback)
+
+    env["MATRIX_LR"] = _stringify_preserving_input(
+        _candidate_value(candidate, "muonUpdateScale", "MATRIX_LR"),
+        resolved["matrixLr"],
+    )
+    env["MUON_BACKEND_STEPS"] = _stringify_preserving_input(
+        _candidate_value(candidate, "muonBackendSteps", "MUON_BACKEND_STEPS"),
+        resolved["muonBackendSteps"],
+    )
+    env["MUON_MOMENTUM"] = _stringify_preserving_input(
+        _candidate_value(candidate, "muonMomentum", "MUON_MOMENTUM"),
+        resolved["muonMomentum"],
+    )
+    env["MUON_MOMENTUM_WARMUP_START"] = _stringify_preserving_input(
+        _candidate_value(candidate, "muonMomentumWarmupStart", "MUON_MOMENTUM_WARMUP_START"),
+        resolved["muonMomentumWarmupStart"],
+    )
+    env["MUON_MOMENTUM_WARMUP_STEPS"] = _stringify_preserving_input(
+        _candidate_value(candidate, "muonMomentumWarmupSteps", "MUON_MOMENTUM_WARMUP_STEPS"),
+        resolved["muonMomentumWarmupSteps"],
+    )
+    raw_exemptions = _candidate_value(candidate, "adamwExemptionSelectors", "CONTROL_TENSOR_NAME_PATTERNS")
+    if isinstance(raw_exemptions, str):
+        env["CONTROL_TENSOR_NAME_PATTERNS"] = raw_exemptions.strip()
+    elif isinstance(raw_exemptions, list):
+        env["CONTROL_TENSOR_NAME_PATTERNS"] = ",".join(resolved["adamwExemptionSelectors"])
+    else:
+        env["CONTROL_TENSOR_NAME_PATTERNS"] = ",".join(resolved["adamwExemptionSelectors"])
     return env
 
 
@@ -277,8 +345,34 @@ def _coerce_finite_float(value: Any, field_name: str, errors: list[str], default
     return number
 
 
+def _coerce_int(value: Any, field_name: str, errors: list[str], default: int) -> int:
+    if value is None:
+        return default
+    try:
+        if isinstance(value, bool):
+            raise ValueError
+        number = float(value)
+    except (TypeError, ValueError):
+        errors.append(f"invalid-{field_name}")
+        return default
+    if not math.isfinite(number) or not number.is_integer():
+        errors.append(f"invalid-{field_name}")
+        return default
+    return int(number)
+
+
 def _preflight_validate_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
     errors: list[str] = []
+    raw_trust_gate_mode = candidate.get("trustGateMode")
+    trust_gate_mode = str(raw_trust_gate_mode or "strict").strip().lower()
+    if trust_gate_mode not in ALLOWED_TRUST_GATE_MODES:
+        errors.append("invalid-trustGateMode")
+    operator_approval_ref = candidate.get("operatorApprovalRef")
+    if trust_gate_mode == "operator-approved-fallback":
+        if not isinstance(operator_approval_ref, str) or not operator_approval_ref.strip():
+            errors.append("missing-operatorApprovalRef")
+        # FAST-55 security policy: local-signature fallback is disallowed.
+        errors.append("disallowed-trustGateFallback")
     raw_activation_mode = _candidate_value(candidate, "activationMode", "ACTIVATION_MODE")
     activation_mode = str(raw_activation_mode or "relu2").strip().lower()
     if activation_mode not in ALLOWED_ACTIVATION_MODES:
@@ -329,13 +423,112 @@ def _preflight_validate_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
     if clamp_enabled and activation_mode != "swiglu":
         errors.append("swigluClampRequiresSwiGLU")
 
+    matrix_lr = _coerce_finite_float(
+        _candidate_value(candidate, "muonUpdateScale", "MATRIX_LR"),
+        "matrixLr",
+        errors,
+        float(DEFAULT_CPU_ENV["MATRIX_LR"]) if "MATRIX_LR" in DEFAULT_CPU_ENV else 0.04,
+    )
+    if not (MIN_MUON_UPDATE_SCALE <= matrix_lr <= MAX_MUON_UPDATE_SCALE):
+        errors.append("invalid-matrixLr")
+
+    raw_muon_backend_steps = _candidate_value(candidate, "muonBackendSteps", "MUON_BACKEND_STEPS")
+    muon_backend_steps = _coerce_int(
+        raw_muon_backend_steps,
+        "muonBackendSteps",
+        errors,
+        int(DEFAULT_CPU_ENV["MUON_BACKEND_STEPS"]) if "MUON_BACKEND_STEPS" in DEFAULT_CPU_ENV else 5,
+    )
+    if not (MIN_MUON_BACKEND_STEPS <= muon_backend_steps <= MAX_MUON_BACKEND_STEPS):
+        errors.append("invalid-muonBackendSteps")
+
+    muon_momentum = _coerce_finite_float(
+        _candidate_value(candidate, "muonMomentum", "MUON_MOMENTUM"),
+        "muonMomentum",
+        errors,
+        float(DEFAULT_CPU_ENV["MUON_MOMENTUM"]) if "MUON_MOMENTUM" in DEFAULT_CPU_ENV else 0.95,
+    )
+    if not (MIN_MUON_MOMENTUM < muon_momentum < MAX_MUON_MOMENTUM):
+        errors.append("invalid-muonMomentum")
+
+    muon_momentum_warmup_start = _coerce_finite_float(
+        _candidate_value(candidate, "muonMomentumWarmupStart", "MUON_MOMENTUM_WARMUP_START"),
+        "muonMomentumWarmupStart",
+        errors,
+        float(DEFAULT_CPU_ENV["MUON_MOMENTUM_WARMUP_START"])
+        if "MUON_MOMENTUM_WARMUP_START" in DEFAULT_CPU_ENV
+        else 0.85,
+    )
+    if not (0.0 <= muon_momentum_warmup_start <= muon_momentum):
+        errors.append("invalid-muonMomentumWarmupStart")
+
+    raw_muon_momentum_warmup_steps = _candidate_value(
+        candidate,
+        "muonMomentumWarmupSteps",
+        "MUON_MOMENTUM_WARMUP_STEPS",
+    )
+    muon_momentum_warmup_steps = _coerce_int(
+        raw_muon_momentum_warmup_steps,
+        "muonMomentumWarmupSteps",
+        errors,
+        int(DEFAULT_CPU_ENV["MUON_MOMENTUM_WARMUP_STEPS"])
+        if "MUON_MOMENTUM_WARMUP_STEPS" in DEFAULT_CPU_ENV
+        else 500,
+    )
+    if muon_momentum_warmup_steps < MIN_MUON_MOMENTUM_WARMUP_STEPS:
+        errors.append("invalid-muonMomentumWarmupSteps")
+    if (
+        raw_muon_backend_steps is not None
+        and raw_muon_momentum_warmup_steps is not None
+        and muon_backend_steps <= 0
+        and muon_momentum_warmup_steps > 0
+    ):
+        errors.append("invalid-muonMomentumWarmupSchedule")
+
+    raw_control_patterns = _candidate_value(
+        candidate,
+        "adamwExemptionSelectors",
+        "CONTROL_TENSOR_NAME_PATTERNS",
+    )
+    if raw_control_patterns is None:
+        control_patterns = [
+            pattern
+            for pattern in str(DEFAULT_CPU_ENV.get("CONTROL_TENSOR_NAME_PATTERNS", DEFAULT_CONTROL_TENSOR_NAME_PATTERNS)).split(",")
+            if pattern
+        ]
+    elif isinstance(raw_control_patterns, str):
+        control_patterns = [pattern.strip() for pattern in raw_control_patterns.split(",") if pattern.strip()]
+    elif isinstance(raw_control_patterns, list):
+        control_patterns = [
+            str(pattern).strip()
+            for pattern in raw_control_patterns
+            if isinstance(pattern, str) and str(pattern).strip()
+        ]
+        if len(control_patterns) != len(raw_control_patterns):
+            errors.append("invalid-controlTensorNamePatterns")
+    else:
+        errors.append("invalid-controlTensorNamePatterns")
+        control_patterns = []
+    if any(not MUON_SELECTOR_PATTERN.fullmatch(pattern) for pattern in control_patterns):
+        errors.append("invalid-controlTensorNamePatterns")
+    if any(pattern not in ALLOWED_ADAMW_EXEMPTION_SELECTORS for pattern in control_patterns):
+        errors.append("invalid-controlTensorNamePatterns")
+
     resolved = {
+        "trustGateMode": trust_gate_mode,
+        "operatorApprovalRef": operator_approval_ref if isinstance(operator_approval_ref, str) else None,
         "activationMode": activation_mode,
         "swigluClampEnabled": clamp_enabled,
         "swigluClampMode": clamp_mode,
         "swigluLinearClampMin": linear_clamp_min,
         "swigluLinearClampMax": linear_clamp_max,
         "swigluGateClampMax": gate_clamp_max,
+        "matrixLr": matrix_lr,
+        "muonBackendSteps": muon_backend_steps,
+        "muonMomentum": muon_momentum,
+        "muonMomentumWarmupStart": muon_momentum_warmup_start,
+        "muonMomentumWarmupSteps": muon_momentum_warmup_steps,
+        "adamwExemptionSelectors": control_patterns,
     }
     return {"errors": sorted(set(errors)), "resolved": resolved}
 
@@ -581,6 +774,8 @@ def _trust_receipt_error(
     trusted_roots: set[str] | None = None,
     trust_root_policy: dict[str, Any] | None = None,
     operator_acceptance_registry_path: Path = DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH,
+    trust_gate_mode: str = "operator-approved-fallback",
+    operator_approval_ref: str | None = None,
 ) -> str | None:
     def runtime_operator_acceptance_error(residual_risk: dict[str, Any]) -> str | None:
         accepted_by = residual_risk.get("acceptedBy")
@@ -705,6 +900,10 @@ def _trust_receipt_error(
     if trusted_roots is not None and trusted_root not in trusted_roots:
         return "receipt-trusted-root-untrusted"
     if local_signature_mode:
+        if trust_gate_mode == "strict":
+            return "receipt-local-signature-disallowed"
+        if trust_gate_mode != "operator-approved-fallback":
+            return "receipt-trust-gate-mode-invalid"
         risk_error = residual_risk_acceptance_error()
         if risk_error is not None:
             return risk_error
@@ -768,6 +967,8 @@ def _resolve_runner_attestation(
     attestation_ref: str | None,
     run_id: str,
     registry_path: Path,
+    trust_gate_mode: str = "operator-approved-fallback",
+    operator_approval_ref: str | None = None,
 ) -> dict[str, Any]:
     if not attestation_ref:
         return {
@@ -856,6 +1057,8 @@ def _resolve_runner_attestation(
         trusted_roots,
         trust_root_policy,
         DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH,
+        trust_gate_mode,
+        operator_approval_ref,
     )
     if receipt_error is not None:
         return {
@@ -874,6 +1077,8 @@ def _resolve_parent_lineage(
     *,
     parent_experiment_id: str | None,
     registry_path: Path,
+    trust_gate_mode: str = "operator-approved-fallback",
+    operator_approval_ref: str | None = None,
 ) -> dict[str, Any]:
     if not parent_experiment_id:
         return {
@@ -934,6 +1139,8 @@ def _resolve_parent_lineage(
         trusted_roots,
         trust_root_policy,
         DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH,
+        trust_gate_mode,
+        operator_approval_ref,
     )
     if receipt_error is not None:
         return {
@@ -1095,6 +1302,10 @@ def append_cpu_subset_evidence(
 
     cpu_records = _cpu_subset_records(records)
     evidence_id = f"evidence-{experiment_id}"
+    trust_gate_mode = str(candidate.get("trustGateMode") or "operator-approved-fallback").strip().lower()
+    operator_approval_ref = candidate.get("operatorApprovalRef")
+    if not isinstance(operator_approval_ref, str):
+        operator_approval_ref = None
     parent_experiment_id = _resolve_parent_experiment_id(candidate, cpu_records)
     parent_record = next(
         (
@@ -1107,6 +1318,8 @@ def append_cpu_subset_evidence(
     parent_lineage = _resolve_parent_lineage(
         parent_experiment_id=parent_experiment_id,
         registry_path=DEFAULT_TRUSTED_PARENT_REGISTRY_PATH,
+        trust_gate_mode=trust_gate_mode,
+        operator_approval_ref=operator_approval_ref,
     )
     parent_frontier_id = parent_lineage["parentFrontierId"]
     runner_verification = _mint_runner_verification(
@@ -1122,6 +1335,8 @@ def append_cpu_subset_evidence(
         attestation_ref=runner_verification.get("attestationRef"),
         run_id=run_id,
         registry_path=DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH,
+        trust_gate_mode=trust_gate_mode,
+        operator_approval_ref=operator_approval_ref,
     )
     runner_verification["provenanceVerified"] = attestation_resolution["status"] == "resolved"
     runner_verification["attestationRegistryRef"] = attestation_resolution["attestationRegistryRef"]
@@ -1325,6 +1540,13 @@ def run_cpu_subset_experiment(
             "validationPolicy": {
                 "activationModeAllowlist": sorted(ALLOWED_ACTIVATION_MODES),
                 "swigluClampModeAllowlist": sorted(ALLOWED_SWIGLU_CLAMP_MODES),
+                "muonUpdateScaleMin": MIN_MUON_UPDATE_SCALE,
+                "muonUpdateScaleMax": MAX_MUON_UPDATE_SCALE,
+                "muonBackendStepsMin": MIN_MUON_BACKEND_STEPS,
+                "muonBackendStepsMax": MAX_MUON_BACKEND_STEPS,
+                "muonMomentumExclusiveRange": [MIN_MUON_MOMENTUM, MAX_MUON_MOMENTUM],
+                "muonMomentumWarmupStepsMin": MIN_MUON_MOMENTUM_WARMUP_STEPS,
+                "adamwExemptionSelectorAllowlist": sorted(ALLOWED_ADAMW_EXEMPTION_SELECTORS),
             },
         }
     run_id = f"cpu_subset_{sanitize_candidate_id(candidate_id)}"

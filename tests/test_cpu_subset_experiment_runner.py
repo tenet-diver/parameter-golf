@@ -184,6 +184,87 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             self.assertIn("non-finite-swigluLinearClampMin", result["validationErrors"])
             mock_popen.assert_not_called()
 
+    def test_rejects_invalid_muon_numeric_config_before_subprocess(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            status_path = root / "campaign_status.json"
+            state_path = root / "campaign_state.json"
+            run_root = root / "runs"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "kind": "parameter-golf-measurement-evidence",
+                        "updatedAt": "2026-04-25T00:00:00Z",
+                        "summary": {
+                            "artifactIds": [],
+                            "trustedControlState": "established",
+                            "totalExperiments": 0,
+                            "acceptedExperiments": 0,
+                            "mostRecentEvidenceId": None,
+                        },
+                        "recentCompletedExperiments": [],
+                        "experimentRecords": [],
+                    },
+                )
+            )
+            status_path.write_text(
+                json.dumps(
+                    {
+                        "generatedAt": "2026-04-25T00:00:00Z",
+                        "trustedControlState": "established",
+                        "latestVerificationClass": None,
+                        "missingEvidence": [],
+                        "integrityFlags": [],
+                        "policyViolations": [],
+                        "adjudication": {"decision": "hold", "reason": "seed"},
+                    },
+                )
+            )
+            state_path.write_text(
+                json.dumps(
+                    {
+                        "generatedAt": "2026-04-25T00:00:00Z",
+                        "candidate": None,
+                        "history": [],
+                    },
+                )
+            )
+
+            with (
+                patch("fastest.scripts.run_cpu_subset_experiment.subprocess.Popen") as mock_popen,
+                patch("fastest.scripts.run_cpu_subset_experiment.regenerate_views"),
+            ):
+                result = run_cpu_subset_experiment(
+                    candidate={
+                        "taskId": "FAST-55",
+                        "candidateId": "muon-invalid",
+                        "env": {
+                            "MATRIX_LR": "nan",
+                            "MUON_BACKEND_STEPS": 0,
+                            "MUON_MOMENTUM": "1.2",
+                            "MUON_MOMENTUM_WARMUP_START": "-0.1",
+                            "MUON_MOMENTUM_WARMUP_STEPS": 9,
+                            "CONTROL_TENSOR_NAME_PATTERNS": "unknown_tensor",
+                        },
+                    },
+                    evidence_path=evidence_path,
+                    status_path=status_path,
+                    state_path=state_path,
+                    run_root=run_root,
+                )
+
+            self.assertEqual(result["status"], "integrity_error")
+            self.assertEqual(result["reasonCode"], "cpu-subset-preflight-validation-failed")
+            self.assertIn("non-finite-matrixLr", result["validationErrors"])
+            self.assertIn("invalid-muonBackendSteps", result["validationErrors"])
+            self.assertIn("invalid-muonMomentum", result["validationErrors"])
+            self.assertIn("invalid-muonMomentumWarmupStart", result["validationErrors"])
+            self.assertIn("invalid-muonMomentumWarmupSchedule", result["validationErrors"])
+            self.assertIn("invalid-controlTensorNamePatterns", result["validationErrors"])
+            mock_popen.assert_not_called()
+
     def test_sanitizes_candidate_id_for_run_directory(self) -> None:
         self.assertEqual(sanitize_candidate_id("../muon:trial/../../bad"), "muon-trial-bad")
         self.assertEqual(sanitize_candidate_id(""), "candidate")
@@ -697,6 +778,98 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             self.assertEqual(
                 record["attestationResolution"]["reasonCode"],
                 "attestation-receipt-residual-risk-acceptance-missing",
+            )
+
+    def test_fails_closed_when_local_receipt_fallback_is_requested_with_operator_acceptance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            trusted_attestation_registry_path = root / "trusted_runner_attestation_registry.json"
+            trusted_operator_acceptance_registry_path = (
+                root / "trusted_operator_risk_acceptance_registry.json"
+            )
+            attestation_ref = "attestation-fast55-local-fallback"
+            acceptance_ref = "risk-accept-fast55-cpu-subset"
+            trusted_attestation_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                            "residualRiskAcceptance": {
+                                "scope": "cpu-subset",
+                                "acceptedBy": (
+                                    "fastest-task-store://parameter-golf/"
+                                    "tasks/FAST-55/notes/operator-risk-acceptance"
+                                ),
+                                "acceptanceRef": acceptance_ref,
+                                "expiresAt": "2099-01-01T00:00:00Z",
+                                "monitoringOwner": "model-factory-oncall",
+                            },
+                            "authorityBinding": {
+                                "authorityBoundary": "registry://attestation-prod",
+                                "registryRef": "trusted-runner-attestation-registry",
+                                "validatedAt": "2026-04-26T00:00:00Z",
+                                "trustedRoots": ["registry:attestation-prod-root"],
+                            },
+                        },
+                        "runnerAttestations": {
+                            attestation_ref: {
+                                "runId": "cpu_subset_child",
+                                "attestationRef": attestation_ref,
+                                "source": "cpu-subset-runner",
+                                "provenanceVerified": True,
+                                "resultClass": "cpu-subset",
+                                "verificationClass": "cpu-subset",
+                                "receipt": trust_receipt(
+                                    attestation_ref,
+                                    "registry:attestation-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+            trusted_operator_acceptance_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "authorityBoundary": (
+                            "fastest-task-store://parameter-golf/"
+                            "tasks/FAST-55/trust/acceptance-registry"
+                        ),
+                        "acceptedResidualRisks": {
+                            acceptance_ref: {
+                                "scope": "cpu-subset",
+                                "acceptedBy": (
+                                    "fastest-task-store://parameter-golf/"
+                                    "tasks/FAST-55/notes/operator-risk-acceptance"
+                                ),
+                                "monitoringOwner": "model-factory-oncall",
+                                "expiresAt": "2099-01-01T00:00:00Z",
+                            }
+                        },
+                    }
+                )
+            )
+
+            with patch.object(
+                cpu_subset_runner,
+                "DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH",
+                trusted_operator_acceptance_registry_path,
+            ):
+                resolution = cpu_subset_runner._resolve_runner_attestation(
+                    attestation_ref=attestation_ref,
+                    run_id="cpu_subset_child",
+                    registry_path=trusted_attestation_registry_path,
+                    trust_gate_mode="strict",
+                )
+
+            self.assertEqual(resolution["status"], "unresolved")
+            self.assertEqual(
+                resolution["reasonCode"],
+                "attestation-receipt-local-signature-disallowed",
             )
 
     def test_fails_closed_for_cryptographic_receipt_without_external_proof_or_risk_acceptance(self) -> None:
