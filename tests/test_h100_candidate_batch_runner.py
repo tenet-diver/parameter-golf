@@ -185,6 +185,53 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
             self.assertIn("graph LR", graph)
             self.assertIn("better_shape", graph)
 
+    def test_analysis_payload_includes_hardware_view(self) -> None:
+        rows = rank_rows(
+            [
+                {
+                    "id": "baseline",
+                    "status": "completed",
+                    "family": "autoregressive",
+                    "hardwareLabel": "1xH100",
+                    "quantization": "int8",
+                    "hypothesis": "control",
+                    "hypothesisTags": ["control"],
+                    "finalValBpb": 1.2,
+                }
+            ]
+        )
+
+        payload = build_analysis_payload(
+            rows,
+            hardware={"hostname": "test", "gpus": [{"name": "H100"}]},
+            started_at="20260426T000000Z",
+        )
+
+        self.assertIn("byHardware", payload["views"])
+        self.assertEqual(payload["views"]["byHardware"][0]["groupKey"], "1xH100")
+
+    def test_run_batch_returns_nonzero_when_candidate_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            candidate_file = root / "candidates.json"
+            candidate_file.write_text(
+                '[{"id": "fails", "family": "test", "command": "python -c \\"import sys; sys.exit(7)\\""}]\n',
+                encoding="utf-8",
+            )
+            args = parse_args(
+                [
+                    "--candidate-file",
+                    str(candidate_file),
+                    "--output-root",
+                    str(root / "out"),
+                    "--timeout-seconds",
+                    "30",
+                    "--stop-on-failure",
+                ]
+            )
+
+            self.assertEqual(batch_runner.run_batch(args), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

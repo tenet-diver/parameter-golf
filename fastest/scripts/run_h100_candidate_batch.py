@@ -526,6 +526,7 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         "id",
         "status",
         "family",
+        "hardwareLabel",
         "quantization",
         "finalValBpb",
         "finalValLoss",
@@ -642,6 +643,7 @@ def build_analysis_payload(
 ) -> dict[str, Any]:
     ranked = rank_rows([dict(row) for row in rows])
     family_groups = summarize_groups(ranked, "family")
+    hardware_groups = summarize_groups(ranked, "hardwareLabel")
     quantization_groups = summarize_groups(ranked, "quantization")
     hypothesis_groups = summarize_groups(ranked, "hypothesis")
     tag_rows: list[dict[str, Any]] = []
@@ -659,6 +661,7 @@ def build_analysis_payload(
         "views": {
             "leaderboard": ranked,
             "byFamily": family_groups,
+            "byHardware": hardware_groups,
             "byQuantization": quantization_groups,
             "byHypothesis": hypothesis_groups,
             "byHypothesisTag": tag_groups,
@@ -672,6 +675,7 @@ def write_analysis_outputs(output_dir: Path, rows: list[dict[str, Any]], hardwar
     payload = build_analysis_payload(rows, hardware=hardware, started_at=started_at)
     (analysis_dir / "analysis.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     write_group_csv(analysis_dir / "by_family.csv", payload["views"]["byFamily"])
+    write_group_csv(analysis_dir / "by_hardware.csv", payload["views"]["byHardware"])
     write_group_csv(analysis_dir / "by_quantization.csv", payload["views"]["byQuantization"])
     write_group_csv(analysis_dir / "by_hypothesis.csv", payload["views"]["byHypothesis"])
     write_group_csv(analysis_dir / "by_hypothesis_tag.csv", payload["views"]["byHypothesisTag"])
@@ -693,6 +697,7 @@ def write_analysis_markdown(path: Path, payload: dict[str, Any]) -> None:
     ]
     for title, key in (
         ("By Family", "byFamily"),
+        ("By Hardware", "byHardware"),
         ("By Quantization", "byQuantization"),
         ("By Hypothesis", "byHypothesis"),
         ("By Hypothesis Tag", "byHypothesisTag"),
@@ -892,6 +897,15 @@ def rank_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for row in unscored:
         row["rank"] = None
     return scored + unscored
+
+
+def hardware_label(hardware: dict[str, Any]) -> str:
+    gpus = hardware.get("gpus")
+    if isinstance(gpus, list) and gpus:
+        first_gpu = gpus[0] if isinstance(gpus[0], dict) else {}
+        name = str(first_gpu.get("name") or "GPU")
+        return f"{len(gpus)}x{name}"
+    return "cpu"
 
 
 def write_summary(path: Path, rows: list[dict[str, Any]], started_at: str, output_dir: Path) -> None:
@@ -1113,6 +1127,7 @@ def run_batch(args: argparse.Namespace) -> int:
         row = {
             "id": candidate["id"],
             "family": candidate.get("family", ""),
+            "hardwareLabel": hardware_label(hardware),
             "quantization": candidate.get("quantization", ""),
             "hypothesis": candidate.get("hypothesis", candidate.get("id")),
             "hypothesisTags": tag_list(candidate),
@@ -1125,7 +1140,22 @@ def run_batch(args: argparse.Namespace) -> int:
             "elapsedSeconds": completed["elapsedSeconds"],
             "runDir": str(run_dir),
             "command": command,
-            "env": {key: env[key] for key in sorted(set(BASE_ENV) | set(candidate.get("env", {})) | {"RUN_ID"}) if key in env},
+            "env": {
+                key: env[key]
+                for key in sorted(
+                    set(BASE_ENV)
+                    | set(candidate.get("env", {}))
+                    | {
+                        "RUN_ID",
+                        "ITERATIONS",
+                        "TRAIN_BATCH_TOKENS",
+                        "TRAIN_SEQ_LEN",
+                        "VAL_BATCH_SIZE",
+                        "VAL_TOKEN_LIMIT",
+                    }
+                )
+                if key in env
+            },
             "selectedTrainBatchTokens": selected_train_batch_tokens,
             "tokensPerSecond": derived_tokens_per_second,
             "batchTuneStatus": batch_tune.get("status") if batch_tune.get("enabled") else None,
@@ -1159,7 +1189,7 @@ def run_batch(args: argparse.Namespace) -> int:
     write_analysis_outputs(output_dir, ranked, hardware, started_at)
     write_summary(output_dir / "summary.md", ranked, started_at, output_dir)
     print(f"wrote {output_dir}")
-    return 0
+    return 1 if any(row.get("status") not in {"completed", "tuned"} for row in rows) else 0
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
