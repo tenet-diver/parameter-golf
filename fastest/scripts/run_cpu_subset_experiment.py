@@ -334,6 +334,9 @@ def _candidate_value(candidate: dict[str, Any], top_key: str, env_key: str) -> A
 def _coerce_finite_float(value: Any, field_name: str, errors: list[str], default: float) -> float:
     if value is None:
         return default
+    if isinstance(value, bool):
+        errors.append(f"invalid-{field_name}")
+        return default
     try:
         number = float(value)
     except (TypeError, ValueError):
@@ -774,7 +777,7 @@ def _trust_receipt_error(
     trusted_roots: set[str] | None = None,
     trust_root_policy: dict[str, Any] | None = None,
     operator_acceptance_registry_path: Path = DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH,
-    trust_gate_mode: str = "operator-approved-fallback",
+    trust_gate_mode: str = "strict",
     operator_approval_ref: str | None = None,
 ) -> str | None:
     def runtime_operator_acceptance_error(residual_risk: dict[str, Any]) -> str | None:
@@ -900,14 +903,7 @@ def _trust_receipt_error(
     if trusted_roots is not None and trusted_root not in trusted_roots:
         return "receipt-trusted-root-untrusted"
     if local_signature_mode:
-        if trust_gate_mode == "strict":
-            return "receipt-local-signature-disallowed"
-        if trust_gate_mode != "operator-approved-fallback":
-            return "receipt-trust-gate-mode-invalid"
-        risk_error = residual_risk_acceptance_error()
-        if risk_error is not None:
-            return risk_error
-        return None
+        return "receipt-local-signature-disallowed"
     cryptographic_verification = entry.get("cryptographicVerification")
     if isinstance(cryptographic_verification, dict):
         authority_boundary = cryptographic_verification.get("authorityBoundary")
@@ -967,7 +963,7 @@ def _resolve_runner_attestation(
     attestation_ref: str | None,
     run_id: str,
     registry_path: Path,
-    trust_gate_mode: str = "operator-approved-fallback",
+    trust_gate_mode: str = "strict",
     operator_approval_ref: str | None = None,
 ) -> dict[str, Any]:
     if not attestation_ref:
@@ -1077,7 +1073,7 @@ def _resolve_parent_lineage(
     *,
     parent_experiment_id: str | None,
     registry_path: Path,
-    trust_gate_mode: str = "operator-approved-fallback",
+    trust_gate_mode: str = "strict",
     operator_approval_ref: str | None = None,
 ) -> dict[str, Any]:
     if not parent_experiment_id:
