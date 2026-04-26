@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -32,6 +33,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RUN_ROOT = REPO_ROOT / "fastest/generated/cpu_subset_runs"
 CPU_SUBSET_MAX_WALLCLOCK_SECONDS = 600
 CPU_SUBSET_CAP_POLICY_SOURCE = "runner-fixed-fast-51"
+DEFAULT_TRUSTED_PARENT_REGISTRY_PATH = REPO_ROOT / "fastest/source/trusted_parent_lineage_registry.json"
 FINAL_BPB_RE = re.compile(
     r"final_int8_zlib_roundtrip_exact\s+val_loss:(?P<loss>[0-9.]+)\s+val_bpb:(?P<bpb>[0-9.]+)"
 )
@@ -541,6 +543,179 @@ def _proposal_task_id(task_id: str, candidate_id: str) -> str:
     return f"{task_id}-{suffix}-follow-up"
 
 
+def _load_trusted_parent_registry(registry_path: Path) -> dict[str, Any] | None:
+    if not registry_path.exists():
+        return None
+    try:
+        payload = json.loads(registry_path.read_text())
+    except (OSError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    return payload
+
+
+def _resolve_parent_lineage(
+    *,
+    parent_experiment_id: str | None,
+    registry_path: Path,
+) -> dict[str, Any]:
+    if not parent_experiment_id:
+        return {
+            "status": "unresolved",
+            "reasonCode": "missing-parent-experiment-id",
+            "lineageResolutionRef": None,
+            "parentFrontierId": None,
+        }
+    registry = _load_trusted_parent_registry(registry_path)
+    if registry is None:
+        return {
+            "status": "unresolved",
+            "reasonCode": "trusted-registry-unavailable",
+            "lineageResolutionRef": None,
+            "parentFrontierId": None,
+        }
+    parent_lineage = registry.get("parentLineage")
+    if not isinstance(parent_lineage, dict):
+        return {
+            "status": "unresolved",
+            "reasonCode": "trusted-registry-invalid-parent-lineage",
+            "lineageResolutionRef": None,
+            "parentFrontierId": None,
+        }
+    entry = parent_lineage.get(parent_experiment_id)
+    if not isinstance(entry, dict):
+        return {
+            "status": "unresolved",
+            "reasonCode": "lineage-unresolved",
+            "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
+            "parentFrontierId": None,
+        }
+    parent_frontier_id = entry.get("parentFrontierId")
+    if not isinstance(parent_frontier_id, str) or not parent_frontier_id:
+        return {
+            "status": "unresolved",
+            "reasonCode": "lineage-missing-parent-frontier-id",
+            "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
+            "parentFrontierId": None,
+        }
+    return {
+        "status": "resolved",
+        "reasonCode": "lineage-resolved",
+        "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
+        "parentFrontierId": parent_frontier_id,
+    }
+
+
+def _load_runner_owned_check(run_dir: Path, filename: str) -> dict[str, Any] | None:
+    path = run_dir / filename
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("source") != "cpu-subset-runner":
+        return None
+    return payload
+
+
+def _mint_runner_verification(
+    *,
+    run_id: str,
+    completed_at: str,
+    val_loss: float,
+    val_bpb: float,
+    command: list[str],
+    run_dir: Path,
+    train_env: dict[str, str],
+) -> dict[str, Any]:
+    deterministic = _load_runner_owned_check(run_dir, "deterministic_rerun.json")
+    seed_variance = _load_runner_owned_check(run_dir, "seed_variance.json")
+    artifact_paths = [
+        artifact_path(run_dir / "stdout.txt"),
+        artifact_path(run_dir / "stderr.txt"),
+        artifact_path(run_dir / "result.json"),
+        artifact_path(run_dir / "final_model.int8.ptz"),
+    ]
+    attestation_material = {
+        "runId": run_id,
+        "completedAt": completed_at,
+        "valLoss": val_loss,
+        "valBpb": val_bpb,
+        "command": command,
+        "artifactPaths": artifact_paths,
+        "seed": train_env.get("SEED"),
+        "iterations": train_env.get("ITERATIONS"),
+        "valTokenLimit": train_env.get("VAL_TOKEN_LIMIT"),
+    }
+    attestation_ref = "attestation-" + hashlib.sha256(
+        json.dumps(attestation_material, sort_keys=True).encode("utf-8")
+    ).hexdigest()[:16]
+    return {
+        "source": "runner",
+        "runnerIdentity": "cpu-subset-runner",
+        "runId": run_id,
+        "completedAt": completed_at,
+        "attestationRef": attestation_ref,
+        "provenanceVerified": True,
+        "deterministicValidated": bool(
+            deterministic and deterministic.get("status") == "passed"
+        ),
+        "seedVarianceValidated": bool(
+            seed_variance and seed_variance.get("status") == "passed"
+        ),
+        "runtimeWithinCap": (
+            _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0)
+            <= CPU_SUBSET_MAX_WALLCLOCK_SECONDS
+        ),
+        "deterministicEvidenceRef": deterministic.get("evidenceRef")
+        if deterministic
+        else None,
+        "seedVarianceEvidenceRef": seed_variance.get("evidenceRef")
+        if seed_variance
+        else None,
+        "artifactPaths": artifact_paths,
+    }
+
+
+def _evaluate_runner_verification(runner_verification: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(runner_verification, dict):
+        return {
+            "status": "failed",
+            "reasonCode": "runner-verification-missing",
+            "attestationRef": None,
+        }
+    attestation_ref = runner_verification.get("attestationRef")
+    if not isinstance(attestation_ref, str) or not attestation_ref:
+        return {
+            "status": "failed",
+            "reasonCode": "runner-attestation-missing",
+            "attestationRef": None,
+        }
+    gate_checks = [
+        ("source", runner_verification.get("source") == "runner"),
+        ("provenance", bool(runner_verification.get("provenanceVerified"))),
+        ("deterministic", bool(runner_verification.get("deterministicValidated"))),
+        ("seedVariance", bool(runner_verification.get("seedVarianceValidated"))),
+        ("runtimeCap", bool(runner_verification.get("runtimeWithinCap"))),
+    ]
+    failed = [name for name, passed in gate_checks if not passed]
+    if failed:
+        return {
+            "status": "failed",
+            "reasonCode": f"runner-verification-gate-failed:{','.join(failed)}",
+            "attestationRef": attestation_ref,
+        }
+    return {
+        "status": "passed",
+        "reasonCode": "runner-verification-passed",
+        "attestationRef": attestation_ref,
+    }
+
+
 def append_cpu_subset_evidence(
     *,
     candidate: dict[str, Any],
@@ -552,6 +727,7 @@ def append_cpu_subset_evidence(
     run_dir: Path,
     train_env: dict[str, str],
     evidence_path: Path,
+    trusted_parent_registry_path: Path = DEFAULT_TRUSTED_PARENT_REGISTRY_PATH,
 ) -> dict[str, Any]:
     evidence = load_json(evidence_path)
     records = evidence.setdefault("experimentRecords", [])
@@ -584,13 +760,24 @@ def append_cpu_subset_evidence(
         ),
         None,
     )
-    parent_frontier_id = candidate.get("parentFrontierId")
-    if not isinstance(parent_frontier_id, str) or not parent_frontier_id:
-        fallback_frontier_id = candidate.get("frontierId")
-        if isinstance(fallback_frontier_id, str) and fallback_frontier_id:
-            parent_frontier_id = fallback_frontier_id
-        else:
-            parent_frontier_id = None
+    parent_lineage = _resolve_parent_lineage(
+        parent_experiment_id=parent_experiment_id,
+        registry_path=trusted_parent_registry_path,
+    )
+    parent_frontier_id = parent_lineage["parentFrontierId"]
+    runner_verification = _mint_runner_verification(
+        run_id=run_id,
+        completed_at=completed_at,
+        val_loss=val_loss,
+        val_bpb=val_bpb,
+        command=command,
+        run_dir=run_dir,
+        train_env=train_env,
+    )
+    runner_gate = _evaluate_runner_verification(runner_verification)
+    trust_gates_satisfied = (
+        runner_gate["status"] == "passed" and parent_lineage["status"] == "resolved"
+    )
     current_factors = _factor_snapshot_from_env(train_env)
     parent_factors = _factor_snapshot_from_record(parent_record) if parent_record else {}
     ranking_table = _build_ranking_table(cpu_records, experiment_id, val_bpb)
@@ -599,8 +786,37 @@ def append_cpu_subset_evidence(
         raise ValueError("MAX_WALLCLOCK_SECONDS must be present and greater than zero.")
     candidate_rank = int(ranking_table["candidateRank"])
     follow_up_lane = "cheap-screen" if candidate_rank == 1 else "cpu-subset"
-    promotion_decision = "propose-follow-up" if candidate_rank == 1 else "hold"
-    retirement_decision = "retain" if candidate_rank <= 3 else "retire"
+    promotion_decision = "propose-follow-up" if candidate_rank == 1 and trust_gates_satisfied else "hold"
+    retirement_decision = (
+        "defer"
+        if not trust_gates_satisfied
+        else ("retain" if candidate_rank <= 3 else "retire")
+    )
+    verification_status = "passed" if trust_gates_satisfied else "verification_failed_trust"
+    follow_up_task_proposal = None
+    if promotion_decision == "propose-follow-up":
+        follow_up_task_proposal = {
+            "sourceLane": "cpu-subset",
+            "lane": follow_up_lane,
+            "taskId": _proposal_task_id(task_id, candidate_id),
+            "candidateId": candidate_id,
+            "parentExperimentId": parent_experiment_id,
+            "title": f"Follow up CPU-subset candidate {candidate_id}",
+            "summary": (
+                f"Candidate rank {candidate_rank}/{ranking_table['totalCandidates']} on CPU-subset val_bpb; "
+                f"proposal lane is {follow_up_lane}."
+            ),
+            "runtimeValidationCaps": {
+                "maxRuntimeSeconds": effective_runtime_cap_sec,
+                "valTokenLimit": _int_from_env(train_env, "VAL_TOKEN_LIMIT", 0),
+            },
+            "measuredEvidenceRef": evidence_id,
+        }
+    ranking_table["attestationRef"] = runner_gate["attestationRef"]
+    ranking_table["lineageResolutionRef"] = parent_lineage["lineageResolutionRef"]
+    ranking_table["verificationStatus"] = verification_status
+    ranking_table["resultClass"] = "cpu-subset"
+    ranking_table["verificationClass"] = "cpu-subset"
 
     record = {
         "experimentId": experiment_id,
@@ -649,6 +865,7 @@ def append_cpu_subset_evidence(
         "resultClass": "cpu-subset",
         "verificationClass": "cpu-subset",
         "integrityStatus": "passed",
+        "verificationStatus": verification_status,
         "classificationReason": (
             "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for "
             "ranking cheap ideas, not leaderboard or benchmark-verified progress."
@@ -659,6 +876,9 @@ def append_cpu_subset_evidence(
             "parentFrontierId": parent_frontier_id,
             "changedFactors": _changed_factors(parent_factors, current_factors),
         },
+        "lineageResolution": parent_lineage,
+        "attestationRef": runner_gate["attestationRef"],
+        "runnerVerificationGate": runner_gate,
         "modelFactory": {
             "owner": "cpu-subset-runner",
             "normalizedFactors": current_factors,
@@ -668,26 +888,11 @@ def append_cpu_subset_evidence(
             "promotionDecision": promotion_decision,
             "retirementDecision": retirement_decision,
             "reason": (
-                "Candidate ranking is derived from CPU-subset val_bpb only; retain top-ranked "
-                "directions for lane-attributed follow-up while keeping benchmark progress gated."
+                "Promotion and follow-up require runner-attested deterministic and seed-variance "
+                "verification plus trusted-registry lineage resolution; fail closed on missing trust."
             ),
         },
-        "followUpTaskProposal": {
-            "sourceLane": "cpu-subset",
-            "lane": follow_up_lane,
-            "taskId": _proposal_task_id(task_id, candidate_id),
-            "candidateId": candidate_id,
-            "parentExperimentId": parent_experiment_id,
-            "title": f"Follow up CPU-subset candidate {candidate_id}",
-            "summary": (
-                f"Candidate rank {candidate_rank}/{ranking_table['totalCandidates']} on CPU-subset val_bpb; "
-                f"proposal lane is {follow_up_lane}."
-            ),
-            "runtimeValidationCaps": {
-                "maxRuntimeSeconds": effective_runtime_cap_sec,
-                "valTokenLimit": _int_from_env(train_env, "VAL_TOKEN_LIMIT", 0),
-            },
-        },
+        "followUpTaskProposal": follow_up_task_proposal,
         "benchmarkProgressEligible": False,
         "observedMetricOutput": {
             "name": "val_bpb",
@@ -703,9 +908,20 @@ def append_cpu_subset_evidence(
             artifact_path(run_dir / "final_model.int8.ptz"),
         ],
         "promotionRationale": {
-            "decision": "hold",
-            "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+            "decision": "hold" if not trust_gates_satisfied else "provisional",
+            "reason": (
+                "CPU-subset evidence can rank ideas but cannot claim benchmark progress."
+                if trust_gates_satisfied
+                else "Follow-up and promotion are blocked until trusted attestation and lineage gates pass."
+            ),
             "missingEvidence": ["benchmark-verified-run"],
+        },
+        "untrustedCandidateMetadata": {
+            "declaredVerification": {
+                "verificationPassed": candidate.get("verificationPassed"),
+                "seedVariancePassed": candidate.get("seedVariancePassed"),
+                "runnerVerification": candidate.get("runnerVerification"),
+            }
         },
     }
     records.append(record)
