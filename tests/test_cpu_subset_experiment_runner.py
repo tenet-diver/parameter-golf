@@ -1,12 +1,17 @@
 import json
+import signal
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from fastest.scripts.run_cpu_subset_experiment import (
     append_cpu_subset_evidence,
     build_cpu_subset_env,
     parse_final_val_bpb,
+    run_cpu_subset_experiment,
+    sanitize_candidate_id,
 )
 
 
@@ -39,6 +44,87 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
         self.assertEqual(env["MODEL_DIM"], "64")
         self.assertEqual(env["VAL_TOKEN_LIMIT"], "8192")
         self.assertEqual(env["MAX_WALLCLOCK_SECONDS"], "600")
+
+    def test_ignores_candidate_override_for_hard_runtime_cap(self) -> None:
+        env = build_cpu_subset_env(
+            {
+                "candidateId": "tiny",
+                "seed": 7,
+                "env": {
+                    "MAX_WALLCLOCK_SECONDS": "1200",
+                },
+            },
+            "cpu_subset_tiny",
+        )
+
+        self.assertEqual(env["MAX_WALLCLOCK_SECONDS"], "600")
+
+    def test_sanitizes_candidate_id_for_run_directory(self) -> None:
+        self.assertEqual(sanitize_candidate_id("../muon:trial/../../bad"), "muon-trial-bad")
+        self.assertEqual(sanitize_candidate_id(""), "candidate")
+
+    def test_timeout_enforcement_uses_process_group_kill_and_fixed_cap(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            status_path = root / "campaign_status.json"
+            state_path = root / "campaign_state.json"
+            run_root = root / "runs"
+            evidence_path.write_text("{}\n")
+            status_path.write_text("{}\n")
+            state_path.write_text("{}\n")
+            spawned: dict[str, object] = {}
+
+            class FakeTimeoutProcess:
+                def __init__(self, *args, **kwargs) -> None:
+                    spawned["args"] = args
+                    spawned["kwargs"] = kwargs
+                    self.pid = 4321
+                    self.returncode = None
+
+                def communicate(self, timeout: float | None = None):
+                    raise subprocess.TimeoutExpired(
+                        cmd=spawned["args"][0],
+                        timeout=timeout or 0,
+                        output="partial-stdout",
+                        stderr="partial-stderr",
+                    )
+
+                def wait(self, timeout: float | None = None) -> int:
+                    self.returncode = -9
+                    return self.returncode
+
+            with (
+                patch("fastest.scripts.run_cpu_subset_experiment.subprocess.Popen", FakeTimeoutProcess),
+                patch("fastest.scripts.run_cpu_subset_experiment.os.getpgid", return_value=4321),
+                patch("fastest.scripts.run_cpu_subset_experiment.os.killpg") as mock_killpg,
+            ):
+                result = run_cpu_subset_experiment(
+                    candidate={
+                        "taskId": "FAST-51",
+                        "candidateId": "../muon:trial",
+                        "seed": 7,
+                        "env": {"MAX_WALLCLOCK_SECONDS": "1200"},
+                    },
+                    evidence_path=evidence_path,
+                    status_path=status_path,
+                    state_path=state_path,
+                    run_root=run_root,
+                )
+
+            self.assertEqual(result["status"], "timeout_enforced")
+            self.assertEqual(result["reasonCode"], "cpu-subset-timeout-enforced")
+            self.assertEqual(result["effectiveRuntimeCapSec"], 600)
+            self.assertEqual(result["capPolicySource"], "runner-fixed-fast-51")
+            self.assertEqual(result["timeoutContainmentMode"], "host-level")
+            self.assertEqual(result["processTerminationScope"], "process-group")
+            self.assertEqual(result["capOverrideActor"], "none")
+            self.assertEqual(result["terminationReason"], "hard-timeout")
+
+            env = spawned["kwargs"]["env"]
+            self.assertEqual(env["MAX_WALLCLOCK_SECONDS"], "600")
+            self.assertTrue(spawned["kwargs"]["start_new_session"])
+            mock_killpg.assert_called_once_with(4321, signal.SIGKILL)
 
     def test_appends_cpu_subset_evidence_without_benchmark_verified_class(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

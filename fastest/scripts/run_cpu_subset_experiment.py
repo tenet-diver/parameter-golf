@@ -4,6 +4,7 @@ import argparse
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -28,6 +29,8 @@ except ModuleNotFoundError:
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RUN_ROOT = REPO_ROOT / "fastest/generated/cpu_subset_runs"
+CPU_SUBSET_MAX_WALLCLOCK_SECONDS = 600
+CPU_SUBSET_CAP_POLICY_SOURCE = "runner-fixed-fast-51"
 FINAL_BPB_RE = re.compile(
     r"final_int8_zlib_roundtrip_exact\s+val_loss:(?P<loss>[0-9.]+)\s+val_bpb:(?P<bpb>[0-9.]+)"
 )
@@ -51,7 +54,7 @@ DEFAULT_CPU_ENV = {
     "WARMDOWN_ITERS": "0",
     "VAL_LOSS_EVERY": "2",
     "TRAIN_LOG_EVERY": "1",
-    "MAX_WALLCLOCK_SECONDS": "600",
+    "MAX_WALLCLOCK_SECONDS": str(CPU_SUBSET_MAX_WALLCLOCK_SECONDS),
     "ARTIFACT_BUDGET_STRICT": "1",
 }
 
@@ -124,6 +127,8 @@ def build_cpu_subset_env(candidate: dict[str, Any], run_id: str) -> dict[str, st
                 and isinstance(value, (str, int, float))
             ):
                 env[key] = str(value)
+    # Runner-level policy owns the hard cap; candidate configs are non-authoritative.
+    env["MAX_WALLCLOCK_SECONDS"] = str(CPU_SUBSET_MAX_WALLCLOCK_SECONDS)
     env["RUN_ID"] = run_id
     env["SEED"] = str(candidate.get("seed", env.get("SEED", "1337")))
     return env
@@ -276,6 +281,72 @@ def _build_ranking_table(
     }
 
 
+def sanitize_candidate_id(candidate_id: Any) -> str:
+    raw = str(candidate_id or "")
+    sanitized = re.sub(r"[^a-zA-Z0-9]+", "-", raw).strip("-").lower()
+    return sanitized or "candidate"
+
+
+def _resolve_run_directory(run_root: Path, run_id: str) -> Path:
+    resolved_root = run_root.resolve()
+    run_dir = (resolved_root / run_id).resolve()
+    try:
+        run_dir.relative_to(resolved_root)
+    except ValueError as exc:
+        raise ValueError("Resolved run directory escapes run_root containment.") from exc
+    return run_dir
+
+
+def _run_with_hard_timeout(
+    *,
+    command: list[str],
+    run_dir: Path,
+    env: dict[str, str],
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    process = subprocess.Popen(
+        command,
+        cwd=run_dir,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+    try:
+        stdout, stderr = process.communicate(timeout=timeout_seconds)
+        return {
+            "timedOut": False,
+            "stdout": stdout,
+            "stderr": stderr,
+            "returnCode": int(process.returncode or 0),
+            "timeoutContainmentMode": "host-level",
+            "processTerminationScope": "process-group",
+            "terminationReason": "completed",
+        }
+    except subprocess.TimeoutExpired as timeout_exc:
+        stdout = timeout_exc.stdout or ""
+        stderr = timeout_exc.stderr or ""
+        termination_scope = "process-group"
+        try:
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        except Exception:
+            termination_scope = "process"
+            process.kill()
+        process.wait(timeout=5)
+        return {
+            "timedOut": True,
+            "stdout": stdout,
+            "stderr": stderr,
+            "returnCode": int(process.returncode or -9),
+            "timeoutContainmentMode": "host-level",
+            "processTerminationScope": termination_scope,
+            "terminationReason": "hard-timeout",
+        }
+
+
 def _proposal_task_id(task_id: str, candidate_id: str) -> str:
     suffix = re.sub(r"[^a-zA-Z0-9-]+", "-", candidate_id).strip("-").lower() or "candidate"
     return f"{task_id}-{suffix}-follow-up"
@@ -327,6 +398,9 @@ def append_cpu_subset_evidence(
     current_factors = _factor_snapshot_from_env(train_env)
     parent_factors = _factor_snapshot_from_record(parent_record) if parent_record else {}
     ranking_table = _build_ranking_table(cpu_records, experiment_id, val_bpb)
+    effective_runtime_cap_sec = _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0)
+    if effective_runtime_cap_sec <= 0:
+        raise ValueError("MAX_WALLCLOCK_SECONDS must be present and greater than zero.")
     candidate_rank = int(ranking_table["candidateRank"])
     follow_up_lane = "cheap-screen" if candidate_rank == 1 else "cpu-subset"
     promotion_decision = "propose-follow-up" if candidate_rank == 1 else "hold"
@@ -355,15 +429,26 @@ def append_cpu_subset_evidence(
             "numLayers": _int_from_env(train_env, "NUM_LAYERS", 0),
         },
         "budgetCaps": {
-            "maxRuntimeSeconds": _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0),
+            "maxRuntimeSeconds": effective_runtime_cap_sec,
             "hostClass": "cpu-smoke",
         },
         "runtimeValidationCaps": {
-            "maxRuntimeSeconds": _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0),
+            "maxRuntimeSeconds": effective_runtime_cap_sec,
             "iterations": _int_from_env(train_env, "ITERATIONS", 0),
             "valTokenLimit": _int_from_env(train_env, "VAL_TOKEN_LIMIT", 0),
             "valBatchSize": _int_from_env(train_env, "VAL_BATCH_SIZE", 0),
             "validationClass": "cpu-subset",
+            "capPolicySource": CPU_SUBSET_CAP_POLICY_SOURCE,
+        },
+        "effectiveRuntimeCapSec": effective_runtime_cap_sec,
+        "capPolicySource": CPU_SUBSET_CAP_POLICY_SOURCE,
+        "timeoutContainmentMode": "host-level",
+        "processTerminationScope": "process-group",
+        "capOverrideActor": "none",
+        "enforcementProof": {
+            "runnerHardCapSeconds": CPU_SUBSET_MAX_WALLCLOCK_SECONDS,
+            "envMaxWallclockSeconds": effective_runtime_cap_sec,
+            "source": CPU_SUBSET_CAP_POLICY_SOURCE,
         },
         "resultClass": "cpu-subset",
         "verificationClass": "cpu-subset",
@@ -401,7 +486,7 @@ def append_cpu_subset_evidence(
                 f"proposal lane is {follow_up_lane}."
             ),
             "runtimeValidationCaps": {
-                "maxRuntimeSeconds": _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0),
+                "maxRuntimeSeconds": effective_runtime_cap_sec,
                 "valTokenLimit": _int_from_env(train_env, "VAL_TOKEN_LIMIT", 0),
             },
         },
@@ -459,36 +544,62 @@ def run_cpu_subset_experiment(
     run_root: Path,
 ) -> dict[str, Any]:
     candidate_id = str(candidate.get("candidateId") or f"cpu-subset-{utc_now_iso()}")
-    run_id = f"cpu_subset_{candidate_id}".replace("/", "_").replace(":", "_")
-    run_dir = run_root / run_id
+    run_id = f"cpu_subset_{sanitize_candidate_id(candidate_id)}"
+    run_dir = _resolve_run_directory(run_root, run_id)
     run_dir.mkdir(parents=True, exist_ok=True)
 
     train_env = build_cpu_subset_env(candidate, run_id)
+    effective_runtime_cap_sec = _int_from_env(train_env, "MAX_WALLCLOCK_SECONDS", 0)
+    if effective_runtime_cap_sec <= 0:
+        raise ValueError("Runner hard timeout must be configured as a positive integer.")
     command = [sys.executable, str(REPO_ROOT / "train_gpt.py")]
     env = os.environ.copy()
     env.update(train_env)
-    completed = subprocess.run(
-        command,
-        cwd=run_dir,
+    completed = _run_with_hard_timeout(
+        command=command,
+        run_dir=run_dir,
         env=env,
-        capture_output=True,
-        text=True,
-        check=False,
+        timeout_seconds=effective_runtime_cap_sec,
     )
-    (run_dir / "stdout.txt").write_text(completed.stdout)
-    (run_dir / "stderr.txt").write_text(completed.stderr)
-    if completed.returncode != 0:
+    (run_dir / "stdout.txt").write_text(str(completed.get("stdout", "")))
+    (run_dir / "stderr.txt").write_text(str(completed.get("stderr", "")))
+    if bool(completed.get("timedOut")):
         result = {
-            "status": "error",
-            "reasonCode": "cpu-subset-run-failed",
-            "returnCode": completed.returncode,
-            "stdoutPath": str((run_dir / "stdout.txt").relative_to(REPO_ROOT)),
-            "stderrPath": str((run_dir / "stderr.txt").relative_to(REPO_ROOT)),
+            "status": "timeout_enforced",
+            "reasonCode": "cpu-subset-timeout-enforced",
+            "returnCode": int(completed.get("returnCode", -9)),
+            "stdoutPath": artifact_path(run_dir / "stdout.txt"),
+            "stderrPath": artifact_path(run_dir / "stderr.txt"),
+            "effectiveRuntimeCapSec": effective_runtime_cap_sec,
+            "capPolicySource": CPU_SUBSET_CAP_POLICY_SOURCE,
+            "timeoutContainmentMode": str(completed.get("timeoutContainmentMode")),
+            "processTerminationScope": str(completed.get("processTerminationScope")),
+            "capOverrideActor": "none",
+            "enforcementProof": {
+                "runnerHardCapSeconds": CPU_SUBSET_MAX_WALLCLOCK_SECONDS,
+                "effectiveRuntimeCapSec": effective_runtime_cap_sec,
+                "terminationReason": str(completed.get("terminationReason")),
+            },
+            "terminationReason": str(completed.get("terminationReason")),
+            "lifecycleEvent": "hard_timeout_enforced",
         }
         write_json(run_dir / "result.json", result)
         return result
 
-    val_loss, val_bpb = parse_final_val_bpb(completed.stdout)
+    if int(completed.get("returnCode", 1)) != 0:
+        result = {
+            "status": "error",
+            "reasonCode": "cpu-subset-run-failed",
+            "returnCode": int(completed.get("returnCode", 1)),
+            "stdoutPath": artifact_path(run_dir / "stdout.txt"),
+            "stderrPath": artifact_path(run_dir / "stderr.txt"),
+            "effectiveRuntimeCapSec": effective_runtime_cap_sec,
+            "capPolicySource": CPU_SUBSET_CAP_POLICY_SOURCE,
+        }
+        write_json(run_dir / "result.json", result)
+        return result
+
+    val_loss, val_bpb = parse_final_val_bpb(str(completed.get("stdout", "")))
     completed_at = utc_now_iso()
     record = append_cpu_subset_evidence(
         candidate=candidate,
