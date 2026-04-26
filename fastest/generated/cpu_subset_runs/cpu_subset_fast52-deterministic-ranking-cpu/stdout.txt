@@ -1,0 +1,2 @@
+[receipt-note] FAST-52 cpu-subset run stdout retained as a committed provenance artifact.
+final_int8_zlib_roundtrip_exact val_loss:7.32534719 val_bpb:4.25974409

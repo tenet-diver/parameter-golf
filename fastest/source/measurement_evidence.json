@@ -5011,7 +5011,8 @@
           "seedVariancePassed": null,
           "runnerVerification": null
         }
-      }
+      },
+      "artifactReceiptManifestPath": "fastest/source/artifact_receipts/fast52_cpu_subset_artifact_receipts.json"
     }
   ]
 }

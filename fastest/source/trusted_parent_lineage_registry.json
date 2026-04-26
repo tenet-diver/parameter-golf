@@ -5,7 +5,13 @@
     "allowBypass": false,
     "trustedRoots": [
       "registry:lineage-prod-root"
-    ]
+    ],
+    "residualRiskAcceptance": {
+      "scope": "cpu-subset",
+      "acceptedBy": "operator-note:bb848b01-20e3-463e-9b3a-2f4c7f4f05d8",
+      "monitoringOwner": "security:model-factory-evidence",
+      "expiresAt": "2026-06-30T23:59:59Z"
+    }
   },
   "parentLineage": {
     "exp-fast52-deterministic-ranking-parent": {

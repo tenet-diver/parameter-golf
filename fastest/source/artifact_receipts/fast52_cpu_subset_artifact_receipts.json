@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "taskId": "FAST-52",
+  "experimentId": "exp-fast52-deterministic-ranking-cpu",
+  "attestationRef": "attestation-7c41b6ea242c6f53",
+  "resultClass": "cpu-subset",
+  "verificationClass": "cpu-subset",
+  "artifactReceipts": [
+    {
+      "artifactPath": "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/stdout.txt",
+      "sha256": "9ec8391db714eefcc7f3c22b62665d59f8334887be6386edbc4d90282b4e6c71"
+    },
+    {
+      "artifactPath": "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/stderr.txt",
+      "sha256": "fe01fb90aa7a379c1edc5b42d96064c56c252c47d0ab568ff2d98db395499867"
+    },
+    {
+      "artifactPath": "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/result.json",
+      "sha256": "1fa2bf349c27bd4c70c951ac7f921470cbf5a53669eb68ccad48eefca8e55939"
+    },
+    {
+      "artifactPath": "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/final_model.int8.ptz",
+      "sha256": "ee07d835ca914b70260aba269c9add9f9530728397afdc6fcc93dd4858a8cd26"
+    }
+  ]
+}

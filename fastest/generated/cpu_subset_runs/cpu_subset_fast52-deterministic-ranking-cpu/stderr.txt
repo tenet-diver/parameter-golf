@@ -1,0 +1,1 @@
+[receipt-note] FAST-52 cpu-subset run stderr retained as a committed provenance artifact.

@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "reasonCode": "cpu-subset-success",
+  "integrityStatus": "passed",
+  "candidateId": "exp-fast52-deterministic-ranking-cpu",
+  "observedMetric": {
+    "name": "val_bpb",
+    "value": 4.25974409,
+    "valLoss": 7.32534719,
+    "direction": "lower_is_better"
+  },
+  "resultClass": "cpu-subset"
+}
