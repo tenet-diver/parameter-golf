@@ -355,6 +355,12 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                                 "expiresAt": "2099-01-01T00:00:00Z",
                                 "monitoringOwner": "model-factory-oncall",
                             },
+                            "authorityBinding": {
+                                "authorityBoundary": "registry://lineage-prod",
+                                "registryRef": "trusted-parent-lineage-registry",
+                                "validatedAt": "2026-04-26T00:00:00Z",
+                                "trustedRoots": ["registry:lineage-prod-root"],
+                            },
                         },
                         "parentLineage": {
                             "exp-parent-cpu": {
@@ -415,6 +421,12 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                                 "acceptedBy": "operator",
                                 "expiresAt": "2099-01-01T00:00:00Z",
                                 "monitoringOwner": "model-factory-oncall",
+                            },
+                            "authorityBinding": {
+                                "authorityBoundary": "registry://attestation-prod",
+                                "registryRef": "trusted-runner-attestation-registry",
+                                "validatedAt": "2026-04-26T00:00:00Z",
+                                "trustedRoots": ["registry:attestation-prod-root"],
                             },
                         },
                         "runnerAttestations": {
@@ -694,6 +706,56 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             self.assertEqual(
                 resolution["reasonCode"],
                 "attestation-receipt-residual-risk-acceptance-missing",
+            )
+
+    def test_fails_closed_when_local_receipt_has_no_runtime_authority_binding(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            trusted_attestation_registry_path = root / "trusted_runner_attestation_registry.json"
+            attestation_ref = "attestation-fast52-local-no-authority-binding"
+            trusted_attestation_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                            "residualRiskAcceptance": {
+                                "scope": "cpu-subset",
+                                "acceptedBy": "operator",
+                                "expiresAt": "2099-01-01T00:00:00Z",
+                                "monitoringOwner": "model-factory-oncall",
+                            },
+                        },
+                        "runnerAttestations": {
+                            attestation_ref: {
+                                "runId": "cpu_subset_child",
+                                "attestationRef": attestation_ref,
+                                "source": "cpu-subset-runner",
+                                "provenanceVerified": True,
+                                "resultClass": "cpu-subset",
+                                "verificationClass": "cpu-subset",
+                                "receipt": trust_receipt(
+                                    attestation_ref,
+                                    "registry:attestation-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+
+            resolution = cpu_subset_runner._resolve_runner_attestation(
+                attestation_ref=attestation_ref,
+                run_id="cpu_subset_child",
+                registry_path=trusted_attestation_registry_path,
+            )
+
+            self.assertEqual(resolution["status"], "unresolved")
+            self.assertEqual(
+                resolution["reasonCode"],
+                "attestation-receipt-authority-binding-missing",
             )
 
     def test_fails_closed_when_candidate_declares_untrusted_verification_or_lineage(self) -> None:

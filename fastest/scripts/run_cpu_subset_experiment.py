@@ -599,6 +599,38 @@ def _trust_receipt_error(
             return "receipt-residual-risk-acceptance-expiry-invalid"
         if expires_at.astimezone(timezone.utc) <= datetime.now(timezone.utc):
             return "receipt-residual-risk-acceptance-expired"
+        authority_binding = trust_root_policy.get("authorityBinding")
+        if not isinstance(authority_binding, dict):
+            return "receipt-authority-binding-missing"
+        authority_boundary = authority_binding.get("authorityBoundary")
+        if not isinstance(authority_boundary, str) or not authority_boundary:
+            return "receipt-authority-binding-boundary-invalid"
+        if authority_boundary.startswith("local-"):
+            return "receipt-authority-binding-boundary-untrusted"
+        registry_ref = authority_binding.get("registryRef")
+        if not isinstance(registry_ref, str) or not registry_ref:
+            return "receipt-authority-binding-registry-ref-invalid"
+        validated_at_raw = authority_binding.get("validatedAt")
+        if not isinstance(validated_at_raw, str) or not validated_at_raw:
+            return "receipt-authority-binding-validated-at-invalid"
+        validated_at_normalized = validated_at_raw.replace("Z", "+00:00")
+        try:
+            validated_at = datetime.fromisoformat(validated_at_normalized)
+        except ValueError:
+            return "receipt-authority-binding-validated-at-invalid"
+        if validated_at.tzinfo is None:
+            return "receipt-authority-binding-validated-at-invalid"
+        if validated_at.astimezone(timezone.utc) > datetime.now(timezone.utc):
+            return "receipt-authority-binding-validated-at-invalid"
+        bound_trusted_roots = authority_binding.get("trustedRoots")
+        if (
+            not isinstance(bound_trusted_roots, list)
+            or not bound_trusted_roots
+            or any(not isinstance(root, str) or not root for root in bound_trusted_roots)
+        ):
+            return "receipt-authority-binding-trusted-roots-invalid"
+        if trusted_root not in set(bound_trusted_roots):
+            return "receipt-authority-binding-trusted-root-mismatch"
         return None
 
     receipt = entry.get("receipt")

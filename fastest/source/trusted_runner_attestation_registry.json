@@ -5,7 +5,15 @@
     "allowBypass": false,
     "trustedRoots": [
       "registry:attestation-prod-root"
-    ]
+    ],
+    "authorityBinding": {
+      "authorityBoundary": "registry://attestation-prod",
+      "registryRef": "trusted-runner-attestation-registry",
+      "validatedAt": "2026-04-26T00:00:00Z",
+      "trustedRoots": [
+        "registry:attestation-prod-root"
+      ]
+    }
   },
   "runnerAttestations": {}
 }

@@ -11,6 +11,14 @@
       "acceptedBy": "fastest-task-store://parameter-golf/tasks/FAST-52/notes/bb848b01-20e3-463e-92af-77d72e4f775c",
       "monitoringOwner": "meta-supervisor",
       "expiresAt": "2026-05-10T00:00:00Z"
+    },
+    "authorityBinding": {
+      "authorityBoundary": "registry://lineage-prod",
+      "registryRef": "trusted-parent-lineage-registry",
+      "validatedAt": "2026-04-26T00:00:00Z",
+      "trustedRoots": [
+        "registry:lineage-prod-root"
+      ]
     }
   },
   "parentLineage": {
