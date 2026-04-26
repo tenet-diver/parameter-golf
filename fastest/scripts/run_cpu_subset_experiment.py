@@ -39,6 +39,7 @@ DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH = (
 )
 TRUST_RECEIPT_SCHEMA = "parameter-golf-trust-receipt/v1"
 TRUST_RECEIPT_ISSUER = "parameter-golf-model-factory-trust-authority"
+TRUST_RECEIPT_SIGNATURE_PREFIX = "local-signed-bundle:"
 FINAL_BPB_RE = re.compile(
     r"final_int8_zlib_roundtrip_exact\s+val_loss:(?P<loss>[0-9.]+)\s+val_bpb:(?P<bpb>[0-9.]+)"
 )
@@ -580,8 +581,11 @@ def _trust_receipt_error(
     if receipt.get("subject") != expected_subject:
         return "receipt-subject-mismatch"
     signature = receipt.get("signature")
-    if not isinstance(signature, str) or not signature.startswith("local-signed-bundle:"):
+    if not isinstance(signature, str) or not signature.startswith(TRUST_RECEIPT_SIGNATURE_PREFIX):
         return "receipt-signature-invalid"
+    signature_subject = signature[len(TRUST_RECEIPT_SIGNATURE_PREFIX) :]
+    if signature_subject != expected_subject:
+        return "receipt-signature-subject-mismatch"
     trusted_root = receipt.get("trustedRoot")
     if not isinstance(trusted_root, str) or not trusted_root:
         return "receipt-trusted-root-missing"
