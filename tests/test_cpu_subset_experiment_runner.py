@@ -16,6 +16,16 @@ from fastest.scripts.run_cpu_subset_experiment import (
 )
 
 
+def trust_receipt(subject: str, trusted_root: str) -> dict[str, str]:
+    return {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": subject,
+        "trustedRoot": trusted_root,
+        "signature": f"local-signed-bundle:{subject}",
+    }
+
+
 class CpuSubsetExperimentRunnerTest(unittest.TestCase):
     def test_parses_final_roundtrip_metric_from_train_output(self) -> None:
         val_loss, val_bpb = parse_final_val_bpb(
@@ -334,9 +344,18 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:lineage-prod-root"],
+                        },
                         "parentLineage": {
                             "exp-parent-cpu": {
                                 "parentFrontierId": "deepseek-v4-muon-tuning",
+                                "receipt": trust_receipt(
+                                    "exp-parent-cpu",
+                                    "registry:lineage-prod-root",
+                                ),
                             }
                         },
                     }
@@ -379,12 +398,21 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                        },
                         "runnerAttestations": {
                             runner_verification["attestationRef"]: {
                                 "runId": "cpu_subset_child",
                                 "attestationRef": runner_verification["attestationRef"],
                                 "source": "cpu-subset-runner",
                                 "provenanceVerified": True,
+                                "receipt": trust_receipt(
+                                    runner_verification["attestationRef"],
+                                    "registry:attestation-prod-root",
+                                ),
                             }
                         },
                     }
@@ -558,9 +586,18 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:lineage-prod-root"],
+                        },
                         "parentLineage": {
                             "exp-parent-cpu": {
                                 "parentFrontierId": "deepseek-v4-deterministic-ranking",
+                                "receipt": trust_receipt(
+                                    "exp-parent-cpu",
+                                    "registry:lineage-prod-root",
+                                ),
                             }
                         },
                     }
@@ -651,9 +688,18 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:lineage-prod-root"],
+                        },
                         "parentLineage": {
                             "exp-parent-cpu": {
                                 "parentFrontierId": "deepseek-v4-deterministic-ranking",
+                                "receipt": trust_receipt(
+                                    "exp-parent-cpu",
+                                    "registry:lineage-prod-root",
+                                ),
                             }
                         },
                     }
@@ -683,6 +729,11 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 json.dumps(
                     {
                         "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                        },
                         "runnerAttestations": {
                             "cpu_subset_child": {
                                 "runId": "cpu_subset_child",
@@ -724,6 +775,149 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             self.assertEqual(record["verificationStatus"], "verification_failed_trust")
             self.assertIsNone(record["followUpTaskProposal"])
             self.assertEqual(record["attestationResolution"]["reasonCode"], "attestation-unresolved")
+
+    def test_fails_closed_when_attestation_trust_root_policy_allows_bypass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            trusted_registry_path = root / "trusted_parent_lineage_registry.json"
+            trusted_attestation_registry_path = root / "trusted_runner_attestation_registry.json"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "kind": "parameter-golf-measurement-evidence",
+                        "updatedAt": "2026-04-25T00:00:00Z",
+                        "summary": {
+                            "artifactIds": ["evidence-exp-parent-cpu"],
+                            "trustedControlState": "established",
+                            "totalExperiments": 1,
+                            "acceptedExperiments": 1,
+                            "mostRecentEvidenceId": "evidence-exp-parent-cpu",
+                        },
+                        "recentCompletedExperiments": ["exp-parent-cpu"],
+                        "experimentRecords": [
+                            {
+                                "experimentId": "exp-parent-cpu",
+                                "evidenceId": "evidence-exp-parent-cpu",
+                                "lane": "cpu-subset",
+                                "status": "accepted",
+                                "objectiveMetricName": "val_bpb",
+                                "objectiveValue": 4.4,
+                            }
+                        ],
+                    }
+                )
+            )
+            trusted_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:lineage-prod-root"],
+                        },
+                        "parentLineage": {
+                            "exp-parent-cpu": {
+                                "parentFrontierId": "deepseek-v4-deterministic-ranking",
+                                "receipt": trust_receipt(
+                                    "exp-parent-cpu",
+                                    "registry:lineage-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+            run_dir = root / "fastest/generated/cpu_subset_runs/cpu_subset_child"
+            run_dir.mkdir(parents=True)
+            (run_dir / "deterministic_rerun.json").write_text(
+                json.dumps(
+                    {
+                        "source": "cpu-subset-runner",
+                        "status": "passed",
+                        "evidenceRef": "deterministic-rerun-cpu_subset_child",
+                    }
+                )
+            )
+            (run_dir / "seed_variance.json").write_text(
+                json.dumps(
+                    {
+                        "source": "cpu-subset-runner",
+                        "status": "passed",
+                        "evidenceRef": "seed-variance-cpu_subset_child",
+                    }
+                )
+            )
+            train_env = build_cpu_subset_env({"seed": 7}, "cpu_subset_child")
+            runner_verification = cpu_subset_runner._mint_runner_verification(
+                run_id="cpu_subset_child",
+                completed_at="2026-04-26T01:00:00Z",
+                val_loss=4.0,
+                val_bpb=4.1,
+                command=["python", "train_gpt.py"],
+                run_dir=run_dir,
+                train_env=train_env,
+            )
+            trusted_attestation_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": True,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                        },
+                        "runnerAttestations": {
+                            runner_verification["attestationRef"]: {
+                                "runId": "cpu_subset_child",
+                                "attestationRef": runner_verification["attestationRef"],
+                                "source": "cpu-subset-runner",
+                                "provenanceVerified": True,
+                                "receipt": trust_receipt(
+                                    runner_verification["attestationRef"],
+                                    "registry:attestation-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+
+            with patch.object(
+                cpu_subset_runner,
+                "DEFAULT_TRUSTED_PARENT_REGISTRY_PATH",
+                trusted_registry_path,
+            ), patch.object(
+                cpu_subset_runner,
+                "DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH",
+                trusted_attestation_registry_path,
+            ):
+                record = append_cpu_subset_evidence(
+                    candidate={
+                        "taskId": "FAST-52",
+                        "candidateId": "trust-root-bypass-attempt",
+                        "parentExperimentId": "exp-parent-cpu",
+                        "seed": 7,
+                    },
+                    run_id="cpu_subset_child",
+                    completed_at="2026-04-26T01:00:00Z",
+                    val_loss=4.0,
+                    val_bpb=4.1,
+                    command=["python", "train_gpt.py"],
+                    run_dir=run_dir,
+                    train_env=train_env,
+                    evidence_path=evidence_path,
+                )
+
+            self.assertEqual(record["modelFactoryDecision"]["promotionDecision"], "hold")
+            self.assertEqual(record["verificationStatus"], "verification_failed_trust")
+            self.assertIsNone(record["followUpTaskProposal"])
+            self.assertEqual(
+                record["attestationResolution"]["reasonCode"],
+                "trusted-attestation-registry-invalid-trust-root-policy-bypass-disallowed",
+            )
 
     def test_excludes_sensitive_env_keys_from_model_factor_serialization(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

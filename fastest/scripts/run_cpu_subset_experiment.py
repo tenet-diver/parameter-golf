@@ -37,6 +37,8 @@ DEFAULT_TRUSTED_PARENT_REGISTRY_PATH = REPO_ROOT / "fastest/source/trusted_paren
 DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH = (
     REPO_ROOT / "fastest/source/trusted_runner_attestation_registry.json"
 )
+TRUST_RECEIPT_SCHEMA = "parameter-golf-trust-receipt/v1"
+TRUST_RECEIPT_ISSUER = "parameter-golf-model-factory-trust-authority"
 FINAL_BPB_RE = re.compile(
     r"final_int8_zlib_roundtrip_exact\s+val_loss:(?P<loss>[0-9.]+)\s+val_bpb:(?P<bpb>[0-9.]+)"
 )
@@ -546,16 +548,55 @@ def _proposal_task_id(task_id: str, candidate_id: str) -> str:
     return f"{task_id}-{suffix}-follow-up"
 
 
-def _load_trusted_parent_registry(registry_path: Path) -> dict[str, Any] | None:
+def _trusted_registry_policy_error(payload: dict[str, Any]) -> str | None:
+    trust_root_policy = payload.get("trustRootPolicy")
+    if not isinstance(trust_root_policy, dict):
+        return "trust-root-policy-missing"
+    environment = trust_root_policy.get("environment")
+    if environment != "production":
+        return "trust-root-policy-non-production"
+    if trust_root_policy.get("allowBypass") is not False:
+        return "trust-root-policy-bypass-disallowed"
+    trusted_roots = trust_root_policy.get("trustedRoots")
+    if not isinstance(trusted_roots, list) or not trusted_roots:
+        return "trust-root-policy-missing-trusted-roots"
+    if any(not isinstance(root, str) or not root for root in trusted_roots):
+        return "trust-root-policy-invalid-trusted-roots"
+    return None
+
+
+def _trust_receipt_error(entry: dict[str, Any], expected_subject: str) -> str | None:
+    receipt = entry.get("receipt")
+    if not isinstance(receipt, dict):
+        return "receipt-missing"
+    if receipt.get("schema") != TRUST_RECEIPT_SCHEMA:
+        return "receipt-schema-invalid"
+    if receipt.get("issuedBy") != TRUST_RECEIPT_ISSUER:
+        return "receipt-issuer-untrusted"
+    if receipt.get("subject") != expected_subject:
+        return "receipt-subject-mismatch"
+    signature = receipt.get("signature")
+    if not isinstance(signature, str) or not signature.startswith("local-signed-bundle:"):
+        return "receipt-signature-invalid"
+    trusted_root = receipt.get("trustedRoot")
+    if not isinstance(trusted_root, str) or not trusted_root:
+        return "receipt-trusted-root-missing"
+    return None
+
+
+def _load_trusted_parent_registry(registry_path: Path) -> tuple[dict[str, Any] | None, str | None]:
     if not registry_path.exists():
-        return None
+        return None, "registry-unavailable"
     try:
         payload = json.loads(registry_path.read_text())
     except (OSError, ValueError):
-        return None
+        return None, "registry-unavailable"
     if not isinstance(payload, dict):
-        return None
-    return payload
+        return None, "registry-invalid"
+    trust_root_policy_error = _trusted_registry_policy_error(payload)
+    if trust_root_policy_error is not None:
+        return None, trust_root_policy_error
+    return payload, None
 
 
 def _resolve_runner_attestation(
@@ -570,11 +611,16 @@ def _resolve_runner_attestation(
             "reasonCode": "attestation-missing",
             "attestationRegistryRef": None,
         }
-    registry = _load_trusted_parent_registry(registry_path)
+    registry, registry_error = _load_trusted_parent_registry(registry_path)
     if registry is None:
+        reason_code = "trusted-attestation-registry-unavailable"
+        if registry_error == "registry-invalid":
+            reason_code = "trusted-attestation-registry-invalid"
+        elif registry_error and registry_error.startswith("trust-root-policy-"):
+            reason_code = f"trusted-attestation-registry-invalid-{registry_error}"
         return {
             "status": "unresolved",
-            "reasonCode": "trusted-attestation-registry-unavailable",
+            "reasonCode": reason_code,
             "attestationRegistryRef": None,
         }
     runner_attestations = registry.get("runnerAttestations")
@@ -624,6 +670,13 @@ def _resolve_runner_attestation(
             "reasonCode": "attestation-provenance-unverified",
             "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
         }
+    receipt_error = _trust_receipt_error(entry, attestation_ref)
+    if receipt_error is not None:
+        return {
+            "status": "unresolved",
+            "reasonCode": f"attestation-{receipt_error}",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
     return {
         "status": "resolved",
         "reasonCode": "attestation-resolved",
@@ -643,11 +696,16 @@ def _resolve_parent_lineage(
             "lineageResolutionRef": None,
             "parentFrontierId": None,
         }
-    registry = _load_trusted_parent_registry(registry_path)
+    registry, registry_error = _load_trusted_parent_registry(registry_path)
     if registry is None:
+        reason_code = "trusted-registry-unavailable"
+        if registry_error == "registry-invalid":
+            reason_code = "trusted-registry-invalid"
+        elif registry_error and registry_error.startswith("trust-root-policy-"):
+            reason_code = f"trusted-registry-invalid-{registry_error}"
         return {
             "status": "unresolved",
-            "reasonCode": "trusted-registry-unavailable",
+            "reasonCode": reason_code,
             "lineageResolutionRef": None,
             "parentFrontierId": None,
         }
@@ -672,6 +730,14 @@ def _resolve_parent_lineage(
         return {
             "status": "unresolved",
             "reasonCode": "lineage-missing-parent-frontier-id",
+            "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
+            "parentFrontierId": None,
+        }
+    receipt_error = _trust_receipt_error(entry, parent_experiment_id)
+    if receipt_error is not None:
+        return {
+            "status": "unresolved",
+            "reasonCode": f"lineage-{receipt_error}",
             "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
             "parentFrontierId": None,
         }
