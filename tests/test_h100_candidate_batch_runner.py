@@ -2,6 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from fastest.scripts import run_h100_candidate_batch as batch_runner
 from fastest.scripts.run_h100_candidate_batch import (
     apply_smoke_overrides,
     build_analysis_payload,
@@ -108,6 +109,7 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
         self.assertNotIn("jepa_style_encoder_decoder_proxy", ids)
         self.assertFalse(any("proxy" in family for family in families))
         self.assertTrue(all(candidate.get("implementation") for candidate in candidates))
+        self.assertFalse(hasattr(batch_runner, "BUILTIN_CANDIDATES"))
 
     def test_parse_args_exposes_batch_tuning_options(self) -> None:
         args = parse_args(
