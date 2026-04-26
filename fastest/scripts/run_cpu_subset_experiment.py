@@ -768,6 +768,13 @@ def _resolve_parent_lineage(
             "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
             "parentFrontierId": None,
         }
+    if not bool(entry.get("provenanceVerified")):
+        return {
+            "status": "unresolved",
+            "reasonCode": "lineage-provenance-unverified",
+            "lineageResolutionRef": f"trusted-parent-lineage:{parent_experiment_id}",
+            "parentFrontierId": None,
+        }
     trusted_roots = _trusted_roots_from_registry(registry)
     receipt_error = _trust_receipt_error(entry, parent_experiment_id, trusted_roots)
     if receipt_error is not None:

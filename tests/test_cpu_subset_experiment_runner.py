@@ -353,6 +353,7 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                         "parentLineage": {
                             "exp-parent-cpu": {
                                 "parentFrontierId": "deepseek-v4-muon-tuning",
+                                "provenanceVerified": True,
                                 "receipt": trust_receipt(
                                     "exp-parent-cpu",
                                     "registry:lineage-prod-root",
@@ -1114,6 +1115,7 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                         "parentLineage": {
                             "exp-parent-cpu": {
                                 "parentFrontierId": "deepseek-v4-deterministic-ranking",
+                                "provenanceVerified": True,
                                 "receipt": trust_receipt(
                                     "exp-parent-cpu",
                                     "registry:lineage-rogue-root",
@@ -1258,6 +1260,7 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                         "parentLineage": {
                             "exp-parent-cpu": {
                                 "parentFrontierId": "deepseek-v4-deterministic-ranking",
+                                "provenanceVerified": True,
                                 "receipt": trust_receipt(
                                     "exp-parent-cpu",
                                     "registry:lineage-prod-root",
@@ -1357,6 +1360,42 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 record["lineageResolution"]["reasonCode"],
                 "lineage-receipt-signature-subject-mismatch",
             )
+
+    def test_fails_closed_when_parent_lineage_entry_provenance_is_unverified(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            trusted_registry_path = root / "trusted_parent_lineage_registry.json"
+            trusted_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:lineage-prod-root"],
+                        },
+                        "parentLineage": {
+                            "exp-parent-cpu": {
+                                "parentFrontierId": "deepseek-v4-deterministic-ranking",
+                                "provenanceVerified": False,
+                                "receipt": trust_receipt(
+                                    "exp-parent-cpu",
+                                    "registry:lineage-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+
+            lineage_resolution = cpu_subset_runner._resolve_parent_lineage(
+                parent_experiment_id="exp-parent-cpu",
+                registry_path=trusted_registry_path,
+            )
+
+            self.assertEqual(lineage_resolution["status"], "unresolved")
+            self.assertEqual(lineage_resolution["reasonCode"], "lineage-provenance-unverified")
+            self.assertIsNone(lineage_resolution["parentFrontierId"])
 
     def test_excludes_sensitive_env_keys_from_model_factor_serialization(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
