@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import signal
@@ -106,12 +107,31 @@ CPU_SUBSET_MUON_ENV_KEYS = frozenset(
         "CONTROL_TENSOR_NAME_PATTERNS",
     }
 )
+CPU_SUBSET_SWIGLU_ENV_KEYS = frozenset(
+    {
+        "ACTIVATION_MODE",
+        "SWIGLU_CLAMP_ENABLED",
+        "SWIGLU_CLAMP_MODE",
+        "SWIGLU_LINEAR_CLAMP_MIN",
+        "SWIGLU_LINEAR_CLAMP_MAX",
+        "SWIGLU_GATE_CLAMP_MAX",
+    }
+)
+ALLOWED_ACTIVATION_MODES = frozenset({"relu2", "swiglu"})
+ALLOWED_SWIGLU_CLAMP_MODES = frozenset({"disabled", "deepseek_v4"})
+DEFAULT_SWIGLU_LINEAR_CLAMP_MIN = -10.0
+DEFAULT_SWIGLU_LINEAR_CLAMP_MAX = 10.0
+DEFAULT_SWIGLU_GATE_CLAMP_MAX = 10.0
 
 CPU_SUBSET_ENV_OVERRIDE_ALLOWLIST = (
-    frozenset(DEFAULT_CPU_ENV.keys()) | frozenset({"SEED"}) | CPU_SUBSET_MUON_ENV_KEYS
+    frozenset(DEFAULT_CPU_ENV.keys())
+    | frozenset({"SEED"})
+    | CPU_SUBSET_MUON_ENV_KEYS
+    | CPU_SUBSET_SWIGLU_ENV_KEYS
 )
 CPU_SUBSET_SERIALIZED_FACTOR_ALLOWLIST = frozenset(
     {
+        "ACTIVATION_MODE",
         "ATTN_NORM_EPS",
         "ATTN_NORM_MODE",
         "ARTIFACT_BUDGET_STRICT",
@@ -129,6 +149,11 @@ CPU_SUBSET_SERIALIZED_FACTOR_ALLOWLIST = frozenset(
         "NUM_KV_HEADS",
         "NUM_LAYERS",
         "SEED",
+        "SWIGLU_CLAMP_ENABLED",
+        "SWIGLU_CLAMP_MODE",
+        "SWIGLU_GATE_CLAMP_MAX",
+        "SWIGLU_LINEAR_CLAMP_MAX",
+        "SWIGLU_LINEAR_CLAMP_MIN",
         "TRAIN_BATCH_TOKENS",
         "TRAIN_LOG_EVERY",
         "TRAIN_SEQ_LEN",
@@ -181,7 +206,121 @@ def build_cpu_subset_env(candidate: dict[str, Any], run_id: str) -> dict[str, st
     env["MAX_WALLCLOCK_SECONDS"] = str(CPU_SUBSET_MAX_WALLCLOCK_SECONDS)
     env["RUN_ID"] = run_id
     env["SEED"] = str(candidate.get("seed", env.get("SEED", "1337")))
+    preflight = _preflight_validate_candidate(candidate)
+    if preflight["errors"]:
+        raise ValueError("Invalid candidate config cannot be materialized into environment")
+    resolved = preflight["resolved"]
+    env["ACTIVATION_MODE"] = str(resolved["activationMode"])
+    env["SWIGLU_CLAMP_ENABLED"] = "1" if bool(resolved["swigluClampEnabled"]) else "0"
+    env["SWIGLU_CLAMP_MODE"] = str(resolved["swigluClampMode"])
+    env["SWIGLU_LINEAR_CLAMP_MIN"] = str(resolved["swigluLinearClampMin"])
+    env["SWIGLU_LINEAR_CLAMP_MAX"] = str(resolved["swigluLinearClampMax"])
+    env["SWIGLU_GATE_CLAMP_MAX"] = str(resolved["swigluGateClampMax"])
     return env
+
+
+def _coerce_bool(value: Any) -> bool | None:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        if value in {0, 0.0}:
+            return False
+        if value in {1, 1.0}:
+            return True
+        return None
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes", "on"}:
+            return True
+        if normalized in {"0", "false", "no", "off"}:
+            return False
+    return None
+
+
+def _candidate_value(candidate: dict[str, Any], top_key: str, env_key: str) -> Any:
+    if top_key in candidate:
+        return candidate[top_key]
+    overrides = candidate.get("env")
+    if isinstance(overrides, dict):
+        return overrides.get(env_key)
+    return None
+
+
+def _coerce_finite_float(value: Any, field_name: str, errors: list[str], default: float) -> float:
+    if value is None:
+        return default
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        errors.append(f"invalid-{field_name}")
+        return default
+    if not math.isfinite(number):
+        errors.append(f"non-finite-{field_name}")
+        return default
+    return number
+
+
+def _preflight_validate_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
+    errors: list[str] = []
+    raw_activation_mode = _candidate_value(candidate, "activationMode", "ACTIVATION_MODE")
+    activation_mode = str(raw_activation_mode or "relu2").strip().lower()
+    if activation_mode not in ALLOWED_ACTIVATION_MODES:
+        errors.append("invalid-activationMode")
+
+    raw_clamp_enabled = _candidate_value(candidate, "swigluClampEnabled", "SWIGLU_CLAMP_ENABLED")
+    clamp_enabled = _coerce_bool(raw_clamp_enabled)
+    if clamp_enabled is None:
+        if raw_clamp_enabled is None:
+            clamp_enabled = False
+        else:
+            errors.append("invalid-swigluClampEnabled")
+            clamp_enabled = False
+
+    raw_clamp_mode = _candidate_value(candidate, "swigluClampMode", "SWIGLU_CLAMP_MODE")
+    if raw_clamp_mode is None:
+        clamp_mode = "deepseek_v4" if clamp_enabled else "disabled"
+    else:
+        clamp_mode = str(raw_clamp_mode).strip().lower()
+    if clamp_mode not in ALLOWED_SWIGLU_CLAMP_MODES:
+        errors.append("invalid-swigluClampMode")
+    if clamp_mode == "disabled":
+        clamp_enabled = False
+
+    linear_clamp_min = _coerce_finite_float(
+        _candidate_value(candidate, "swigluLinearClampMin", "SWIGLU_LINEAR_CLAMP_MIN"),
+        "swigluLinearClampMin",
+        errors,
+        DEFAULT_SWIGLU_LINEAR_CLAMP_MIN,
+    )
+    linear_clamp_max = _coerce_finite_float(
+        _candidate_value(candidate, "swigluLinearClampMax", "SWIGLU_LINEAR_CLAMP_MAX"),
+        "swigluLinearClampMax",
+        errors,
+        DEFAULT_SWIGLU_LINEAR_CLAMP_MAX,
+    )
+    gate_clamp_max = _coerce_finite_float(
+        _candidate_value(candidate, "swigluGateClampMax", "SWIGLU_GATE_CLAMP_MAX"),
+        "swigluGateClampMax",
+        errors,
+        DEFAULT_SWIGLU_GATE_CLAMP_MAX,
+    )
+
+    if linear_clamp_min > linear_clamp_max:
+        errors.append("invalid-swigluLinearClampRange")
+    if gate_clamp_max <= 0:
+        errors.append("invalid-swigluGateClampMax")
+    if clamp_enabled and activation_mode != "swiglu":
+        errors.append("swigluClampRequiresSwiGLU")
+
+    resolved = {
+        "activationMode": activation_mode,
+        "swigluClampEnabled": clamp_enabled,
+        "swigluClampMode": clamp_mode,
+        "swigluLinearClampMin": linear_clamp_min,
+        "swigluLinearClampMax": linear_clamp_max,
+        "swigluGateClampMax": gate_clamp_max,
+    }
+    return {"errors": sorted(set(errors)), "resolved": resolved}
 
 
 def regenerate_views(evidence_path: Path, status_path: Path, state_path: Path) -> None:
@@ -509,6 +648,7 @@ def append_cpu_subset_evidence(
         },
         "resultClass": "cpu-subset",
         "verificationClass": "cpu-subset",
+        "integrityStatus": "passed",
         "classificationReason": (
             "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for "
             "ranking cheap ideas, not leaderboard or benchmark-verified progress."
@@ -602,6 +742,21 @@ def run_cpu_subset_experiment(
     run_root: Path,
 ) -> dict[str, Any]:
     candidate_id = str(candidate.get("candidateId") or f"cpu-subset-{utc_now_iso()}")
+    preflight = _preflight_validate_candidate(candidate)
+    if preflight["errors"]:
+        return {
+            "status": "integrity_error",
+            "reasonCode": "cpu-subset-preflight-validation-failed",
+            "candidateId": candidate_id,
+            "resultClass": "cpu-subset",
+            "verificationClass": "cpu-subset",
+            "integrityStatus": "failed",
+            "validationErrors": preflight["errors"],
+            "validationPolicy": {
+                "activationModeAllowlist": sorted(ALLOWED_ACTIVATION_MODES),
+                "swigluClampModeAllowlist": sorted(ALLOWED_SWIGLU_CLAMP_MODES),
+            },
+        }
     run_id = f"cpu_subset_{sanitize_candidate_id(candidate_id)}"
     run_dir = _resolve_run_directory(run_root, run_id)
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -625,6 +780,7 @@ def run_cpu_subset_experiment(
         result = {
             "status": "timeout_enforced",
             "reasonCode": "cpu-subset-timeout-enforced",
+            "integrityStatus": "failed",
             "returnCode": int(completed.get("returnCode", -9)),
             "stdoutPath": artifact_path(run_dir / "stdout.txt"),
             "stderrPath": artifact_path(run_dir / "stderr.txt"),
@@ -648,6 +804,7 @@ def run_cpu_subset_experiment(
         result = {
             "status": "error",
             "reasonCode": "cpu-subset-run-failed",
+            "integrityStatus": "failed",
             "returnCode": int(completed.get("returnCode", 1)),
             "stdoutPath": artifact_path(run_dir / "stdout.txt"),
             "stderrPath": artifact_path(run_dir / "stderr.txt"),
@@ -674,6 +831,7 @@ def run_cpu_subset_experiment(
     result = {
         "status": "success",
         "reasonCode": "cpu-subset-success",
+        "integrityStatus": "passed",
         "candidateId": record["experimentId"],
         "observedMetric": record["observedMetricOutput"],
         "resultClass": "cpu-subset",

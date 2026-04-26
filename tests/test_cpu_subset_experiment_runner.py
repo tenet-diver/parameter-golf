@@ -99,6 +99,79 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
         self.assertEqual(env["ATTN_NORM_MODE"], "qk_rmsnorm")
         self.assertEqual(env["ATTN_NORM_EPS"], "1e-5")
 
+    def test_rejects_non_finite_swiglu_clamp_config_before_subprocess(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            status_path = root / "campaign_status.json"
+            state_path = root / "campaign_state.json"
+            run_root = root / "runs"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "kind": "parameter-golf-measurement-evidence",
+                        "updatedAt": "2026-04-25T00:00:00Z",
+                        "summary": {
+                            "artifactIds": [],
+                            "trustedControlState": "established",
+                            "totalExperiments": 0,
+                            "acceptedExperiments": 0,
+                            "mostRecentEvidenceId": None,
+                        },
+                        "recentCompletedExperiments": [],
+                        "experimentRecords": [],
+                    },
+                )
+            )
+            status_path.write_text(
+                json.dumps(
+                    {
+                        "generatedAt": "2026-04-25T00:00:00Z",
+                        "trustedControlState": "established",
+                        "latestVerificationClass": None,
+                        "missingEvidence": [],
+                        "integrityFlags": [],
+                        "policyViolations": [],
+                        "adjudication": {"decision": "hold", "reason": "seed"},
+                    },
+                )
+            )
+            state_path.write_text(
+                json.dumps(
+                    {
+                        "generatedAt": "2026-04-25T00:00:00Z",
+                        "candidate": None,
+                        "history": [],
+                    },
+                )
+            )
+
+            with (
+                patch("fastest.scripts.run_cpu_subset_experiment.subprocess.Popen") as mock_popen,
+                patch("fastest.scripts.run_cpu_subset_experiment.regenerate_views"),
+            ):
+                result = run_cpu_subset_experiment(
+                    candidate={
+                        "taskId": "FAST-54",
+                        "candidateId": "swiglu-invalid",
+                        "activationMode": "swiglu",
+                        "swigluClampEnabled": True,
+                        "swigluLinearClampMin": "nan",
+                        "swigluLinearClampMax": 10.0,
+                        "swigluGateClampMax": 10.0,
+                    },
+                    evidence_path=evidence_path,
+                    status_path=status_path,
+                    state_path=state_path,
+                    run_root=run_root,
+                )
+
+            self.assertEqual(result["status"], "integrity_error")
+            self.assertEqual(result["reasonCode"], "cpu-subset-preflight-validation-failed")
+            self.assertIn("non-finite-swigluLinearClampMin", result["validationErrors"])
+            mock_popen.assert_not_called()
+
     def test_sanitizes_candidate_id_for_run_directory(self) -> None:
         self.assertEqual(sanitize_candidate_id("../muon:trial/../../bad"), "muon-trial-bad")
         self.assertEqual(sanitize_candidate_id(""), "candidate")

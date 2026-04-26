@@ -62,6 +62,11 @@ class Hyperparameters:
     qk_gain_init = float(os.environ.get("QK_GAIN_INIT", 1.5))
     attn_norm_mode = os.environ.get("ATTN_NORM_MODE", "baseline").strip().lower()
     attn_norm_eps = float(os.environ.get("ATTN_NORM_EPS", 1e-6))
+    activation_mode = os.environ.get("ACTIVATION_MODE", "relu2").strip().lower()
+    swiglu_clamp_enabled = bool(int(os.environ.get("SWIGLU_CLAMP_ENABLED", "0")))
+    swiglu_linear_clamp_min = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MIN", -10.0))
+    swiglu_linear_clamp_max = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MAX", 10.0))
+    swiglu_gate_clamp_max = float(os.environ.get("SWIGLU_GATE_CLAMP_MAX", 10.0))
 
     # Model shape.
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
@@ -648,14 +653,46 @@ class CausalSelfAttention(nn.Module):
 
 class MLP(nn.Module):
     # relu^2 MLP from the original modded-nanogpt setup
-    def __init__(self, dim: int, mlp_mult: int):
+    def __init__(
+        self,
+        dim: int,
+        mlp_mult: int,
+        activation_mode: str,
+        swiglu_clamp_enabled: bool,
+        swiglu_linear_clamp_min: float,
+        swiglu_linear_clamp_max: float,
+        swiglu_gate_clamp_max: float,
+    ):
         super().__init__()
         hidden = mlp_mult * dim
-        self.fc = CastedLinear(dim, hidden, bias=False)
+        if activation_mode not in {"relu2", "swiglu"}:
+            raise ValueError(f"Unsupported ACTIVATION_MODE: {activation_mode}")
+        if swiglu_linear_clamp_min > swiglu_linear_clamp_max:
+            raise ValueError(
+                "SWIGLU_LINEAR_CLAMP_MIN must be <= SWIGLU_LINEAR_CLAMP_MAX"
+            )
+        if swiglu_gate_clamp_max <= 0.0:
+            raise ValueError("SWIGLU_GATE_CLAMP_MAX must be positive")
+        self.activation_mode = activation_mode
+        self.swiglu_clamp_enabled = swiglu_clamp_enabled
+        self.swiglu_linear_clamp_min = swiglu_linear_clamp_min
+        self.swiglu_linear_clamp_max = swiglu_linear_clamp_max
+        self.swiglu_gate_clamp_max = swiglu_gate_clamp_max
+        self.fc = CastedLinear(dim, hidden * (2 if activation_mode == "swiglu" else 1), bias=False)
         self.proj = CastedLinear(hidden, dim, bias=False)
         self.proj._zero_init = True
 
     def forward(self, x: Tensor) -> Tensor:
+        if self.activation_mode == "swiglu":
+            linear, gate = self.fc(x).chunk(2, dim=-1)
+            if self.swiglu_clamp_enabled:
+                linear = torch.clamp(
+                    linear,
+                    min=self.swiglu_linear_clamp_min,
+                    max=self.swiglu_linear_clamp_max,
+                )
+                gate = torch.clamp(gate, max=self.swiglu_gate_clamp_max)
+            return self.proj(linear * F.silu(gate))
         x = torch.relu(self.fc(x))
         return self.proj(x.square())
 
@@ -671,6 +708,11 @@ class Block(nn.Module):
         qk_gain_init: float,
         attn_norm_mode: str,
         attn_norm_eps: float,
+        activation_mode: str,
+        swiglu_clamp_enabled: bool,
+        swiglu_linear_clamp_min: float,
+        swiglu_linear_clamp_max: float,
+        swiglu_gate_clamp_max: float,
         parallel_residual: bool,
     ):
         super().__init__()
@@ -680,7 +722,15 @@ class Block(nn.Module):
         self.attn = CausalSelfAttention(
             dim, num_heads, num_kv_heads, rope_base, qk_gain_init, attn_norm_mode, attn_norm_eps
         )
-        self.mlp = MLP(dim, mlp_mult)
+        self.mlp = MLP(
+            dim,
+            mlp_mult,
+            activation_mode,
+            swiglu_clamp_enabled,
+            swiglu_linear_clamp_min,
+            swiglu_linear_clamp_max,
+            swiglu_gate_clamp_max,
+        )
         self.attn_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
         self.mlp_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
         self.resid_mix = nn.Parameter(torch.stack((torch.ones(dim), torch.zeros(dim))).float())
@@ -728,6 +778,11 @@ class GPT(nn.Module):
         qk_gain_init: float,
         attn_norm_mode: str,
         attn_norm_eps: float,
+        activation_mode: str,
+        swiglu_clamp_enabled: bool,
+        swiglu_linear_clamp_min: float,
+        swiglu_linear_clamp_max: float,
+        swiglu_gate_clamp_max: float,
         parallel_residual: bool,
         encoder_layer_order: str,
         decoder_layer_order: str,
@@ -767,6 +822,11 @@ class GPT(nn.Module):
                     qk_gain_init,
                     attn_norm_mode,
                     attn_norm_eps,
+                    activation_mode,
+                    swiglu_clamp_enabled,
+                    swiglu_linear_clamp_min,
+                    swiglu_linear_clamp_max,
+                    swiglu_gate_clamp_max,
                     parallel_residual,
                 )
                 for i in range(num_layers)
@@ -943,6 +1003,11 @@ def main() -> None:
         qk_gain_init=args.qk_gain_init,
         attn_norm_mode=args.attn_norm_mode,
         attn_norm_eps=args.attn_norm_eps,
+        activation_mode=args.activation_mode,
+        swiglu_clamp_enabled=args.swiglu_clamp_enabled,
+        swiglu_linear_clamp_min=args.swiglu_linear_clamp_min,
+        swiglu_linear_clamp_max=args.swiglu_linear_clamp_max,
+        swiglu_gate_clamp_max=args.swiglu_gate_clamp_max,
         parallel_residual=args.parallel_residual,
         encoder_layer_order=args.encoder_layer_order,
         decoder_layer_order=args.decoder_layer_order,
