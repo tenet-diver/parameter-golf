@@ -573,6 +573,34 @@ def _trust_receipt_error(
     trusted_roots: set[str] | None = None,
     trust_root_policy: dict[str, Any] | None = None,
 ) -> str | None:
+    def residual_risk_acceptance_error() -> str | None:
+        if not isinstance(trust_root_policy, dict):
+            return "receipt-residual-risk-acceptance-missing"
+        residual_risk = trust_root_policy.get("residualRiskAcceptance")
+        if not isinstance(residual_risk, dict):
+            return "receipt-residual-risk-acceptance-missing"
+        if residual_risk.get("scope") != "cpu-subset":
+            return "receipt-residual-risk-acceptance-invalid-scope"
+        accepted_by = residual_risk.get("acceptedBy")
+        if not isinstance(accepted_by, str) or not accepted_by:
+            return "receipt-residual-risk-acceptance-invalid-approver"
+        monitoring_owner = residual_risk.get("monitoringOwner")
+        if not isinstance(monitoring_owner, str) or not monitoring_owner:
+            return "receipt-residual-risk-acceptance-monitoring-missing"
+        expires_at_raw = residual_risk.get("expiresAt")
+        if not isinstance(expires_at_raw, str) or not expires_at_raw:
+            return "receipt-residual-risk-acceptance-expiry-invalid"
+        expires_at_normalized = expires_at_raw.replace("Z", "+00:00")
+        try:
+            expires_at = datetime.fromisoformat(expires_at_normalized)
+        except ValueError:
+            return "receipt-residual-risk-acceptance-expiry-invalid"
+        if expires_at.tzinfo is None:
+            return "receipt-residual-risk-acceptance-expiry-invalid"
+        if expires_at.astimezone(timezone.utc) <= datetime.now(timezone.utc):
+            return "receipt-residual-risk-acceptance-expired"
+        return None
+
     receipt = entry.get("receipt")
     if not isinstance(receipt, dict):
         return "receipt-missing"
@@ -602,31 +630,36 @@ def _trust_receipt_error(
     if trusted_roots is not None and trusted_root not in trusted_roots:
         return "receipt-trusted-root-untrusted"
     if local_signature_mode:
-        if not isinstance(trust_root_policy, dict):
-            return "receipt-residual-risk-acceptance-missing"
-        residual_risk = trust_root_policy.get("residualRiskAcceptance")
-        if not isinstance(residual_risk, dict):
-            return "receipt-residual-risk-acceptance-missing"
-        if residual_risk.get("scope") != "cpu-subset":
-            return "receipt-residual-risk-acceptance-invalid-scope"
-        accepted_by = residual_risk.get("acceptedBy")
-        if not isinstance(accepted_by, str) or not accepted_by:
-            return "receipt-residual-risk-acceptance-invalid-approver"
-        monitoring_owner = residual_risk.get("monitoringOwner")
-        if not isinstance(monitoring_owner, str) or not monitoring_owner:
-            return "receipt-residual-risk-acceptance-monitoring-missing"
-        expires_at_raw = residual_risk.get("expiresAt")
-        if not isinstance(expires_at_raw, str) or not expires_at_raw:
-            return "receipt-residual-risk-acceptance-expiry-invalid"
-        expires_at_normalized = expires_at_raw.replace("Z", "+00:00")
+        risk_error = residual_risk_acceptance_error()
+        if risk_error is not None:
+            return risk_error
+        return None
+    cryptographic_verification = entry.get("cryptographicVerification")
+    if isinstance(cryptographic_verification, dict):
+        authority_boundary = cryptographic_verification.get("authorityBoundary")
+        if not isinstance(authority_boundary, str) or not authority_boundary:
+            return "receipt-cryptographic-authority-boundary-missing"
+        if authority_boundary.startswith("local-"):
+            return "receipt-cryptographic-authority-boundary-untrusted"
+        verification_ref = cryptographic_verification.get("verificationRef")
+        if not isinstance(verification_ref, str) or not verification_ref:
+            return "receipt-cryptographic-verification-ref-missing"
+        if not bool(cryptographic_verification.get("verified")):
+            return "receipt-cryptographic-unverified"
+        verified_at_raw = cryptographic_verification.get("verifiedAt")
+        if not isinstance(verified_at_raw, str) or not verified_at_raw:
+            return "receipt-cryptographic-verified-at-invalid"
+        verified_at_normalized = verified_at_raw.replace("Z", "+00:00")
         try:
-            expires_at = datetime.fromisoformat(expires_at_normalized)
+            verified_at = datetime.fromisoformat(verified_at_normalized)
         except ValueError:
-            return "receipt-residual-risk-acceptance-expiry-invalid"
-        if expires_at.tzinfo is None:
-            return "receipt-residual-risk-acceptance-expiry-invalid"
-        if expires_at.astimezone(timezone.utc) <= datetime.now(timezone.utc):
-            return "receipt-residual-risk-acceptance-expired"
+            return "receipt-cryptographic-verified-at-invalid"
+        if verified_at.tzinfo is None:
+            return "receipt-cryptographic-verified-at-invalid"
+        return None
+    risk_error = residual_risk_acceptance_error()
+    if risk_error is not None:
+        return risk_error
     return None
 
 

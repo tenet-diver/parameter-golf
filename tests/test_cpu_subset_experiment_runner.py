@@ -649,6 +649,53 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 "attestation-receipt-residual-risk-acceptance-missing",
             )
 
+    def test_fails_closed_for_cryptographic_receipt_without_external_proof_or_risk_acceptance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            trusted_attestation_registry_path = root / "trusted_runner_attestation_registry.json"
+            attestation_ref = "attestation-fast52-crypto"
+            trusted_attestation_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                        },
+                        "runnerAttestations": {
+                            attestation_ref: {
+                                "runId": "cpu_subset_child",
+                                "attestationRef": attestation_ref,
+                                "source": "cpu-subset-runner",
+                                "provenanceVerified": True,
+                                "resultClass": "cpu-subset",
+                                "verificationClass": "cpu-subset",
+                                "receipt": {
+                                    "schema": "parameter-golf-trust-receipt/v1",
+                                    "issuedBy": "parameter-golf-model-factory-trust-authority",
+                                    "subject": attestation_ref,
+                                    "trustedRoot": "registry:attestation-prod-root",
+                                    "signature": f"cryptographic-signed-bundle:{attestation_ref}",
+                                },
+                            }
+                        },
+                    }
+                )
+            )
+
+            resolution = cpu_subset_runner._resolve_runner_attestation(
+                attestation_ref=attestation_ref,
+                run_id="cpu_subset_child",
+                registry_path=trusted_attestation_registry_path,
+            )
+
+            self.assertEqual(resolution["status"], "unresolved")
+            self.assertEqual(
+                resolution["reasonCode"],
+                "attestation-receipt-residual-risk-acceptance-missing",
+            )
+
     def test_fails_closed_when_candidate_declares_untrusted_verification_or_lineage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)
