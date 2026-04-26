@@ -49,6 +49,11 @@ FINAL_BPB_RE = re.compile(
 )
 
 
+def _authority_boundary_untrusted(authority_boundary: str) -> bool:
+    lowered = authority_boundary.lower()
+    return lowered.startswith(("local-", "local://", "local-task-store://", "file://"))
+
+
 def _resolve_shared_repo_root() -> Path:
     for parent in REPO_ROOT.parents:
         if parent.name == "parameter-golf":
@@ -592,6 +597,11 @@ def _trust_receipt_error(
             return "receipt-residual-risk-acceptance-registry-unavailable"
         if not isinstance(payload, dict):
             return "receipt-residual-risk-acceptance-registry-invalid"
+        authority_boundary = payload.get("authorityBoundary")
+        if not isinstance(authority_boundary, str) or not authority_boundary:
+            return "receipt-residual-risk-acceptance-registry-boundary-invalid"
+        if _authority_boundary_untrusted(authority_boundary):
+            return "receipt-residual-risk-acceptance-registry-boundary-untrusted"
         accepted = payload.get("acceptedResidualRisks")
         if not isinstance(accepted, dict):
             return "receipt-residual-risk-acceptance-registry-invalid"
@@ -635,7 +645,7 @@ def _trust_receipt_error(
         authority_boundary = authority_binding.get("authorityBoundary")
         if not isinstance(authority_boundary, str) or not authority_boundary:
             return "receipt-authority-binding-boundary-invalid"
-        if authority_boundary.startswith("local-"):
+        if _authority_boundary_untrusted(authority_boundary):
             return "receipt-authority-binding-boundary-untrusted"
         registry_ref = authority_binding.get("registryRef")
         if not isinstance(registry_ref, str) or not registry_ref:
@@ -704,7 +714,7 @@ def _trust_receipt_error(
         authority_boundary = cryptographic_verification.get("authorityBoundary")
         if not isinstance(authority_boundary, str) or not authority_boundary:
             return "receipt-cryptographic-authority-boundary-missing"
-        if authority_boundary.startswith("local-"):
+        if _authority_boundary_untrusted(authority_boundary):
             return "receipt-cryptographic-authority-boundary-untrusted"
         verification_ref = cryptographic_verification.get("verificationRef")
         if not isinstance(verification_ref, str) or not verification_ref:
