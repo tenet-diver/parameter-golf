@@ -18,6 +18,11 @@ from typing import Any
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from candidates.registry import default_candidate_dicts
+
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "records/h100_candidate_batch"
 DEFAULT_DATA_PATH = REPO_ROOT / "data/datasets/fineweb10B_sp1024"
 DEFAULT_TOKENIZER_PATH = REPO_ROOT / "data/tokenizers/fineweb_1024_bpe.model"
@@ -40,6 +45,12 @@ PEAK_MEMORY_RE = re.compile(r"peak memory allocated:\s+(?P<allocated>[0-9]+)\s+M
 ARTIFACT_BUDGET_RE = re.compile(
     r"artifact_budget:state:(?P<state>[^ ]+)\s+total_bytes:(?P<total>-?[0-9]+)\s+"
     r"limit_bytes:(?P<limit>[0-9]+)\s+headroom_bytes:(?P<headroom>-?[0-9]+)"
+)
+BATCH_TUNE_RE = re.compile(
+    r"batch_tune_success\s+train_batch_tokens:(?P<tokens>[0-9]+)\s+"
+    r"train_seq_len:(?P<seq>[0-9]+)\s+train_loss:(?P<loss>[0-9.]+)\s+"
+    r"step_time:(?P<step_ms>[0-9.]+)ms\s+peak_allocated_mib:(?P<allocated>[0-9]+)\s+"
+    r"peak_reserved_mib:(?P<reserved>[0-9]+)"
 )
 
 
@@ -146,59 +157,21 @@ BUILTIN_CANDIDATES: list[dict[str, Any]] = [
         "env": {"NUM_LAYERS": "13", "MODEL_DIM": "448", "NUM_HEADS": "7", "NUM_KV_HEADS": "1", "MLP_MULT": "2"},
     },
     {
-        "id": "jepa_style_encoder_decoder_proxy",
-        "family": "jepa_proxy",
-        "hypothesis": "latent_prediction_scaffold_merits_native_jepa",
-        "hypothesisTags": ["jepa_proxy", "encoder_decoder", "skip_reuse"],
+        "id": "moe_top2_4expert",
+        "family": "mixture_of_experts",
+        "hypothesis": "top2_moe_increases_conditional_capacity_under_artifact_budget",
+        "hypothesisTags": ["moe", "top2_routing", "conditional_capacity"],
         "quantization": "int8-zlib-artifact",
-        "description": "Not a JEPA loss; stresses encoder/decoder asymmetry and skip reuse as a cheap JEPA-style scaffold probe.",
+        "description": "Real routed MoE: learned token router with 4 experts and top-2 expert weighting inside each MLP block.",
         "env": {
-            "NUM_LAYERS": "10",
-            "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,6",
-            "DECODER_LAYER_ORDER": "7,8,9",
-            "PARALLEL_RESIDUAL": "1",
-        },
-    },
-    {
-        "id": "text_diffusion_proxy",
-        "family": "text_diffusion_proxy",
-        "hypothesis": "diffusion_like_soft_targets_need_native_objective",
-        "hypothesisTags": ["text_diffusion_proxy", "softcap", "untied_head"],
-        "quantization": "int8-zlib-artifact",
-        "description": "Not a diffusion objective; low-softcap/untied-head stress test to flag whether this direction merits a native objective.",
-        "env": {
-            "TIE_EMBEDDINGS": "0",
-            "LOGIT_SOFTCAP": "12",
-            "MODEL_DIM": "480",
-            "NUM_HEADS": "8",
-            "NUM_KV_HEADS": "4",
+            "NUM_LAYERS": "5",
+            "MODEL_DIM": "384",
+            "NUM_HEADS": "6",
+            "NUM_KV_HEADS": "3",
             "MLP_MULT": "2",
+            "MOE_NUM_EXPERTS": "4",
+            "MOE_TOP_K": "2",
         },
-    },
-    {
-        "id": "ssm_proxy_linear_attention_budget",
-        "family": "state_space_proxy",
-        "hypothesis": "cheap_sequence_mixing_can_trade_attention_for_depth",
-        "hypothesisTags": ["state_space_proxy", "long_context", "small_kv"],
-        "quantization": "int8-zlib-artifact",
-        "description": "Not an SSM kernel; small KV-head/high-depth probe approximating cheap sequence-mixing budget pressure.",
-        "env": {
-            "NUM_LAYERS": "12",
-            "MODEL_DIM": "448",
-            "NUM_HEADS": "7",
-            "NUM_KV_HEADS": "1",
-            "TRAIN_SEQ_LEN": "2048",
-            "ATTN_NORM_MODE": "qk_norm_per_head",
-        },
-    },
-    {
-        "id": "moe_proxy_wide_mlp",
-        "family": "moe_proxy",
-        "hypothesis": "conditional_capacity_merits_native_moe",
-        "hypothesisTags": ["moe_proxy", "wide_mlp", "capacity"],
-        "quantization": "int8-zlib-artifact",
-        "description": "Not routed MoE; wide MLP probe for capacity concentration under the artifact budget.",
-        "env": {"NUM_LAYERS": "6", "MODEL_DIM": "512", "NUM_HEADS": "8", "NUM_KV_HEADS": "4", "MLP_MULT": "4"},
     },
 ]
 
@@ -209,7 +182,7 @@ def utc_slug() -> str:
 
 def load_candidates(path: Path | None) -> list[dict[str, Any]]:
     if path is None:
-        return [dict(candidate) for candidate in BUILTIN_CANDIDATES]
+        return default_candidate_dicts()
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, list):
         raise ValueError("candidate file must contain a JSON list")
@@ -244,6 +217,10 @@ def command_for_candidate(candidate: dict[str, Any], *, smoke: bool = False) -> 
     if isinstance(command, list) and all(isinstance(part, str) for part in command):
         return list(command)
     raise ValueError(f"candidate {candidate.get('id')!r} has invalid command")
+
+
+def candidate_uses_default_train_command(candidate: dict[str, Any]) -> bool:
+    return candidate.get("command") is None
 
 
 def build_env(candidate: dict[str, Any], run_id: str) -> dict[str, str]:
@@ -284,6 +261,29 @@ def apply_smoke_overrides(env: dict[str, str]) -> None:
             "ARTIFACT_BUDGET_STRICT": "0",
         }
     )
+
+
+def int_env(env: dict[str, str], key: str, default: int) -> int:
+    try:
+        return int(float(env.get(key, str(default))))
+    except (TypeError, ValueError):
+        return default
+
+
+def round_batch_tokens(tokens: int, train_seq_len: int, grad_accum_steps: int = 8, world_size: int = 1) -> int:
+    unit = max(train_seq_len * grad_accum_steps * world_size, 1)
+    return max(unit, (max(tokens, unit) // unit) * unit)
+
+
+def first_gpu_memory_mib(hardware: dict[str, Any]) -> int | None:
+    gpus = hardware.get("gpus")
+    if not isinstance(gpus, list) or not gpus:
+        return None
+    raw = gpus[0].get("memoryTotalMiB") if isinstance(gpus[0], dict) else None
+    try:
+        return int(float(str(raw).strip()))
+    except (TypeError, ValueError):
+        return None
 
 
 def collect_hardware_info() -> dict[str, Any]:
@@ -330,6 +330,24 @@ def collect_hardware_info() -> dict[str, Any]:
             }
         )
     return info
+
+
+def parse_batch_tune(stdout: str) -> dict[str, Any] | None:
+    matches = list(BATCH_TUNE_RE.finditer(stdout))
+    if not matches:
+        return None
+    match = matches[-1]
+    tokens = int(match.group("tokens"))
+    step_ms = float(match.group("step_ms"))
+    return {
+        "trainBatchTokens": tokens,
+        "trainSeqLen": int(match.group("seq")),
+        "trainLoss": float(match.group("loss")),
+        "stepMs": step_ms,
+        "tokensPerSecond": tokens / (step_ms / 1000.0) if step_ms > 0 else None,
+        "peakAllocatedMiB": int(match.group("allocated")),
+        "peakReservedMiB": int(match.group("reserved")),
+    }
 
 
 def stream_subprocess(
@@ -384,6 +402,163 @@ def stream_subprocess(
         "stdout": "".join(stdout_chunks),
         "stderr": "".join(stderr_chunks),
     }
+
+
+def run_batch_tune_probe(
+    *,
+    candidate: dict[str, Any],
+    run_dir: Path,
+    env: dict[str, str],
+    tokens: int,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    probe_dir = run_dir / "batch_tune" / f"tokens_{tokens}"
+    probe_dir.mkdir(parents=True, exist_ok=True)
+    probe_env = dict(env)
+    probe_env.update(
+        {
+            "BATCH_TUNE_ONLY": "1",
+            "TRAIN_BATCH_TOKENS": str(tokens),
+            "WARMUP_STEPS": "0",
+            "VAL_LOSS_EVERY": "0",
+            "TRAIN_LOG_EVERY": "0",
+            "SKIP_PRE_QUANT_FINAL_EVAL": "1",
+            "ARTIFACT_BUDGET_STRICT": "0",
+        }
+    )
+    completed = stream_subprocess(
+        command=command_for_candidate(candidate, smoke=False),
+        cwd=probe_dir,
+        env=probe_env,
+        stdout_path=probe_dir / "stdout.txt",
+        stderr_path=probe_dir / "stderr.txt",
+        timeout_seconds=timeout_seconds,
+    )
+    tune_metrics = parse_batch_tune(completed["stdout"])
+    success = completed["returnCode"] == 0 and tune_metrics is not None and not completed["timedOut"]
+    result = {
+        "tokens": tokens,
+        "success": success,
+        "returnCode": completed["returnCode"],
+        "timedOut": completed["timedOut"],
+        "terminationReason": completed["terminationReason"],
+        "elapsedSeconds": completed["elapsedSeconds"],
+        "probeDir": str(probe_dir),
+    }
+    if tune_metrics is not None:
+        result.update(tune_metrics)
+    (probe_dir / "probe_result.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    return result
+
+
+def auto_tune_batch_size(
+    *,
+    candidate: dict[str, Any],
+    run_dir: Path,
+    env: dict[str, str],
+    hardware: dict[str, Any],
+    target_memory_fraction: float,
+    max_tokens: int,
+    timeout_seconds: int,
+) -> dict[str, Any]:
+    train_seq_len = int_env(env, "TRAIN_SEQ_LEN", 1024)
+    initial_tokens = round_batch_tokens(int_env(env, "TRAIN_BATCH_TOKENS", 524_288), train_seq_len)
+    max_tokens = round_batch_tokens(max_tokens, train_seq_len)
+    gpu_memory_mib = first_gpu_memory_mib(hardware)
+    target_reserved_mib = int(gpu_memory_mib * target_memory_fraction) if gpu_memory_mib is not None else None
+    probes: list[dict[str, Any]] = []
+    best: dict[str, Any] | None = None
+    first_bad_tokens: int | None = None
+
+    def probe(tokens: int) -> dict[str, Any]:
+        result = run_batch_tune_probe(
+            candidate=candidate,
+            run_dir=run_dir,
+            env=env,
+            tokens=tokens,
+            timeout_seconds=timeout_seconds,
+        )
+        probes.append(result)
+        return result
+
+    tokens = min(initial_tokens, max_tokens)
+    result = probe(tokens)
+    while not result["success"] and tokens > train_seq_len * 8:
+        first_bad_tokens = tokens
+        tokens = round_batch_tokens(tokens // 2, train_seq_len)
+        result = probe(tokens)
+    if not result["success"]:
+        summary = {
+            "enabled": True,
+            "status": "failed",
+            "selectedTrainBatchTokens": initial_tokens,
+            "targetMemoryFraction": target_memory_fraction,
+            "targetReservedMiB": target_reserved_mib,
+            "gpuMemoryTotalMiB": gpu_memory_mib,
+            "probes": probes,
+        }
+        (run_dir / "batch_tune_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+        return summary
+
+    best = result
+    while best["tokens"] < max_tokens:
+        if target_reserved_mib is not None and best.get("peakReservedMiB", 0) >= target_reserved_mib:
+            break
+        next_tokens = round_batch_tokens(best["tokens"] * 2, train_seq_len)
+        if next_tokens <= best["tokens"]:
+            break
+        next_tokens = min(next_tokens, max_tokens)
+        result = probe(next_tokens)
+        if result["success"]:
+            best = result
+            continue
+        first_bad_tokens = next_tokens
+        break
+
+    if first_bad_tokens is not None and best is not None:
+        low = best["tokens"]
+        high = first_bad_tokens
+        unit = train_seq_len * 8
+        while high - low > unit:
+            mid = round_batch_tokens((low + high) // 2, train_seq_len)
+            if mid <= low or mid >= high:
+                break
+            result = probe(mid)
+            if result["success"]:
+                best = result
+                low = mid
+            else:
+                high = mid
+
+    if best is None:
+        selected = initial_tokens
+        status = "failed"
+    else:
+        selected = int(best["tokens"])
+        status = "completed"
+        env["TRAIN_BATCH_TOKENS"] = str(selected)
+
+    summary = {
+        "enabled": True,
+        "status": status,
+        "selectedTrainBatchTokens": selected,
+        "targetMemoryFraction": target_memory_fraction,
+        "targetReservedMiB": target_reserved_mib,
+        "gpuMemoryTotalMiB": gpu_memory_mib,
+        "maxTrainBatchTokens": max_tokens,
+        "bestProbe": best,
+        "probes": probes,
+    }
+    (run_dir / "batch_tune_summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+    return summary
+
+
+def tokens_per_second(train_batch_tokens: Any, step_avg_ms: Any) -> float | None:
+    tokens = numeric(train_batch_tokens)
+    step_ms = numeric(step_avg_ms)
+    if tokens is None or step_ms is None or step_ms <= 0:
+        return None
+    return tokens / (step_ms / 1000.0)
 
 
 def prune_raw_checkpoint(run_dir: Path, keep_raw_checkpoint: bool) -> dict[str, Any]:
@@ -467,6 +642,9 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         "finalValLoss",
         "completedSteps",
         "stepAvgMs",
+        "tokensPerSecond",
+        "selectedTrainBatchTokens",
+        "batchTuneStatus",
         "modelParams",
         "int8SubmissionBytes",
         "rawSubmissionBytes",
@@ -492,6 +670,8 @@ def write_group_csv(path: Path, groups: list[dict[str, Any]]) -> None:
         "medianValBpb",
         "meanValBpb",
         "bestStepAvgMs",
+        "bestTokensPerSecond",
+        "bestSelectedTrainBatchTokens",
         "bestInt8SubmissionBytes",
         "bestArtifactHeadroomBytes",
     ]
@@ -540,6 +720,8 @@ def summarize_groups(rows: list[dict[str, Any]], key: str) -> list[dict[str, Any
                 "medianValBpb": median(values),
                 "meanValBpb": sum(values) / len(values) if values else None,
                 "bestStepAvgMs": best.get("stepAvgMs") if best else None,
+                "bestTokensPerSecond": best.get("tokensPerSecond") if best else None,
+                "bestSelectedTrainBatchTokens": best.get("selectedTrainBatchTokens") if best else None,
                 "bestInt8SubmissionBytes": best.get("int8SubmissionBytes") if best else None,
                 "bestArtifactHeadroomBytes": best.get("artifactBudgetHeadroomBytes") if best else None,
                 "rows": [row.get("id") for row in group_rows],
@@ -836,6 +1018,29 @@ def write_summary(path: Path, rows: list[dict[str, Any]], started_at: str, outpu
         f"- Metric: `final_int8_zlib_roundtrip_exact val_bpb` (lower is better)",
         "",
     ]
+    tuned_rows = [row for row in rows if row.get("batchTuneStatus")]
+    if tuned_rows:
+        lines.extend(
+            [
+                "## Batch Tuning",
+                "",
+                "| Candidate | Status | Selected train tokens | Probe peak reserved MiB | Probe tokens/sec |",
+                "|---|---|---:|---:|---:|",
+            ]
+        )
+        for row in rows:
+            tune = row.get("batchTune") if isinstance(row.get("batchTune"), dict) else {}
+            best_probe = tune.get("bestProbe") if isinstance(tune.get("bestProbe"), dict) else {}
+            lines.append(
+                "| `{id}` | {status} | {tokens} | {reserved} | {tps} |".format(
+                    id=row.get("id", ""),
+                    status=row.get("batchTuneStatus") or "",
+                    tokens=row.get("selectedTrainBatchTokens") or "",
+                    reserved=best_probe.get("peakReservedMiB", ""),
+                    tps=format_float(best_probe.get("tokensPerSecond")),
+                )
+            )
+        lines.append("")
     if scored:
         best = scored[0]
         lines.extend(
@@ -844,18 +1049,20 @@ def write_summary(path: Path, rows: list[dict[str, Any]], started_at: str, outpu
                 "",
                 "## Ranking",
                 "",
-                "| Rank | Candidate | Family | val_bpb | Steps | step_avg_ms | int8 bytes | Artifact budget |",
-                "|---:|---|---|---:|---:|---:|---:|---|",
+                "| Rank | Candidate | Family | val_bpb | Steps | train tokens | tok/s | step_avg_ms | int8 bytes | Artifact budget |",
+                "|---:|---|---|---:|---:|---:|---:|---:|---:|---|",
             ]
         )
         for row in scored:
             lines.append(
-                "| {rank} | `{id}` | {family} | {bpb:.8f} | {steps} | {avg} | {size} | {budget} |".format(
+                "| {rank} | `{id}` | {family} | {bpb:.8f} | {steps} | {tokens} | {tps} | {avg} | {size} | {budget} |".format(
                     rank=row["rank"],
                     id=row["id"],
                     family=row.get("family", ""),
                     bpb=float(row["finalValBpb"]),
                     steps=row.get("completedSteps") or "",
+                    tokens=row.get("selectedTrainBatchTokens") or "",
+                    tps=f"{float(row['tokensPerSecond']):.0f}" if numeric(row.get("tokensPerSecond")) is not None else "",
                     avg=f"{float(row['stepAvgMs']):.2f}" if numeric(row.get("stepAvgMs")) is not None else "",
                     size=row.get("int8SubmissionBytes") or "",
                     budget=row.get("artifactBudgetState") or "",
@@ -921,7 +1128,7 @@ def write_summary(path: Path, rows: list[dict[str, Any]], started_at: str, outpu
             "",
             "## Coverage Notes",
             "",
-            "- Built-in candidates use the current `train_gpt.py` API. Families labeled `*_proxy` are not native implementations of JEPA, text diffusion, SSM, or MoE.",
+            "- Built-in candidates are implementation-backed by modules under `candidates/`; JEPA, text diffusion, and SSM are intentionally absent until native implementations are added.",
             "- To run native implementations, pass `--candidate-file candidates.json`; each candidate can provide `command`, `env`, `family`, and `description`.",
         ]
     )
@@ -964,21 +1171,56 @@ def run_batch(args: argparse.Namespace) -> int:
         env = build_env(candidate, run_id)
         if args.smoke:
             apply_smoke_overrides(env)
+        batch_tune: dict[str, Any] = {"enabled": False}
+        if args.auto_tune_batch and not args.smoke:
+            if not candidate_uses_default_train_command(candidate):
+                batch_tune = {
+                    "enabled": True,
+                    "status": "skipped",
+                    "reason": "custom-command-does-not-support-standard-BATCH_TUNE_ONLY-probe",
+                    "selectedTrainBatchTokens": int_env(env, "TRAIN_BATCH_TOKENS", 524_288),
+                }
+            else:
+                print(f"[{index}/{len(candidates)}] tuning batch for {candidate_id}")
+                batch_tune = auto_tune_batch_size(
+                    candidate=candidate,
+                    run_dir=run_dir,
+                    env=env,
+                    hardware=hardware,
+                    target_memory_fraction=args.batch_tune_target_memory_fraction,
+                    max_tokens=args.batch_tune_max_tokens,
+                    timeout_seconds=args.batch_tune_timeout_seconds,
+                )
         command = command_for_candidate(candidate, smoke=args.smoke)
-        print(f"[{index}/{len(candidates)}] running {candidate_id}")
-        completed = stream_subprocess(
-            command=command,
-            cwd=run_dir,
-            env=env,
-            stdout_path=run_dir / "stdout.txt",
-            stderr_path=run_dir / "stderr.txt",
-            timeout_seconds=args.timeout_seconds,
-        )
-        metrics = parse_metrics(completed["stdout"])
-        artifact_state = prune_raw_checkpoint(run_dir, args.keep_raw_checkpoints)
-        status = "completed" if completed["returnCode"] == 0 and metrics["finalValBpb"] is not None else "failed"
-        if completed["timedOut"]:
-            status = "timed_out"
+        if args.tune_only:
+            completed = {
+                "returnCode": 0,
+                "timedOut": False,
+                "terminationReason": "tune-only",
+                "elapsedSeconds": 0.0,
+                "stdout": "",
+                "stderr": "",
+            }
+            metrics = parse_metrics("")
+            artifact_state = prune_raw_checkpoint(run_dir, args.keep_raw_checkpoints)
+            status = "tuned" if batch_tune.get("status") == "completed" else str(batch_tune.get("status") or "tune_skipped")
+        else:
+            print(f"[{index}/{len(candidates)}] running {candidate_id}")
+            completed = stream_subprocess(
+                command=command,
+                cwd=run_dir,
+                env=env,
+                stdout_path=run_dir / "stdout.txt",
+                stderr_path=run_dir / "stderr.txt",
+                timeout_seconds=args.timeout_seconds,
+            )
+            metrics = parse_metrics(completed["stdout"])
+            artifact_state = prune_raw_checkpoint(run_dir, args.keep_raw_checkpoints)
+            status = "completed" if completed["returnCode"] == 0 and metrics["finalValBpb"] is not None else "failed"
+            if completed["timedOut"]:
+                status = "timed_out"
+        selected_train_batch_tokens = int_env(env, "TRAIN_BATCH_TOKENS", 524_288)
+        derived_tokens_per_second = tokens_per_second(selected_train_batch_tokens, metrics.get("stepAvgMs"))
         row = {
             "id": candidate["id"],
             "family": candidate.get("family", ""),
@@ -995,6 +1237,10 @@ def run_batch(args: argparse.Namespace) -> int:
             "runDir": str(run_dir),
             "command": command,
             "env": {key: env[key] for key in sorted(set(BASE_ENV) | set(candidate.get("env", {})) | {"RUN_ID"}) if key in env},
+            "selectedTrainBatchTokens": selected_train_batch_tokens,
+            "tokensPerSecond": derived_tokens_per_second,
+            "batchTuneStatus": batch_tune.get("status") if batch_tune.get("enabled") else None,
+            "batchTune": batch_tune,
             **artifact_state,
             **metrics,
         }
@@ -1009,6 +1255,8 @@ def run_batch(args: argparse.Namespace) -> int:
         write_summary(output_dir / "summary.md", ranked, started_at, output_dir)
         if status == "completed":
             print(f"[{index}/{len(candidates)}] {candidate_id} val_bpb={metrics['finalValBpb']:.8f}")
+        elif args.tune_only:
+            print(f"[{index}/{len(candidates)}] {candidate_id} tune_status={status} train_batch_tokens={selected_train_batch_tokens}")
         else:
             print(f"[{index}/{len(candidates)}] {candidate_id} status={status} return_code={completed['returnCode']}")
         if args.stop_on_failure and status != "completed":
@@ -1036,6 +1284,26 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Print selected candidates without running them.")
     parser.add_argument("--smoke", action="store_true", help="Use tiny overrides for local wiring tests.")
     parser.add_argument("--keep-raw-checkpoints", action="store_true", help="Keep final_model.pt files in each run directory.")
+    parser.add_argument("--auto-tune-batch", action="store_true", help="Run batch-size tuning probes before each scored H100 run.")
+    parser.add_argument("--tune-only", action="store_true", help="Run setup/tuning and skip the scored training run.")
+    parser.add_argument(
+        "--batch-tune-target-memory-fraction",
+        type=float,
+        default=0.90,
+        help="Target fraction of first GPU memory to reserve during automatic batch tuning.",
+    )
+    parser.add_argument(
+        "--batch-tune-max-tokens",
+        type=int,
+        default=2_097_152,
+        help="Maximum TRAIN_BATCH_TOKENS value considered during automatic batch tuning.",
+    )
+    parser.add_argument(
+        "--batch-tune-timeout-seconds",
+        type=int,
+        default=180,
+        help="Host timeout per batch tuning probe.",
+    )
     return parser.parse_args(argv)
 
 

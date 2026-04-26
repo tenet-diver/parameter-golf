@@ -23,10 +23,11 @@ import numpy as np
 import sentencepiece as spm
 import torch
 import torch.distributed as dist
-import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 
+sys.modules.setdefault("train_gpt", sys.modules[__name__])
+from candidates.registry import build_model, candidate_name_from_env
 from fastest.scripts.artifact_budget_analyzer import estimate_artifact_budget
 
 # -----------------------------
@@ -67,6 +68,9 @@ class Hyperparameters:
     swiglu_linear_clamp_min = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MIN", -10.0))
     swiglu_linear_clamp_max = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MAX", 10.0))
     swiglu_gate_clamp_max = float(os.environ.get("SWIGLU_GATE_CLAMP_MAX", 10.0))
+    moe_num_experts = int(os.environ.get("MOE_NUM_EXPERTS", "1"))
+    moe_top_k = int(os.environ.get("MOE_TOP_K", "1"))
+    candidate_impl = os.environ.get("CANDIDATE_IMPL", "autoregressive_gpt").strip() or "autoregressive_gpt"
 
     # Model shape.
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
@@ -520,356 +524,11 @@ class DistributedTokenLoader:
         return x.to(self.device, non_blocking=True), y.to(self.device, non_blocking=True)
 
 # -----------------------------
-# TRANSFORMER MODULES
+# CANDIDATE MODEL INTERFACE
 # -----------------------------
 
-class RMSNorm(nn.Module):
-    def __init__(self, eps: float | None = None):
-        super().__init__()
-        self.eps = eps
+from candidates.autoregressive.architecture import CastedLinear, restore_low_dim_params_to_fp32
 
-    def forward(self, x: Tensor) -> Tensor:
-        return F.rms_norm(x, (x.size(-1),), eps=self.eps)
-
-
-class CastedLinear(nn.Linear):
-    # Keep weights in fp32 for optimizer/state quality, cast at matmul time for bf16 compute.
-    def forward(self, x: Tensor) -> Tensor:
-        bias = self.bias.to(x.dtype) if self.bias is not None else None
-        return F.linear(x, self.weight.to(x.dtype), bias)
-
-
-def restore_low_dim_params_to_fp32(module: nn.Module) -> None:
-    # Keep small/control parameters in fp32 even when the model body runs in bf16.
-    with torch.no_grad():
-        for name, param in module.named_parameters():
-            if (param.ndim < 2 or any(pattern in name for pattern in CONTROL_TENSOR_NAME_PATTERNS)) and param.dtype != torch.float32:
-                param.data = param.data.float()
-
-
-class Rotary(nn.Module):
-    # Caches cos/sin tables per sequence length on the current device.
-    def __init__(self, dim: int, base: float = 10000.0):
-        super().__init__()
-        inv_freq = 1.0 / (base ** (torch.arange(0, dim, 2, dtype=torch.float32) / dim))
-        self.register_buffer("inv_freq", inv_freq, persistent=False)
-        self._seq_len_cached = 0
-        self._cos_cached: Tensor | None = None
-        self._sin_cached: Tensor | None = None
-
-    def forward(self, seq_len: int, device: torch.device, dtype: torch.dtype) -> tuple[Tensor, Tensor]:
-        if (
-            self._cos_cached is None
-            or self._sin_cached is None
-            or self._seq_len_cached != seq_len
-            or self._cos_cached.device != device
-        ):
-            t = torch.arange(seq_len, device=device, dtype=self.inv_freq.dtype)
-            freqs = torch.outer(t, self.inv_freq.to(device))
-            self._cos_cached = freqs.cos()[None, None, :, :]
-            self._sin_cached = freqs.sin()[None, None, :, :]
-            self._seq_len_cached = seq_len
-        # Validation runs under inference_mode and may populate the cache before
-        # training starts. Clone on return so cached inference tensors are never
-        # reused directly in autograd-tracked CPU subset training.
-        return self._cos_cached.to(dtype=dtype).clone(), self._sin_cached.to(dtype=dtype).clone()
-
-
-def apply_rotary_emb(x: Tensor, cos: Tensor, sin: Tensor) -> Tensor:
-    half = x.size(-1) // 2
-    x1, x2 = x[..., :half], x[..., half:]
-    return torch.cat((x1 * cos + x2 * sin, x1 * (-sin) + x2 * cos), dim=-1)
-
-
-class CausalSelfAttention(nn.Module):
-    def __init__(
-        self,
-        dim: int,
-        num_heads: int,
-        num_kv_heads: int,
-        rope_base: float,
-        qk_gain_init: float,
-        attn_norm_mode: str,
-        attn_norm_eps: float,
-    ):
-        super().__init__()
-        if dim % num_heads != 0:
-            raise ValueError("model_dim must be divisible by num_heads")
-        if num_heads % num_kv_heads != 0:
-            raise ValueError("num_heads must be divisible by num_kv_heads")
-        self.num_heads = num_heads
-        self.num_kv_heads = num_kv_heads
-        self.head_dim = dim // num_heads
-        if self.head_dim % 2 != 0:
-            raise ValueError("head_dim must be even for RoPE")
-        kv_dim = self.num_kv_heads * self.head_dim
-        self.c_q = CastedLinear(dim, dim, bias=False)
-        self.c_k = CastedLinear(dim, kv_dim, bias=False)
-        self.c_v = CastedLinear(dim, kv_dim, bias=False)
-        self.proj = CastedLinear(dim, dim, bias=False)
-        self.proj._zero_init = True
-        if attn_norm_mode not in {"baseline", "qk_rmsnorm", "qk_norm_per_head"}:
-            raise ValueError(f"Unsupported ATTN_NORM_MODE={attn_norm_mode!r}")
-        if attn_norm_eps <= 0.0:
-            raise ValueError(f"ATTN_NORM_EPS must be > 0, got {attn_norm_eps}")
-        self.attn_norm_mode = attn_norm_mode
-        self.attn_norm_eps = attn_norm_eps
-        self.q_gain = nn.Parameter(torch.full((num_heads,), qk_gain_init, dtype=torch.float32))
-        self.rotary = Rotary(self.head_dim, base=rope_base)
-
-    def _normalize_qk(self, q: Tensor, k: Tensor) -> tuple[Tensor, Tensor]:
-        if self.attn_norm_mode == "qk_rmsnorm":
-            q = F.rms_norm(q, (q.size(-1),), eps=self.attn_norm_eps)
-            k = F.rms_norm(k, (k.size(-1),), eps=self.attn_norm_eps)
-            return q, k
-        if self.attn_norm_mode == "qk_norm_per_head":
-            q = F.normalize(q, p=2.0, dim=-1, eps=self.attn_norm_eps)
-            k = F.normalize(k, p=2.0, dim=-1, eps=self.attn_norm_eps)
-            return q, k
-        return q, k
-
-    def forward(self, x: Tensor) -> Tensor:
-        bsz, seqlen, dim = x.shape
-        q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim).transpose(1, 2)
-        k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
-        v = self.c_v(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
-        cos, sin = self.rotary(seqlen, x.device, q.dtype)
-        q = apply_rotary_emb(q, cos, sin)
-        k = apply_rotary_emb(k, cos, sin)
-        q, k = self._normalize_qk(q, k)
-        if self.attn_norm_mode == "baseline":
-            q = q * self.q_gain.to(dtype=q.dtype)[None, :, None, None]
-        y = F.scaled_dot_product_attention(
-            q,
-            k,
-            v,
-            attn_mask=None,
-            is_causal=True,
-            enable_gqa=(self.num_kv_heads != self.num_heads),
-        )
-        y = y.transpose(1, 2).contiguous().reshape(bsz, seqlen, dim)
-        return self.proj(y)
-
-
-class MLP(nn.Module):
-    # relu^2 MLP from the original modded-nanogpt setup
-    def __init__(
-        self,
-        dim: int,
-        mlp_mult: int,
-        activation_mode: str,
-        swiglu_clamp_enabled: bool,
-        swiglu_linear_clamp_min: float,
-        swiglu_linear_clamp_max: float,
-        swiglu_gate_clamp_max: float,
-    ):
-        super().__init__()
-        hidden = mlp_mult * dim
-        if activation_mode not in {"relu2", "swiglu"}:
-            raise ValueError(f"Unsupported ACTIVATION_MODE: {activation_mode}")
-        if swiglu_linear_clamp_min > swiglu_linear_clamp_max:
-            raise ValueError(
-                "SWIGLU_LINEAR_CLAMP_MIN must be <= SWIGLU_LINEAR_CLAMP_MAX"
-            )
-        if swiglu_gate_clamp_max <= 0.0:
-            raise ValueError("SWIGLU_GATE_CLAMP_MAX must be positive")
-        self.activation_mode = activation_mode
-        self.swiglu_clamp_enabled = swiglu_clamp_enabled
-        self.swiglu_linear_clamp_min = swiglu_linear_clamp_min
-        self.swiglu_linear_clamp_max = swiglu_linear_clamp_max
-        self.swiglu_gate_clamp_max = swiglu_gate_clamp_max
-        self.fc = CastedLinear(dim, hidden * (2 if activation_mode == "swiglu" else 1), bias=False)
-        self.proj = CastedLinear(hidden, dim, bias=False)
-        self.proj._zero_init = True
-
-    def forward(self, x: Tensor) -> Tensor:
-        if self.activation_mode == "swiglu":
-            linear, gate = self.fc(x).chunk(2, dim=-1)
-            if self.swiglu_clamp_enabled:
-                linear = torch.clamp(
-                    linear,
-                    min=self.swiglu_linear_clamp_min,
-                    max=self.swiglu_linear_clamp_max,
-                )
-                gate = torch.clamp(gate, max=self.swiglu_gate_clamp_max)
-            return self.proj(linear * F.silu(gate))
-        x = torch.relu(self.fc(x))
-        return self.proj(x.square())
-
-
-class Block(nn.Module):
-    def __init__(
-        self,
-        dim: int,
-        num_heads: int,
-        num_kv_heads: int,
-        mlp_mult: int,
-        rope_base: float,
-        qk_gain_init: float,
-        attn_norm_mode: str,
-        attn_norm_eps: float,
-        activation_mode: str,
-        swiglu_clamp_enabled: bool,
-        swiglu_linear_clamp_min: float,
-        swiglu_linear_clamp_max: float,
-        swiglu_gate_clamp_max: float,
-        parallel_residual: bool,
-    ):
-        super().__init__()
-        self.parallel_residual = parallel_residual
-        self.attn_norm = RMSNorm()
-        self.mlp_norm = RMSNorm()
-        self.attn = CausalSelfAttention(
-            dim, num_heads, num_kv_heads, rope_base, qk_gain_init, attn_norm_mode, attn_norm_eps
-        )
-        self.mlp = MLP(
-            dim,
-            mlp_mult,
-            activation_mode,
-            swiglu_clamp_enabled,
-            swiglu_linear_clamp_min,
-            swiglu_linear_clamp_max,
-            swiglu_gate_clamp_max,
-        )
-        self.attn_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
-        self.mlp_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
-        self.resid_mix = nn.Parameter(torch.stack((torch.ones(dim), torch.zeros(dim))).float())
-
-    def forward(self, x: Tensor, x0: Tensor) -> Tensor:
-        mix = self.resid_mix.to(dtype=x.dtype)
-        x = mix[0][None, None, :] * x + mix[1][None, None, :] * x0
-        attn_out = self.attn(self.attn_norm(x))
-        if self.parallel_residual:
-            mlp_out = self.mlp(self.mlp_norm(x))
-            x = x + self.attn_scale.to(dtype=x.dtype)[None, None, :] * attn_out
-            x = x + self.mlp_scale.to(dtype=x.dtype)[None, None, :] * mlp_out
-            return x
-        x = x + self.attn_scale.to(dtype=x.dtype)[None, None, :] * attn_out
-        x = x + self.mlp_scale.to(dtype=x.dtype)[None, None, :] * self.mlp(self.mlp_norm(x))
-        return x
-
-
-def parse_layer_order(spec: str, default: list[int], num_layers: int, label: str) -> list[int]:
-    if not spec:
-        return default
-    tokens = [token.strip() for token in spec.split(",")]
-    if any(not token for token in tokens):
-        raise ValueError(f"{label} contains an empty layer index: {spec!r}")
-    order = [int(token) for token in tokens]
-    for index in order:
-        if index < 0 or index >= num_layers:
-            raise ValueError(f"{label} index {index} is out of range for NUM_LAYERS={num_layers}")
-    return order
-
-
-class GPT(nn.Module):
-    def __init__(
-        self,
-        vocab_size: int,
-        num_layers: int,
-        model_dim: int,
-        num_heads: int,
-        num_kv_heads: int,
-        mlp_mult: int,
-        tie_embeddings: bool,
-        tied_embed_init_std: float,
-        logit_softcap: float,
-        rope_base: float,
-        qk_gain_init: float,
-        attn_norm_mode: str,
-        attn_norm_eps: float,
-        activation_mode: str,
-        swiglu_clamp_enabled: bool,
-        swiglu_linear_clamp_min: float,
-        swiglu_linear_clamp_max: float,
-        swiglu_gate_clamp_max: float,
-        parallel_residual: bool,
-        encoder_layer_order: str,
-        decoder_layer_order: str,
-    ):
-        super().__init__()
-        if logit_softcap <= 0.0:
-            raise ValueError(f"logit_softcap must be positive, got {logit_softcap}")
-        self.tie_embeddings = tie_embeddings
-        self.tied_embed_init_std = tied_embed_init_std
-        self.logit_softcap = logit_softcap
-        self.tok_emb = nn.Embedding(vocab_size, model_dim)
-        default_num_encoder_layers = num_layers // 2
-        default_encoder_layer_order = list(range(default_num_encoder_layers))
-        default_decoder_layer_order = list(range(default_num_encoder_layers, num_layers))
-        self.encoder_layer_order = parse_layer_order(
-            encoder_layer_order,
-            default_encoder_layer_order,
-            num_layers,
-            "ENCODER_LAYER_ORDER",
-        )
-        self.decoder_layer_order = parse_layer_order(
-            decoder_layer_order,
-            default_decoder_layer_order,
-            num_layers,
-            "DECODER_LAYER_ORDER",
-        )
-        self.num_skip_weights = min(len(self.encoder_layer_order), len(self.decoder_layer_order))
-        self.skip_weights = nn.Parameter(torch.ones(self.num_skip_weights, model_dim, dtype=torch.float32))
-        self.blocks = nn.ModuleList(
-            [
-                Block(
-                    model_dim,
-                    num_heads,
-                    num_kv_heads,
-                    mlp_mult,
-                    rope_base,
-                    qk_gain_init,
-                    attn_norm_mode,
-                    attn_norm_eps,
-                    activation_mode,
-                    swiglu_clamp_enabled,
-                    swiglu_linear_clamp_min,
-                    swiglu_linear_clamp_max,
-                    swiglu_gate_clamp_max,
-                    parallel_residual,
-                )
-                for i in range(num_layers)
-            ]
-        )
-        self.final_norm = RMSNorm()
-        self.lm_head = None if tie_embeddings else CastedLinear(model_dim, vocab_size, bias=False)
-        if self.lm_head is not None:
-            self.lm_head._zero_init = True
-        self._init_weights()
-
-    def _init_weights(self) -> None:
-        if self.tie_embeddings:
-            nn.init.normal_(self.tok_emb.weight, mean=0.0, std=self.tied_embed_init_std)
-        for module in self.modules():
-            if isinstance(module, nn.Linear) and getattr(module, "_zero_init", False):
-                nn.init.zeros_(module.weight)
-
-    def forward(self, input_ids: Tensor, target_ids: Tensor) -> Tensor:
-        x = self.tok_emb(input_ids)
-        x = F.rms_norm(x, (x.size(-1),))
-        x0 = x
-        skips: list[Tensor] = []
-
-        # First half stores skips; second half reuses them in reverse order.
-        for block_index in self.encoder_layer_order:
-            x = self.blocks[block_index](x, x0)
-            skips.append(x)
-        for i, block_index in enumerate(self.decoder_layer_order):
-            if i < self.num_skip_weights and skips:
-                x = x + self.skip_weights[i].to(dtype=x.dtype)[None, None, :] * skips.pop()
-            x = self.blocks[block_index](x, x0)
-
-        x = self.final_norm(x).reshape(-1, x.size(-1))
-        targets = target_ids.reshape(-1)
-        if self.tie_embeddings:
-            logits_proj = F.linear(x, self.tok_emb.weight)
-        else:
-            if self.lm_head is None:
-                raise RuntimeError("lm_head is required when tie_embeddings=False")
-            logits_proj = self.lm_head(x)
-        logits = self.logit_softcap * torch.tanh(logits_proj / self.logit_softcap)
-        return F.cross_entropy(logits.float(), targets, reduction="mean")
 
 
 # -----------------------------
@@ -989,35 +648,13 @@ def main() -> None:
     # MODEL + OPTIMIZER SETUP
     # -----------------------------
 
-    base_model = GPT(
-        vocab_size=args.vocab_size,
-        num_layers=args.num_layers,
-        model_dim=args.model_dim,
-        num_heads=args.num_heads,
-        num_kv_heads=args.num_kv_heads,
-        mlp_mult=args.mlp_mult,
-        tie_embeddings=args.tie_embeddings,
-        tied_embed_init_std=args.tied_embed_init_std,
-        logit_softcap=args.logit_softcap,
-        rope_base=args.rope_base,
-        qk_gain_init=args.qk_gain_init,
-        attn_norm_mode=args.attn_norm_mode,
-        attn_norm_eps=args.attn_norm_eps,
-        activation_mode=args.activation_mode,
-        swiglu_clamp_enabled=args.swiglu_clamp_enabled,
-        swiglu_linear_clamp_min=args.swiglu_linear_clamp_min,
-        swiglu_linear_clamp_max=args.swiglu_linear_clamp_max,
-        swiglu_gate_clamp_max=args.swiglu_gate_clamp_max,
-        parallel_residual=args.parallel_residual,
-        encoder_layer_order=args.encoder_layer_order,
-        decoder_layer_order=args.decoder_layer_order,
-    ).to(device)
+    base_model = build_model(args).to(device)
     if use_cuda:
         base_model = base_model.bfloat16()
     for module in base_model.modules():
         if isinstance(module, CastedLinear):
             module.float()
-    restore_low_dim_params_to_fp32(base_model)
+    restore_low_dim_params_to_fp32(base_model, CONTROL_TENSOR_NAME_PATTERNS)
     compiled_model = torch.compile(base_model, dynamic=False, fullgraph=True) if compile_enabled else base_model
     model: nn.Module = DDP(compiled_model, device_ids=[local_rank], broadcast_buffers=False) if distributed else compiled_model
 
@@ -1078,6 +715,7 @@ def main() -> None:
         f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads} "
         f"attn_norm_mode:{args.attn_norm_mode} attn_norm_eps:{args.attn_norm_eps}"
     )
+    log0(f"candidate_impl:{candidate_name_from_env()}")
     log0(
         f"layer_order:encoder={base_model.encoder_layer_order} "
         f"decoder={base_model.decoder_layer_order} "
@@ -1088,6 +726,7 @@ def main() -> None:
         f"head_lr:{args.head_lr if base_model.lm_head is not None else 0.0} "
         f"matrix_lr:{args.matrix_lr} scalar_lr:{args.scalar_lr}"
     )
+    log0(f"moe:num_experts:{args.moe_num_experts} top_k:{args.moe_top_k}")
     log0(
         f"train_batch_tokens:{args.train_batch_tokens} train_seq_len:{args.train_seq_len} "
         f"iterations:{args.iterations} warmup_steps:{args.warmup_steps} "
@@ -1128,6 +767,43 @@ def main() -> None:
         warmdown_ms = args.warmdown_iters * step_ms
         remaining_ms = max(max_wallclock_ms - elapsed_ms, 0.0)
         return remaining_ms / max(warmdown_ms, 1e-9) if remaining_ms <= warmdown_ms else 1.0
+
+    batch_tune_only = bool(int(os.environ.get("BATCH_TUNE_ONLY", "0")))
+    if batch_tune_only:
+        model.train()
+        synchronize_device()
+        t_tune = time.perf_counter()
+        zero_grad_all()
+        train_loss = torch.zeros((), device=device)
+        for micro_step in range(grad_accum_steps):
+            if distributed:
+                model.require_backward_grad_sync = micro_step == grad_accum_steps - 1
+            x, y = train_loader.next_batch(args.train_batch_tokens, args.train_seq_len, grad_accum_steps)
+            with torch.autocast(device_type=device.type, dtype=autocast_dtype, enabled=autocast_enabled):
+                loss = model(x, y)
+            train_loss += loss.detach()
+            (loss * grad_scale).backward()
+        train_loss /= grad_accum_steps
+        for opt in optimizers:
+            opt.step()
+        zero_grad_all()
+        synchronize_device()
+        tune_ms = 1000.0 * (time.perf_counter() - t_tune)
+        if use_cuda:
+            allocated_mib = torch.cuda.max_memory_allocated() // 1024 // 1024
+            reserved_mib = torch.cuda.max_memory_reserved() // 1024 // 1024
+        else:
+            allocated_mib = 0
+            reserved_mib = 0
+        log0(
+            f"batch_tune_success train_batch_tokens:{args.train_batch_tokens} "
+            f"train_seq_len:{args.train_seq_len} train_loss:{train_loss.item():.4f} "
+            f"step_time:{tune_ms:.0f}ms peak_allocated_mib:{allocated_mib} "
+            f"peak_reserved_mib:{reserved_mib}"
+        )
+        if distributed:
+            dist.destroy_process_group()
+        return
 
     # Warmup primes the compiled forward/backward/optimizer paths, then we restore the
     # initial weights/optimizer state so measured training starts from the true init.

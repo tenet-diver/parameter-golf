@@ -7,6 +7,7 @@ from fastest.scripts.run_h100_candidate_batch import (
     build_analysis_payload,
     command_for_candidate,
     load_candidates,
+    parse_args,
     parse_metrics,
     prune_raw_checkpoint,
     rank_rows,
@@ -96,6 +97,37 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
                 ],
             )
             self.assertIn("finalValBpb", csv_path.read_text())
+
+    def test_default_candidates_come_from_real_registry_without_proxy_labels(self) -> None:
+        candidates = load_candidates(None)
+        ids = {candidate["id"] for candidate in candidates}
+        families = {candidate.get("family", "") for candidate in candidates}
+
+        self.assertIn("ar_baseline_int8", ids)
+        self.assertIn("moe_top2_4expert", ids)
+        self.assertNotIn("jepa_style_encoder_decoder_proxy", ids)
+        self.assertFalse(any("proxy" in family for family in families))
+        self.assertTrue(all(candidate.get("implementation") for candidate in candidates))
+
+    def test_parse_args_exposes_batch_tuning_options(self) -> None:
+        args = parse_args(
+            [
+                "--auto-tune-batch",
+                "--batch-tune-target-memory-fraction",
+                "0.82",
+                "--batch-tune-max-tokens",
+                "1048576",
+                "--batch-tune-timeout-seconds",
+                "45",
+                "--tune-only",
+            ]
+        )
+
+        self.assertTrue(args.auto_tune_batch)
+        self.assertEqual(args.batch_tune_target_memory_fraction, 0.82)
+        self.assertEqual(args.batch_tune_max_tokens, 1048576)
+        self.assertEqual(args.batch_tune_timeout_seconds, 45)
+        self.assertTrue(args.tune_only)
 
     def test_prunes_raw_checkpoint_by_default_but_keeps_quantized_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

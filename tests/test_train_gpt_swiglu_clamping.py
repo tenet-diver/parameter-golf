@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from train_gpt import MLP
+from candidates.autoregressive.model import MLP
 
 
 class TrainGptSwiGluClampTest(unittest.TestCase):
