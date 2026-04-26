@@ -677,6 +677,20 @@ def _resolve_runner_attestation(
             "reasonCode": "attestation-untrusted-source",
             "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
         }
+    result_class = entry.get("resultClass")
+    if result_class != "cpu-subset":
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-result-class-invalid",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
+    verification_class = entry.get("verificationClass")
+    if verification_class != "cpu-subset":
+        return {
+            "status": "unresolved",
+            "reasonCode": "attestation-verification-class-invalid",
+            "attestationRegistryRef": f"trusted-runner-attestation:{attestation_ref}",
+        }
     expected_attestation_ref = entry.get("attestationRef")
     if expected_attestation_ref != attestation_ref:
         return {
@@ -824,6 +838,8 @@ def _mint_runner_verification(
         "runId": run_id,
         "completedAt": completed_at,
         "attestationRef": attestation_ref,
+        "resultClass": "cpu-subset",
+        "verificationClass": "cpu-subset",
         "provenanceVerified": True,
         "deterministicValidated": bool(
             deterministic and deterministic.get("status") == "passed"
