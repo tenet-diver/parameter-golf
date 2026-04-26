@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-26T05:26:20Z",
+  "updatedAt": "2026-04-26T08:12:57Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -53,12 +53,16 @@
       "evidence-exp-fast53-attn-qk-norm-per-head-cpu",
       "evidence-exp-fast54-swiglu-control-cpu",
       "evidence-exp-fast54-swiglu-clamped-cpu",
-      "evidence-exp-fast52-deterministic-ranking-cpu"
+      "evidence-exp-fast52-deterministic-ranking-cpu",
+      "evidence-exp-fast55-muon-baseline-cpu",
+      "evidence-exp-fast55-muon-update-scale-cpu",
+      "evidence-exp-fast55-muon-backend-warmup-cpu",
+      "evidence-exp-fast55-adamw-exempt-qproj-cpu"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 49,
-    "acceptedExperiments": 49,
-    "mostRecentEvidenceId": "evidence-exp-fast52-deterministic-ranking-cpu"
+    "totalExperiments": 53,
+    "acceptedExperiments": 53,
+    "mostRecentEvidenceId": "evidence-exp-fast55-adamw-exempt-qproj-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -109,7 +113,11 @@
     "exp-fast53-attn-qk-norm-per-head-cpu",
     "exp-fast54-swiglu-control-cpu",
     "exp-fast54-swiglu-clamped-cpu",
-    "exp-fast52-deterministic-ranking-cpu"
+    "exp-fast52-deterministic-ranking-cpu",
+    "exp-fast55-muon-baseline-cpu",
+    "exp-fast55-muon-update-scale-cpu",
+    "exp-fast55-muon-backend-warmup-cpu",
+    "exp-fast55-adamw-exempt-qproj-cpu"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -5013,6 +5021,1559 @@
         }
       },
       "artifactReceiptManifestPath": "fastest/source/artifact_receipts/fast52_cpu_subset_artifact_receipts.json"
+    },
+    {
+      "experimentId": "exp-fast55-muon-baseline-cpu",
+      "evidenceId": "evidence-exp-fast55-muon-baseline-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-26T08:08:02Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 2.73507311,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-55:cpu-subset:exp-fast55-muon-baseline-cpu",
+      "taskId": "FAST-55",
+      "traceId": "trace-fast55-muon-baseline-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 256,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 32768,
+        "modelDim": 96,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "runtimeValidationCaps": {
+        "maxRuntimeSeconds": 600,
+        "iterations": 256,
+        "valTokenLimit": 32768,
+        "valBatchSize": 4096,
+        "validationClass": "cpu-subset",
+        "capPolicySource": "runner-fixed-fast-51"
+      },
+      "effectiveRuntimeCapSec": 600,
+      "capPolicySource": "runner-fixed-fast-51",
+      "timeoutContainmentMode": "host-level",
+      "processTerminationScope": "process-group",
+      "capOverrideActor": "none",
+      "enforcementProof": {
+        "runnerHardCapSeconds": 600,
+        "envMaxWallclockSeconds": 600,
+        "source": "runner-fixed-fast-51"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "integrityStatus": "passed",
+      "verificationStatus": "passed",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "lineage": {
+        "source": "model-factory",
+        "parentExperimentId": "exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning",
+        "changedFactors": [
+          {
+            "factor": "ACTIVATION_MODE",
+            "parentValue": "unset",
+            "candidateValue": "relu2"
+          },
+          {
+            "factor": "ATTN_NORM_EPS",
+            "parentValue": "unset",
+            "candidateValue": "1e-6"
+          },
+          {
+            "factor": "ATTN_NORM_MODE",
+            "parentValue": "unset",
+            "candidateValue": "baseline"
+          },
+          {
+            "factor": "ITERATIONS",
+            "parentValue": "32",
+            "candidateValue": "256"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_ENABLED",
+            "parentValue": "unset",
+            "candidateValue": "0"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_MODE",
+            "parentValue": "unset",
+            "candidateValue": "disabled"
+          },
+          {
+            "factor": "SWIGLU_GATE_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MIN",
+            "parentValue": "unset",
+            "candidateValue": "-10.0"
+          },
+          {
+            "factor": "VAL_TOKEN_LIMIT",
+            "parentValue": "8192",
+            "candidateValue": "32768"
+          }
+        ]
+      },
+      "lineageResolution": {
+        "status": "resolved",
+        "reasonCode": "lineage-resolved",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning"
+      },
+      "attestationRef": "attestation-0f156cd3523029d9",
+      "attestationResolution": {
+        "status": "resolved",
+        "reasonCode": "attestation-resolved",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-0f156cd3523029d9"
+      },
+      "runnerVerificationGate": {
+        "status": "passed",
+        "reasonCode": "runner-verification-passed",
+        "attestationRef": "attestation-0f156cd3523029d9"
+      },
+      "modelFactory": {
+        "owner": "cpu-subset-runner",
+        "normalizedFactors": {
+          "ACTIVATION_MODE": "relu2",
+          "ARTIFACT_BUDGET_STRICT": "1",
+          "ATTN_NORM_EPS": "1e-6",
+          "ATTN_NORM_MODE": "baseline",
+          "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights",
+          "ITERATIONS": "256",
+          "MATRIX_LR": "0.03",
+          "MAX_WALLCLOCK_SECONDS": "600",
+          "MLP_MULT": "2",
+          "MODEL_DIM": "96",
+          "MUON_BACKEND_STEPS": "5",
+          "MUON_MOMENTUM": "0.95",
+          "MUON_MOMENTUM_WARMUP_START": "0.85",
+          "MUON_MOMENTUM_WARMUP_STEPS": "120",
+          "NUM_HEADS": "4",
+          "NUM_KV_HEADS": "2",
+          "NUM_LAYERS": "1",
+          "SEED": "1337",
+          "SWIGLU_CLAMP_ENABLED": "0",
+          "SWIGLU_CLAMP_MODE": "disabled",
+          "SWIGLU_GATE_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MIN": "-10.0",
+          "TRAIN_BATCH_TOKENS": "2048",
+          "TRAIN_LOG_EVERY": "1",
+          "TRAIN_SEQ_LEN": "128",
+          "VAL_BATCH_SIZE": "4096",
+          "VAL_LOSS_EVERY": "2",
+          "VAL_TOKEN_LIMIT": "32768",
+          "VOCAB_SIZE": "1024",
+          "WARMDOWN_ITERS": "0",
+          "WARMUP_STEPS": "0"
+        }
+      },
+      "rankingTable": {
+        "metricName": "val_bpb",
+        "direction": "lower_is_better",
+        "candidateRank": 6,
+        "totalCandidates": 27,
+        "rows": [
+          {
+            "experimentId": "exp-lr-half-256iter-d256-cpu",
+            "objectiveValue": 2.60080495,
+            "rank": 1,
+            "deltaToBest": 0.0
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d192-cpu",
+            "objectiveValue": 2.61832018,
+            "rank": 2,
+            "deltaToBest": 0.01751523
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d128-cpu",
+            "objectiveValue": 2.66077075,
+            "rank": 3,
+            "deltaToBest": 0.0599658
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-tiny-cpu",
+            "objectiveValue": 2.67928586,
+            "rank": 4,
+            "deltaToBest": 0.07848091
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-val32k-tiny-cpu",
+            "objectiveValue": 2.70817084,
+            "rank": 5,
+            "deltaToBest": 0.10736589
+          },
+          {
+            "experimentId": "exp-fast55-muon-baseline-cpu",
+            "objectiveValue": 2.73507311,
+            "rank": 6,
+            "deltaToBest": 0.13426816
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-clamped-cpu",
+            "objectiveValue": 2.73744696,
+            "rank": 7,
+            "deltaToBest": 0.13664201
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-control-cpu",
+            "objectiveValue": 2.73757892,
+            "rank": 8,
+            "deltaToBest": 0.13677397
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-rmsnorm-cpu",
+            "objectiveValue": 2.74979268,
+            "rank": 9,
+            "deltaToBest": 0.14898773
+          },
+          {
+            "experimentId": "exp-fast53-attn-baseline-cpu",
+            "objectiveValue": 2.75463306,
+            "rank": 10,
+            "deltaToBest": 0.15382811
+          },
+          {
+            "experimentId": "exp-lr-half-128iter-tiny-cpu",
+            "objectiveValue": 2.80297923,
+            "rank": 11,
+            "deltaToBest": 0.20217428
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-norm-per-head-cpu",
+            "objectiveValue": 2.81660447,
+            "rank": 12,
+            "deltaToBest": 0.21579952
+          },
+          {
+            "experimentId": "exp-lr-half-64iter-tiny-cpu",
+            "objectiveValue": 2.95971435,
+            "rank": 13,
+            "deltaToBest": 0.3589094
+          },
+          {
+            "experimentId": "exp-fast51-muon-warmup80",
+            "objectiveValue": 3.17236706,
+            "rank": 14,
+            "deltaToBest": 0.57156211
+          },
+          {
+            "experimentId": "exp-fast51-muon-backend7",
+            "objectiveValue": 3.17716103,
+            "rank": 15,
+            "deltaToBest": 0.57635608
+          },
+          {
+            "experimentId": "exp-fast51-muon-baseline",
+            "objectiveValue": 3.17730065,
+            "rank": 16,
+            "deltaToBest": 0.5764957
+          },
+          {
+            "experimentId": "exp-lr-half-32iter-tiny-cpu",
+            "objectiveValue": 3.18292065,
+            "rank": 17,
+            "deltaToBest": 0.5821157
+          },
+          {
+            "experimentId": "exp-fast51-adamw-exempt-qproj",
+            "objectiveValue": 3.20857486,
+            "rank": 18,
+            "deltaToBest": 0.60776991
+          },
+          {
+            "experimentId": "exp-lr-half-16iter-tiny-cpu",
+            "objectiveValue": 3.41242975,
+            "rank": 19,
+            "deltaToBest": 0.8116248
+          },
+          {
+            "experimentId": "exp-lr-quarter-16iter-tiny-cpu",
+            "objectiveValue": 3.4320009,
+            "rank": 20,
+            "deltaToBest": 0.83119595
+          },
+          {
+            "experimentId": "exp-lr-quarter-8iter-tiny-cpu",
+            "objectiveValue": 3.62737283,
+            "rank": 21,
+            "deltaToBest": 1.02656788
+          },
+          {
+            "experimentId": "exp-lr-half-8iter-tiny-cpu",
+            "objectiveValue": 3.66020801,
+            "rank": 22,
+            "deltaToBest": 1.05940306
+          },
+          {
+            "experimentId": "exp-lr-eighth-8iter-tiny-cpu",
+            "objectiveValue": 3.7113563,
+            "rank": 23,
+            "deltaToBest": 1.11055135
+          },
+          {
+            "experimentId": "exp-lr-quarter-tiny-cpu",
+            "objectiveValue": 3.84994109,
+            "rank": 24,
+            "deltaToBest": 1.24913614
+          },
+          {
+            "experimentId": "exp-lr-half-tiny-cpu",
+            "objectiveValue": 3.88462382,
+            "rank": 25,
+            "deltaToBest": 1.28381887
+          },
+          {
+            "experimentId": "exp-fast52-deterministic-ranking-cpu",
+            "objectiveValue": 4.25974409,
+            "rank": 26,
+            "deltaToBest": 1.65893914
+          },
+          {
+            "experimentId": "exp-baseline-tiny-cpu",
+            "objectiveValue": 4.26207938,
+            "rank": 27,
+            "deltaToBest": 1.66127443
+          }
+        ],
+        "attestationRef": "attestation-0f156cd3523029d9",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-0f156cd3523029d9",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "verificationStatus": "passed",
+        "resultClass": "cpu-subset",
+        "verificationClass": "cpu-subset"
+      },
+      "modelFactoryDecision": {
+        "promotionDecision": "hold",
+        "retirementDecision": "retire",
+        "reason": "Promotion and follow-up require runner-attested deterministic and seed-variance verification plus trusted-registry lineage resolution; fail closed on missing trust."
+      },
+      "followUpTaskProposal": null,
+      "benchmarkProgressEligible": false,
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 2.73507311,
+        "valLoss": 4.72413099,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/.fastest-self-run/worktrees/fast-55-ca8627ca/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-baseline-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-baseline-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-baseline-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-baseline-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "provisional",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      },
+      "untrustedCandidateMetadata": {
+        "declaredVerification": {
+          "verificationPassed": null,
+          "seedVariancePassed": null,
+          "runnerVerification": null
+        }
+      }
+    },
+    {
+      "experimentId": "exp-fast55-muon-update-scale-cpu",
+      "evidenceId": "evidence-exp-fast55-muon-update-scale-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-26T08:09:21Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 2.72965078,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-55:cpu-subset:exp-fast55-muon-update-scale-cpu",
+      "taskId": "FAST-55",
+      "traceId": "trace-fast55-muon-update-scale-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 256,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 32768,
+        "modelDim": 96,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "runtimeValidationCaps": {
+        "maxRuntimeSeconds": 600,
+        "iterations": 256,
+        "valTokenLimit": 32768,
+        "valBatchSize": 4096,
+        "validationClass": "cpu-subset",
+        "capPolicySource": "runner-fixed-fast-51"
+      },
+      "effectiveRuntimeCapSec": 600,
+      "capPolicySource": "runner-fixed-fast-51",
+      "timeoutContainmentMode": "host-level",
+      "processTerminationScope": "process-group",
+      "capOverrideActor": "none",
+      "enforcementProof": {
+        "runnerHardCapSeconds": 600,
+        "envMaxWallclockSeconds": 600,
+        "source": "runner-fixed-fast-51"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "integrityStatus": "passed",
+      "verificationStatus": "passed",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "lineage": {
+        "source": "model-factory",
+        "parentExperimentId": "exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning",
+        "changedFactors": [
+          {
+            "factor": "ACTIVATION_MODE",
+            "parentValue": "unset",
+            "candidateValue": "relu2"
+          },
+          {
+            "factor": "ATTN_NORM_EPS",
+            "parentValue": "unset",
+            "candidateValue": "1e-6"
+          },
+          {
+            "factor": "ATTN_NORM_MODE",
+            "parentValue": "unset",
+            "candidateValue": "baseline"
+          },
+          {
+            "factor": "ITERATIONS",
+            "parentValue": "32",
+            "candidateValue": "256"
+          },
+          {
+            "factor": "MATRIX_LR",
+            "parentValue": "0.03",
+            "candidateValue": "0.0275"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_ENABLED",
+            "parentValue": "unset",
+            "candidateValue": "0"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_MODE",
+            "parentValue": "unset",
+            "candidateValue": "disabled"
+          },
+          {
+            "factor": "SWIGLU_GATE_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MIN",
+            "parentValue": "unset",
+            "candidateValue": "-10.0"
+          },
+          {
+            "factor": "VAL_TOKEN_LIMIT",
+            "parentValue": "8192",
+            "candidateValue": "32768"
+          }
+        ]
+      },
+      "lineageResolution": {
+        "status": "resolved",
+        "reasonCode": "lineage-resolved",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning"
+      },
+      "attestationRef": "attestation-1e44897ce5b85328",
+      "attestationResolution": {
+        "status": "resolved",
+        "reasonCode": "attestation-resolved",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-1e44897ce5b85328"
+      },
+      "runnerVerificationGate": {
+        "status": "passed",
+        "reasonCode": "runner-verification-passed",
+        "attestationRef": "attestation-1e44897ce5b85328"
+      },
+      "modelFactory": {
+        "owner": "cpu-subset-runner",
+        "normalizedFactors": {
+          "ACTIVATION_MODE": "relu2",
+          "ARTIFACT_BUDGET_STRICT": "1",
+          "ATTN_NORM_EPS": "1e-6",
+          "ATTN_NORM_MODE": "baseline",
+          "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights",
+          "ITERATIONS": "256",
+          "MATRIX_LR": "0.0275",
+          "MAX_WALLCLOCK_SECONDS": "600",
+          "MLP_MULT": "2",
+          "MODEL_DIM": "96",
+          "MUON_BACKEND_STEPS": "5",
+          "MUON_MOMENTUM": "0.95",
+          "MUON_MOMENTUM_WARMUP_START": "0.85",
+          "MUON_MOMENTUM_WARMUP_STEPS": "120",
+          "NUM_HEADS": "4",
+          "NUM_KV_HEADS": "2",
+          "NUM_LAYERS": "1",
+          "SEED": "1337",
+          "SWIGLU_CLAMP_ENABLED": "0",
+          "SWIGLU_CLAMP_MODE": "disabled",
+          "SWIGLU_GATE_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MIN": "-10.0",
+          "TRAIN_BATCH_TOKENS": "2048",
+          "TRAIN_LOG_EVERY": "1",
+          "TRAIN_SEQ_LEN": "128",
+          "VAL_BATCH_SIZE": "4096",
+          "VAL_LOSS_EVERY": "2",
+          "VAL_TOKEN_LIMIT": "32768",
+          "VOCAB_SIZE": "1024",
+          "WARMDOWN_ITERS": "0",
+          "WARMUP_STEPS": "0"
+        }
+      },
+      "rankingTable": {
+        "metricName": "val_bpb",
+        "direction": "lower_is_better",
+        "candidateRank": 6,
+        "totalCandidates": 28,
+        "rows": [
+          {
+            "experimentId": "exp-lr-half-256iter-d256-cpu",
+            "objectiveValue": 2.60080495,
+            "rank": 1,
+            "deltaToBest": 0.0
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d192-cpu",
+            "objectiveValue": 2.61832018,
+            "rank": 2,
+            "deltaToBest": 0.01751523
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d128-cpu",
+            "objectiveValue": 2.66077075,
+            "rank": 3,
+            "deltaToBest": 0.0599658
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-tiny-cpu",
+            "objectiveValue": 2.67928586,
+            "rank": 4,
+            "deltaToBest": 0.07848091
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-val32k-tiny-cpu",
+            "objectiveValue": 2.70817084,
+            "rank": 5,
+            "deltaToBest": 0.10736589
+          },
+          {
+            "experimentId": "exp-fast55-muon-update-scale-cpu",
+            "objectiveValue": 2.72965078,
+            "rank": 6,
+            "deltaToBest": 0.12884583
+          },
+          {
+            "experimentId": "exp-fast55-muon-baseline-cpu",
+            "objectiveValue": 2.73507311,
+            "rank": 7,
+            "deltaToBest": 0.13426816
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-clamped-cpu",
+            "objectiveValue": 2.73744696,
+            "rank": 8,
+            "deltaToBest": 0.13664201
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-control-cpu",
+            "objectiveValue": 2.73757892,
+            "rank": 9,
+            "deltaToBest": 0.13677397
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-rmsnorm-cpu",
+            "objectiveValue": 2.74979268,
+            "rank": 10,
+            "deltaToBest": 0.14898773
+          },
+          {
+            "experimentId": "exp-fast53-attn-baseline-cpu",
+            "objectiveValue": 2.75463306,
+            "rank": 11,
+            "deltaToBest": 0.15382811
+          },
+          {
+            "experimentId": "exp-lr-half-128iter-tiny-cpu",
+            "objectiveValue": 2.80297923,
+            "rank": 12,
+            "deltaToBest": 0.20217428
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-norm-per-head-cpu",
+            "objectiveValue": 2.81660447,
+            "rank": 13,
+            "deltaToBest": 0.21579952
+          },
+          {
+            "experimentId": "exp-lr-half-64iter-tiny-cpu",
+            "objectiveValue": 2.95971435,
+            "rank": 14,
+            "deltaToBest": 0.3589094
+          },
+          {
+            "experimentId": "exp-fast51-muon-warmup80",
+            "objectiveValue": 3.17236706,
+            "rank": 15,
+            "deltaToBest": 0.57156211
+          },
+          {
+            "experimentId": "exp-fast51-muon-backend7",
+            "objectiveValue": 3.17716103,
+            "rank": 16,
+            "deltaToBest": 0.57635608
+          },
+          {
+            "experimentId": "exp-fast51-muon-baseline",
+            "objectiveValue": 3.17730065,
+            "rank": 17,
+            "deltaToBest": 0.5764957
+          },
+          {
+            "experimentId": "exp-lr-half-32iter-tiny-cpu",
+            "objectiveValue": 3.18292065,
+            "rank": 18,
+            "deltaToBest": 0.5821157
+          },
+          {
+            "experimentId": "exp-fast51-adamw-exempt-qproj",
+            "objectiveValue": 3.20857486,
+            "rank": 19,
+            "deltaToBest": 0.60776991
+          },
+          {
+            "experimentId": "exp-lr-half-16iter-tiny-cpu",
+            "objectiveValue": 3.41242975,
+            "rank": 20,
+            "deltaToBest": 0.8116248
+          },
+          {
+            "experimentId": "exp-lr-quarter-16iter-tiny-cpu",
+            "objectiveValue": 3.4320009,
+            "rank": 21,
+            "deltaToBest": 0.83119595
+          },
+          {
+            "experimentId": "exp-lr-quarter-8iter-tiny-cpu",
+            "objectiveValue": 3.62737283,
+            "rank": 22,
+            "deltaToBest": 1.02656788
+          },
+          {
+            "experimentId": "exp-lr-half-8iter-tiny-cpu",
+            "objectiveValue": 3.66020801,
+            "rank": 23,
+            "deltaToBest": 1.05940306
+          },
+          {
+            "experimentId": "exp-lr-eighth-8iter-tiny-cpu",
+            "objectiveValue": 3.7113563,
+            "rank": 24,
+            "deltaToBest": 1.11055135
+          },
+          {
+            "experimentId": "exp-lr-quarter-tiny-cpu",
+            "objectiveValue": 3.84994109,
+            "rank": 25,
+            "deltaToBest": 1.24913614
+          },
+          {
+            "experimentId": "exp-lr-half-tiny-cpu",
+            "objectiveValue": 3.88462382,
+            "rank": 26,
+            "deltaToBest": 1.28381887
+          },
+          {
+            "experimentId": "exp-fast52-deterministic-ranking-cpu",
+            "objectiveValue": 4.25974409,
+            "rank": 27,
+            "deltaToBest": 1.65893914
+          },
+          {
+            "experimentId": "exp-baseline-tiny-cpu",
+            "objectiveValue": 4.26207938,
+            "rank": 28,
+            "deltaToBest": 1.66127443
+          }
+        ],
+        "attestationRef": "attestation-1e44897ce5b85328",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-1e44897ce5b85328",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "verificationStatus": "passed",
+        "resultClass": "cpu-subset",
+        "verificationClass": "cpu-subset"
+      },
+      "modelFactoryDecision": {
+        "promotionDecision": "hold",
+        "retirementDecision": "retire",
+        "reason": "Promotion and follow-up require runner-attested deterministic and seed-variance verification plus trusted-registry lineage resolution; fail closed on missing trust."
+      },
+      "followUpTaskProposal": null,
+      "benchmarkProgressEligible": false,
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 2.72965078,
+        "valLoss": 4.71476531,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/.fastest-self-run/worktrees/fast-55-ca8627ca/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-update-scale-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-update-scale-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-update-scale-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-update-scale-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "provisional",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      },
+      "untrustedCandidateMetadata": {
+        "declaredVerification": {
+          "verificationPassed": null,
+          "seedVariancePassed": null,
+          "runnerVerification": null
+        }
+      }
+    },
+    {
+      "experimentId": "exp-fast55-muon-backend-warmup-cpu",
+      "evidenceId": "evidence-exp-fast55-muon-backend-warmup-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-26T08:10:48Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 2.73537593,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-55:cpu-subset:exp-fast55-muon-backend-warmup-cpu",
+      "taskId": "FAST-55",
+      "traceId": "trace-fast55-muon-backend-warmup-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 256,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 32768,
+        "modelDim": 96,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "runtimeValidationCaps": {
+        "maxRuntimeSeconds": 600,
+        "iterations": 256,
+        "valTokenLimit": 32768,
+        "valBatchSize": 4096,
+        "validationClass": "cpu-subset",
+        "capPolicySource": "runner-fixed-fast-51"
+      },
+      "effectiveRuntimeCapSec": 600,
+      "capPolicySource": "runner-fixed-fast-51",
+      "timeoutContainmentMode": "host-level",
+      "processTerminationScope": "process-group",
+      "capOverrideActor": "none",
+      "enforcementProof": {
+        "runnerHardCapSeconds": 600,
+        "envMaxWallclockSeconds": 600,
+        "source": "runner-fixed-fast-51"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "integrityStatus": "passed",
+      "verificationStatus": "passed",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "lineage": {
+        "source": "model-factory",
+        "parentExperimentId": "exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning",
+        "changedFactors": [
+          {
+            "factor": "ACTIVATION_MODE",
+            "parentValue": "unset",
+            "candidateValue": "relu2"
+          },
+          {
+            "factor": "ATTN_NORM_EPS",
+            "parentValue": "unset",
+            "candidateValue": "1e-6"
+          },
+          {
+            "factor": "ATTN_NORM_MODE",
+            "parentValue": "unset",
+            "candidateValue": "baseline"
+          },
+          {
+            "factor": "ITERATIONS",
+            "parentValue": "32",
+            "candidateValue": "256"
+          },
+          {
+            "factor": "MUON_BACKEND_STEPS",
+            "parentValue": "5",
+            "candidateValue": "7"
+          },
+          {
+            "factor": "MUON_MOMENTUM_WARMUP_START",
+            "parentValue": "0.85",
+            "candidateValue": "0.80"
+          },
+          {
+            "factor": "MUON_MOMENTUM_WARMUP_STEPS",
+            "parentValue": "120",
+            "candidateValue": "240"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_ENABLED",
+            "parentValue": "unset",
+            "candidateValue": "0"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_MODE",
+            "parentValue": "unset",
+            "candidateValue": "disabled"
+          },
+          {
+            "factor": "SWIGLU_GATE_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MIN",
+            "parentValue": "unset",
+            "candidateValue": "-10.0"
+          },
+          {
+            "factor": "VAL_TOKEN_LIMIT",
+            "parentValue": "8192",
+            "candidateValue": "32768"
+          }
+        ]
+      },
+      "lineageResolution": {
+        "status": "resolved",
+        "reasonCode": "lineage-resolved",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning"
+      },
+      "attestationRef": "attestation-5674a7d04e7b4208",
+      "attestationResolution": {
+        "status": "resolved",
+        "reasonCode": "attestation-resolved",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-5674a7d04e7b4208"
+      },
+      "runnerVerificationGate": {
+        "status": "passed",
+        "reasonCode": "runner-verification-passed",
+        "attestationRef": "attestation-5674a7d04e7b4208"
+      },
+      "modelFactory": {
+        "owner": "cpu-subset-runner",
+        "normalizedFactors": {
+          "ACTIVATION_MODE": "relu2",
+          "ARTIFACT_BUDGET_STRICT": "1",
+          "ATTN_NORM_EPS": "1e-6",
+          "ATTN_NORM_MODE": "baseline",
+          "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights",
+          "ITERATIONS": "256",
+          "MATRIX_LR": "0.03",
+          "MAX_WALLCLOCK_SECONDS": "600",
+          "MLP_MULT": "2",
+          "MODEL_DIM": "96",
+          "MUON_BACKEND_STEPS": "7",
+          "MUON_MOMENTUM": "0.95",
+          "MUON_MOMENTUM_WARMUP_START": "0.80",
+          "MUON_MOMENTUM_WARMUP_STEPS": "240",
+          "NUM_HEADS": "4",
+          "NUM_KV_HEADS": "2",
+          "NUM_LAYERS": "1",
+          "SEED": "1337",
+          "SWIGLU_CLAMP_ENABLED": "0",
+          "SWIGLU_CLAMP_MODE": "disabled",
+          "SWIGLU_GATE_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MIN": "-10.0",
+          "TRAIN_BATCH_TOKENS": "2048",
+          "TRAIN_LOG_EVERY": "1",
+          "TRAIN_SEQ_LEN": "128",
+          "VAL_BATCH_SIZE": "4096",
+          "VAL_LOSS_EVERY": "2",
+          "VAL_TOKEN_LIMIT": "32768",
+          "VOCAB_SIZE": "1024",
+          "WARMDOWN_ITERS": "0",
+          "WARMUP_STEPS": "0"
+        }
+      },
+      "rankingTable": {
+        "metricName": "val_bpb",
+        "direction": "lower_is_better",
+        "candidateRank": 8,
+        "totalCandidates": 29,
+        "rows": [
+          {
+            "experimentId": "exp-lr-half-256iter-d256-cpu",
+            "objectiveValue": 2.60080495,
+            "rank": 1,
+            "deltaToBest": 0.0
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d192-cpu",
+            "objectiveValue": 2.61832018,
+            "rank": 2,
+            "deltaToBest": 0.01751523
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d128-cpu",
+            "objectiveValue": 2.66077075,
+            "rank": 3,
+            "deltaToBest": 0.0599658
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-tiny-cpu",
+            "objectiveValue": 2.67928586,
+            "rank": 4,
+            "deltaToBest": 0.07848091
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-val32k-tiny-cpu",
+            "objectiveValue": 2.70817084,
+            "rank": 5,
+            "deltaToBest": 0.10736589
+          },
+          {
+            "experimentId": "exp-fast55-muon-update-scale-cpu",
+            "objectiveValue": 2.72965078,
+            "rank": 6,
+            "deltaToBest": 0.12884583
+          },
+          {
+            "experimentId": "exp-fast55-muon-baseline-cpu",
+            "objectiveValue": 2.73507311,
+            "rank": 7,
+            "deltaToBest": 0.13426816
+          },
+          {
+            "experimentId": "exp-fast55-muon-backend-warmup-cpu",
+            "objectiveValue": 2.73537593,
+            "rank": 8,
+            "deltaToBest": 0.13457098
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-clamped-cpu",
+            "objectiveValue": 2.73744696,
+            "rank": 9,
+            "deltaToBest": 0.13664201
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-control-cpu",
+            "objectiveValue": 2.73757892,
+            "rank": 10,
+            "deltaToBest": 0.13677397
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-rmsnorm-cpu",
+            "objectiveValue": 2.74979268,
+            "rank": 11,
+            "deltaToBest": 0.14898773
+          },
+          {
+            "experimentId": "exp-fast53-attn-baseline-cpu",
+            "objectiveValue": 2.75463306,
+            "rank": 12,
+            "deltaToBest": 0.15382811
+          },
+          {
+            "experimentId": "exp-lr-half-128iter-tiny-cpu",
+            "objectiveValue": 2.80297923,
+            "rank": 13,
+            "deltaToBest": 0.20217428
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-norm-per-head-cpu",
+            "objectiveValue": 2.81660447,
+            "rank": 14,
+            "deltaToBest": 0.21579952
+          },
+          {
+            "experimentId": "exp-lr-half-64iter-tiny-cpu",
+            "objectiveValue": 2.95971435,
+            "rank": 15,
+            "deltaToBest": 0.3589094
+          },
+          {
+            "experimentId": "exp-fast51-muon-warmup80",
+            "objectiveValue": 3.17236706,
+            "rank": 16,
+            "deltaToBest": 0.57156211
+          },
+          {
+            "experimentId": "exp-fast51-muon-backend7",
+            "objectiveValue": 3.17716103,
+            "rank": 17,
+            "deltaToBest": 0.57635608
+          },
+          {
+            "experimentId": "exp-fast51-muon-baseline",
+            "objectiveValue": 3.17730065,
+            "rank": 18,
+            "deltaToBest": 0.5764957
+          },
+          {
+            "experimentId": "exp-lr-half-32iter-tiny-cpu",
+            "objectiveValue": 3.18292065,
+            "rank": 19,
+            "deltaToBest": 0.5821157
+          },
+          {
+            "experimentId": "exp-fast51-adamw-exempt-qproj",
+            "objectiveValue": 3.20857486,
+            "rank": 20,
+            "deltaToBest": 0.60776991
+          },
+          {
+            "experimentId": "exp-lr-half-16iter-tiny-cpu",
+            "objectiveValue": 3.41242975,
+            "rank": 21,
+            "deltaToBest": 0.8116248
+          },
+          {
+            "experimentId": "exp-lr-quarter-16iter-tiny-cpu",
+            "objectiveValue": 3.4320009,
+            "rank": 22,
+            "deltaToBest": 0.83119595
+          },
+          {
+            "experimentId": "exp-lr-quarter-8iter-tiny-cpu",
+            "objectiveValue": 3.62737283,
+            "rank": 23,
+            "deltaToBest": 1.02656788
+          },
+          {
+            "experimentId": "exp-lr-half-8iter-tiny-cpu",
+            "objectiveValue": 3.66020801,
+            "rank": 24,
+            "deltaToBest": 1.05940306
+          },
+          {
+            "experimentId": "exp-lr-eighth-8iter-tiny-cpu",
+            "objectiveValue": 3.7113563,
+            "rank": 25,
+            "deltaToBest": 1.11055135
+          },
+          {
+            "experimentId": "exp-lr-quarter-tiny-cpu",
+            "objectiveValue": 3.84994109,
+            "rank": 26,
+            "deltaToBest": 1.24913614
+          },
+          {
+            "experimentId": "exp-lr-half-tiny-cpu",
+            "objectiveValue": 3.88462382,
+            "rank": 27,
+            "deltaToBest": 1.28381887
+          },
+          {
+            "experimentId": "exp-fast52-deterministic-ranking-cpu",
+            "objectiveValue": 4.25974409,
+            "rank": 28,
+            "deltaToBest": 1.65893914
+          },
+          {
+            "experimentId": "exp-baseline-tiny-cpu",
+            "objectiveValue": 4.26207938,
+            "rank": 29,
+            "deltaToBest": 1.66127443
+          }
+        ],
+        "attestationRef": "attestation-5674a7d04e7b4208",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-5674a7d04e7b4208",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "verificationStatus": "passed",
+        "resultClass": "cpu-subset",
+        "verificationClass": "cpu-subset"
+      },
+      "modelFactoryDecision": {
+        "promotionDecision": "hold",
+        "retirementDecision": "retire",
+        "reason": "Promotion and follow-up require runner-attested deterministic and seed-variance verification plus trusted-registry lineage resolution; fail closed on missing trust."
+      },
+      "followUpTaskProposal": null,
+      "benchmarkProgressEligible": false,
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 2.73537593,
+        "valLoss": 4.72465402,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/.fastest-self-run/worktrees/fast-55-ca8627ca/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-backend-warmup-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-backend-warmup-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-backend-warmup-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-muon-backend-warmup-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "provisional",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      },
+      "untrustedCandidateMetadata": {
+        "declaredVerification": {
+          "verificationPassed": null,
+          "seedVariancePassed": null,
+          "runnerVerification": null
+        }
+      }
+    },
+    {
+      "experimentId": "exp-fast55-adamw-exempt-qproj-cpu",
+      "evidenceId": "evidence-exp-fast55-adamw-exempt-qproj-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-26T08:12:57Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 2.73507311,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-55:cpu-subset:exp-fast55-adamw-exempt-qproj-cpu",
+      "taskId": "FAST-55",
+      "traceId": "trace-fast55-adamw-exempt-qproj-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 256,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 32768,
+        "modelDim": 96,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "runtimeValidationCaps": {
+        "maxRuntimeSeconds": 600,
+        "iterations": 256,
+        "valTokenLimit": 32768,
+        "valBatchSize": 4096,
+        "validationClass": "cpu-subset",
+        "capPolicySource": "runner-fixed-fast-51"
+      },
+      "effectiveRuntimeCapSec": 600,
+      "capPolicySource": "runner-fixed-fast-51",
+      "timeoutContainmentMode": "host-level",
+      "processTerminationScope": "process-group",
+      "capOverrideActor": "none",
+      "enforcementProof": {
+        "runnerHardCapSeconds": 600,
+        "envMaxWallclockSeconds": 600,
+        "source": "runner-fixed-fast-51"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "integrityStatus": "passed",
+      "verificationStatus": "passed",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "lineage": {
+        "source": "model-factory",
+        "parentExperimentId": "exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning",
+        "changedFactors": [
+          {
+            "factor": "ACTIVATION_MODE",
+            "parentValue": "unset",
+            "candidateValue": "relu2"
+          },
+          {
+            "factor": "ATTN_NORM_EPS",
+            "parentValue": "unset",
+            "candidateValue": "1e-6"
+          },
+          {
+            "factor": "ATTN_NORM_MODE",
+            "parentValue": "unset",
+            "candidateValue": "baseline"
+          },
+          {
+            "factor": "CONTROL_TENSOR_NAME_PATTERNS",
+            "parentValue": "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights",
+            "candidateValue": "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,lm_head,tok_embeddings,rmsnorm"
+          },
+          {
+            "factor": "ITERATIONS",
+            "parentValue": "32",
+            "candidateValue": "256"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_ENABLED",
+            "parentValue": "unset",
+            "candidateValue": "0"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_MODE",
+            "parentValue": "unset",
+            "candidateValue": "disabled"
+          },
+          {
+            "factor": "SWIGLU_GATE_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MIN",
+            "parentValue": "unset",
+            "candidateValue": "-10.0"
+          },
+          {
+            "factor": "VAL_TOKEN_LIMIT",
+            "parentValue": "8192",
+            "candidateValue": "32768"
+          }
+        ]
+      },
+      "lineageResolution": {
+        "status": "resolved",
+        "reasonCode": "lineage-resolved",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "parentFrontierId": "deepseek-v4-muon-tuning"
+      },
+      "attestationRef": "attestation-6e192d75c9a1065e",
+      "attestationResolution": {
+        "status": "resolved",
+        "reasonCode": "attestation-resolved",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-6e192d75c9a1065e"
+      },
+      "runnerVerificationGate": {
+        "status": "passed",
+        "reasonCode": "runner-verification-passed",
+        "attestationRef": "attestation-6e192d75c9a1065e"
+      },
+      "modelFactory": {
+        "owner": "cpu-subset-runner",
+        "normalizedFactors": {
+          "ACTIVATION_MODE": "relu2",
+          "ARTIFACT_BUDGET_STRICT": "1",
+          "ATTN_NORM_EPS": "1e-6",
+          "ATTN_NORM_MODE": "baseline",
+          "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights,lm_head,tok_embeddings,rmsnorm",
+          "ITERATIONS": "256",
+          "MATRIX_LR": "0.03",
+          "MAX_WALLCLOCK_SECONDS": "600",
+          "MLP_MULT": "2",
+          "MODEL_DIM": "96",
+          "MUON_BACKEND_STEPS": "5",
+          "MUON_MOMENTUM": "0.95",
+          "MUON_MOMENTUM_WARMUP_START": "0.85",
+          "MUON_MOMENTUM_WARMUP_STEPS": "120",
+          "NUM_HEADS": "4",
+          "NUM_KV_HEADS": "2",
+          "NUM_LAYERS": "1",
+          "SEED": "1337",
+          "SWIGLU_CLAMP_ENABLED": "0",
+          "SWIGLU_CLAMP_MODE": "disabled",
+          "SWIGLU_GATE_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MIN": "-10.0",
+          "TRAIN_BATCH_TOKENS": "2048",
+          "TRAIN_LOG_EVERY": "1",
+          "TRAIN_SEQ_LEN": "128",
+          "VAL_BATCH_SIZE": "4096",
+          "VAL_LOSS_EVERY": "2",
+          "VAL_TOKEN_LIMIT": "32768",
+          "VOCAB_SIZE": "1024",
+          "WARMDOWN_ITERS": "0",
+          "WARMUP_STEPS": "0"
+        }
+      },
+      "rankingTable": {
+        "metricName": "val_bpb",
+        "direction": "lower_is_better",
+        "candidateRank": 7,
+        "totalCandidates": 30,
+        "rows": [
+          {
+            "experimentId": "exp-lr-half-256iter-d256-cpu",
+            "objectiveValue": 2.60080495,
+            "rank": 1,
+            "deltaToBest": 0.0
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d192-cpu",
+            "objectiveValue": 2.61832018,
+            "rank": 2,
+            "deltaToBest": 0.01751523
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d128-cpu",
+            "objectiveValue": 2.66077075,
+            "rank": 3,
+            "deltaToBest": 0.0599658
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-tiny-cpu",
+            "objectiveValue": 2.67928586,
+            "rank": 4,
+            "deltaToBest": 0.07848091
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-val32k-tiny-cpu",
+            "objectiveValue": 2.70817084,
+            "rank": 5,
+            "deltaToBest": 0.10736589
+          },
+          {
+            "experimentId": "exp-fast55-muon-update-scale-cpu",
+            "objectiveValue": 2.72965078,
+            "rank": 6,
+            "deltaToBest": 0.12884583
+          },
+          {
+            "experimentId": "exp-fast55-adamw-exempt-qproj-cpu",
+            "objectiveValue": 2.73507311,
+            "rank": 7,
+            "deltaToBest": 0.13426816
+          },
+          {
+            "experimentId": "exp-fast55-muon-baseline-cpu",
+            "objectiveValue": 2.73507311,
+            "rank": 8,
+            "deltaToBest": 0.13426816
+          },
+          {
+            "experimentId": "exp-fast55-muon-backend-warmup-cpu",
+            "objectiveValue": 2.73537593,
+            "rank": 9,
+            "deltaToBest": 0.13457098
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-clamped-cpu",
+            "objectiveValue": 2.73744696,
+            "rank": 10,
+            "deltaToBest": 0.13664201
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-control-cpu",
+            "objectiveValue": 2.73757892,
+            "rank": 11,
+            "deltaToBest": 0.13677397
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-rmsnorm-cpu",
+            "objectiveValue": 2.74979268,
+            "rank": 12,
+            "deltaToBest": 0.14898773
+          },
+          {
+            "experimentId": "exp-fast53-attn-baseline-cpu",
+            "objectiveValue": 2.75463306,
+            "rank": 13,
+            "deltaToBest": 0.15382811
+          },
+          {
+            "experimentId": "exp-lr-half-128iter-tiny-cpu",
+            "objectiveValue": 2.80297923,
+            "rank": 14,
+            "deltaToBest": 0.20217428
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-norm-per-head-cpu",
+            "objectiveValue": 2.81660447,
+            "rank": 15,
+            "deltaToBest": 0.21579952
+          },
+          {
+            "experimentId": "exp-lr-half-64iter-tiny-cpu",
+            "objectiveValue": 2.95971435,
+            "rank": 16,
+            "deltaToBest": 0.3589094
+          },
+          {
+            "experimentId": "exp-fast51-muon-warmup80",
+            "objectiveValue": 3.17236706,
+            "rank": 17,
+            "deltaToBest": 0.57156211
+          },
+          {
+            "experimentId": "exp-fast51-muon-backend7",
+            "objectiveValue": 3.17716103,
+            "rank": 18,
+            "deltaToBest": 0.57635608
+          },
+          {
+            "experimentId": "exp-fast51-muon-baseline",
+            "objectiveValue": 3.17730065,
+            "rank": 19,
+            "deltaToBest": 0.5764957
+          },
+          {
+            "experimentId": "exp-lr-half-32iter-tiny-cpu",
+            "objectiveValue": 3.18292065,
+            "rank": 20,
+            "deltaToBest": 0.5821157
+          },
+          {
+            "experimentId": "exp-fast51-adamw-exempt-qproj",
+            "objectiveValue": 3.20857486,
+            "rank": 21,
+            "deltaToBest": 0.60776991
+          },
+          {
+            "experimentId": "exp-lr-half-16iter-tiny-cpu",
+            "objectiveValue": 3.41242975,
+            "rank": 22,
+            "deltaToBest": 0.8116248
+          },
+          {
+            "experimentId": "exp-lr-quarter-16iter-tiny-cpu",
+            "objectiveValue": 3.4320009,
+            "rank": 23,
+            "deltaToBest": 0.83119595
+          },
+          {
+            "experimentId": "exp-lr-quarter-8iter-tiny-cpu",
+            "objectiveValue": 3.62737283,
+            "rank": 24,
+            "deltaToBest": 1.02656788
+          },
+          {
+            "experimentId": "exp-lr-half-8iter-tiny-cpu",
+            "objectiveValue": 3.66020801,
+            "rank": 25,
+            "deltaToBest": 1.05940306
+          },
+          {
+            "experimentId": "exp-lr-eighth-8iter-tiny-cpu",
+            "objectiveValue": 3.7113563,
+            "rank": 26,
+            "deltaToBest": 1.11055135
+          },
+          {
+            "experimentId": "exp-lr-quarter-tiny-cpu",
+            "objectiveValue": 3.84994109,
+            "rank": 27,
+            "deltaToBest": 1.24913614
+          },
+          {
+            "experimentId": "exp-lr-half-tiny-cpu",
+            "objectiveValue": 3.88462382,
+            "rank": 28,
+            "deltaToBest": 1.28381887
+          },
+          {
+            "experimentId": "exp-fast52-deterministic-ranking-cpu",
+            "objectiveValue": 4.25974409,
+            "rank": 29,
+            "deltaToBest": 1.65893914
+          },
+          {
+            "experimentId": "exp-baseline-tiny-cpu",
+            "objectiveValue": 4.26207938,
+            "rank": 30,
+            "deltaToBest": 1.66127443
+          }
+        ],
+        "attestationRef": "attestation-6e192d75c9a1065e",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-6e192d75c9a1065e",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast51-muon-baseline",
+        "verificationStatus": "passed",
+        "resultClass": "cpu-subset",
+        "verificationClass": "cpu-subset"
+      },
+      "modelFactoryDecision": {
+        "promotionDecision": "hold",
+        "retirementDecision": "retire",
+        "reason": "Promotion and follow-up require runner-attested deterministic and seed-variance verification plus trusted-registry lineage resolution; fail closed on missing trust."
+      },
+      "followUpTaskProposal": null,
+      "benchmarkProgressEligible": false,
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 2.73507311,
+        "valLoss": 4.72413099,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/.fastest-self-run/worktrees/fast-55-ca8627ca/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-adamw-exempt-qproj-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-adamw-exempt-qproj-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-adamw-exempt-qproj-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast55-adamw-exempt-qproj-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "provisional",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      },
+      "untrustedCandidateMetadata": {
+        "declaredVerification": {
+          "verificationPassed": null,
+          "seedVariancePassed": null,
+          "runnerVerification": null
+        }
+      }
     }
   ]
 }

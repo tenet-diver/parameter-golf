@@ -1,0 +1,17 @@
+{
+  "taskId": "FAST-55",
+  "candidateId": "fast55-muon-update-scale-cpu",
+  "parentExperimentId": "exp-fast51-muon-baseline",
+  "trustGateMode": "strict",
+  "seed": 1337,
+  "env": {
+    "ITERATIONS": 256,
+    "VAL_TOKEN_LIMIT": 32768,
+    "MATRIX_LR": "0.0275",
+    "MUON_BACKEND_STEPS": 5,
+    "MUON_MOMENTUM": "0.95",
+    "MUON_MOMENTUM_WARMUP_START": "0.85",
+    "MUON_MOMENTUM_WARMUP_STEPS": 120,
+    "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,attn_scales,mlp_scale,mlp_scales,resid_mix,resid_mixes,q_gain,skip_weight,skip_weights"
+  }
+}

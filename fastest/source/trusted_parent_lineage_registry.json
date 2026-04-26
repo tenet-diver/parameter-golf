@@ -33,6 +33,23 @@
         "trustedRoot": "registry:lineage-prod-root",
         "signature": "local-signed-bundle:exp-fast52-deterministic-ranking-parent"
       }
+    },
+    "exp-fast51-muon-baseline": {
+      "parentFrontierId": "deepseek-v4-muon-tuning",
+      "provenanceVerified": true,
+      "receipt": {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": "exp-fast51-muon-baseline",
+        "trustedRoot": "registry:lineage-prod-root",
+        "signature": "cryptographic-signed-bundle:exp-fast51-muon-baseline"
+      },
+      "cryptographicVerification": {
+        "authorityBoundary": "registry://lineage-prod",
+        "verificationRef": "cryptoverify:exp-fast51-muon-baseline",
+        "verified": true,
+        "verifiedAt": "2026-04-26T08:12:57Z"
+      }
     }
   }
 }

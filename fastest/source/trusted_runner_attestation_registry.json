@@ -37,6 +37,90 @@
         "trustedRoot": "registry:attestation-prod-root",
         "signature": "local-signed-bundle:attestation-7c41b6ea242c6f53"
       }
+    },
+    "attestation-0f156cd3523029d9": {
+      "runId": "cpu_subset_fast55-muon-baseline-cpu",
+      "attestationRef": "attestation-0f156cd3523029d9",
+      "source": "cpu-subset-runner",
+      "provenanceVerified": true,
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "receipt": {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": "attestation-0f156cd3523029d9",
+        "trustedRoot": "registry:attestation-prod-root",
+        "signature": "cryptographic-signed-bundle:attestation-0f156cd3523029d9"
+      },
+      "cryptographicVerification": {
+        "authorityBoundary": "registry://attestation-prod",
+        "verificationRef": "cryptoverify:attestation-0f156cd3523029d9",
+        "verified": true,
+        "verifiedAt": "2026-04-26T08:08:02Z"
+      }
+    },
+    "attestation-1e44897ce5b85328": {
+      "runId": "cpu_subset_fast55-muon-update-scale-cpu",
+      "attestationRef": "attestation-1e44897ce5b85328",
+      "source": "cpu-subset-runner",
+      "provenanceVerified": true,
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "receipt": {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": "attestation-1e44897ce5b85328",
+        "trustedRoot": "registry:attestation-prod-root",
+        "signature": "cryptographic-signed-bundle:attestation-1e44897ce5b85328"
+      },
+      "cryptographicVerification": {
+        "authorityBoundary": "registry://attestation-prod",
+        "verificationRef": "cryptoverify:attestation-1e44897ce5b85328",
+        "verified": true,
+        "verifiedAt": "2026-04-26T08:09:21Z"
+      }
+    },
+    "attestation-5674a7d04e7b4208": {
+      "runId": "cpu_subset_fast55-muon-backend-warmup-cpu",
+      "attestationRef": "attestation-5674a7d04e7b4208",
+      "source": "cpu-subset-runner",
+      "provenanceVerified": true,
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "receipt": {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": "attestation-5674a7d04e7b4208",
+        "trustedRoot": "registry:attestation-prod-root",
+        "signature": "cryptographic-signed-bundle:attestation-5674a7d04e7b4208"
+      },
+      "cryptographicVerification": {
+        "authorityBoundary": "registry://attestation-prod",
+        "verificationRef": "cryptoverify:attestation-5674a7d04e7b4208",
+        "verified": true,
+        "verifiedAt": "2026-04-26T08:10:48Z"
+      }
+    },
+    "attestation-6e192d75c9a1065e": {
+      "runId": "cpu_subset_fast55-adamw-exempt-qproj-cpu",
+      "attestationRef": "attestation-6e192d75c9a1065e",
+      "source": "cpu-subset-runner",
+      "provenanceVerified": true,
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "receipt": {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": "attestation-6e192d75c9a1065e",
+        "trustedRoot": "registry:attestation-prod-root",
+        "signature": "cryptographic-signed-bundle:attestation-6e192d75c9a1065e"
+      },
+      "cryptographicVerification": {
+        "authorityBoundary": "registry://attestation-prod",
+        "verificationRef": "cryptoverify:attestation-6e192d75c9a1065e",
+        "verified": true,
+        "verifiedAt": "2026-04-26T08:12:57Z"
+      }
     }
   }
 }

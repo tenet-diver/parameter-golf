@@ -23,9 +23,9 @@
     "unassigned": 4
   },
   "progress": {
-    "totalExperiments": 49,
-    "acceptedExperiments": 49,
-    "mostRecentEvidenceId": "evidence-exp-fast52-deterministic-ranking-cpu"
+    "totalExperiments": 53,
+    "acceptedExperiments": 53,
+    "mostRecentEvidenceId": "evidence-exp-fast55-adamw-exempt-qproj-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -76,12 +76,16 @@
     "exp-fast53-attn-qk-norm-per-head-cpu",
     "exp-fast54-swiglu-control-cpu",
     "exp-fast54-swiglu-clamped-cpu",
-    "exp-fast52-deterministic-ranking-cpu"
+    "exp-fast52-deterministic-ranking-cpu",
+    "exp-fast55-muon-baseline-cpu",
+    "exp-fast55-muon-update-scale-cpu",
+    "exp-fast55-muon-backend-warmup-cpu",
+    "exp-fast55-adamw-exempt-qproj-cpu"
   ],
   "progressTrend": "unknown",
   "bestKnownResult": null,
   "lastControllerTickAt": "2026-04-24T16:12:21.611Z",
-  "lastProgressAt": "2026-04-26T05:26:20Z",
+  "lastProgressAt": "2026-04-26T08:12:57Z",
   "stalledProgress": false,
   "blockers": [
     "No benchmark-verified campaign result exists yet.",
