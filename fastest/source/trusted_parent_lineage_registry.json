@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "trustRootPolicy": {
+    "environment": "production",
+    "allowBypass": false,
+    "trustedRoots": [
+      "registry:lineage-prod-root"
+    ]
+  },
+  "parentLineage": {
+    "exp-fast52-deterministic-ranking-parent": {
+      "parentFrontierId": "deepseek-v4-deterministic-ranking",
+      "provenanceVerified": true,
+      "receipt": {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": "exp-fast52-deterministic-ranking-parent",
+        "trustedRoot": "registry:lineage-prod-root",
+        "signature": "local-signed-bundle:exp-fast52-deterministic-ranking-parent"
+      }
+    }
+  }
+}

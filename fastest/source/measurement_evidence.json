@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-measurement-evidence",
-  "updatedAt": "2026-04-26T03:00:22Z",
+  "updatedAt": "2026-04-26T05:26:20Z",
   "summary": {
     "artifactIds": [
       "evidence-fast1-control-20260423-001",
@@ -52,12 +52,13 @@
       "evidence-exp-fast53-attn-qk-rmsnorm-cpu",
       "evidence-exp-fast53-attn-qk-norm-per-head-cpu",
       "evidence-exp-fast54-swiglu-control-cpu",
-      "evidence-exp-fast54-swiglu-clamped-cpu"
+      "evidence-exp-fast54-swiglu-clamped-cpu",
+      "evidence-exp-fast52-deterministic-ranking-cpu"
     ],
     "trustedControlState": "established",
-    "totalExperiments": 48,
-    "acceptedExperiments": 48,
-    "mostRecentEvidenceId": "evidence-exp-fast54-swiglu-clamped-cpu"
+    "totalExperiments": 49,
+    "acceptedExperiments": 49,
+    "mostRecentEvidenceId": "evidence-exp-fast52-deterministic-ranking-cpu"
   },
   "recentCompletedExperiments": [
     "exp-fast1-control-20260423-001",
@@ -107,7 +108,8 @@
     "exp-fast53-attn-qk-rmsnorm-cpu",
     "exp-fast53-attn-qk-norm-per-head-cpu",
     "exp-fast54-swiglu-control-cpu",
-    "exp-fast54-swiglu-clamped-cpu"
+    "exp-fast54-swiglu-clamped-cpu",
+    "exp-fast52-deterministic-ranking-cpu"
   ],
   "promotionPolicy": {
     "policyVersion": "pg-constraint-clarity-v1",
@@ -4568,6 +4570,447 @@
         "missingEvidence": [
           "benchmark-verified-run"
         ]
+      }
+    },
+    {
+      "experimentId": "exp-fast52-deterministic-ranking-cpu",
+      "evidenceId": "evidence-exp-fast52-deterministic-ranking-cpu",
+      "lane": "cpu-subset",
+      "status": "accepted",
+      "completedAt": "2026-04-26T05:26:20Z",
+      "objectiveMetricName": "val_bpb",
+      "objectiveValue": 4.25974409,
+      "failureCode": null,
+      "failureMessage": null,
+      "idempotencyKey": "FAST-52:cpu-subset:exp-fast52-deterministic-ranking-cpu",
+      "taskId": "FAST-52",
+      "traceId": "trace-fast52-deterministic-ranking-cpu",
+      "runConfig": {
+        "seed": "1337",
+        "iterations": 4,
+        "trainSeqLen": 128,
+        "trainBatchTokens": 2048,
+        "valTokenLimit": 8192,
+        "modelDim": 96,
+        "numLayers": 1
+      },
+      "budgetCaps": {
+        "maxRuntimeSeconds": 600,
+        "hostClass": "cpu-smoke"
+      },
+      "runtimeValidationCaps": {
+        "maxRuntimeSeconds": 600,
+        "iterations": 4,
+        "valTokenLimit": 8192,
+        "valBatchSize": 4096,
+        "validationClass": "cpu-subset",
+        "capPolicySource": "runner-fixed-fast-51"
+      },
+      "effectiveRuntimeCapSec": 600,
+      "capPolicySource": "runner-fixed-fast-51",
+      "timeoutContainmentMode": "host-level",
+      "processTerminationScope": "process-group",
+      "capOverrideActor": "none",
+      "enforcementProof": {
+        "runnerHardCapSeconds": 600,
+        "envMaxWallclockSeconds": 600,
+        "source": "runner-fixed-fast-51"
+      },
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "integrityStatus": "passed",
+      "verificationStatus": "verification_failed_trust",
+      "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
+      "lineage": {
+        "source": "model-factory",
+        "parentExperimentId": "exp-fast52-deterministic-ranking-parent",
+        "parentFrontierId": "deepseek-v4-deterministic-ranking",
+        "changedFactors": [
+          {
+            "factor": "ACTIVATION_MODE",
+            "parentValue": "unset",
+            "candidateValue": "relu2"
+          },
+          {
+            "factor": "ARTIFACT_BUDGET_STRICT",
+            "parentValue": "unset",
+            "candidateValue": "1"
+          },
+          {
+            "factor": "ATTN_NORM_EPS",
+            "parentValue": "unset",
+            "candidateValue": "1e-6"
+          },
+          {
+            "factor": "ATTN_NORM_MODE",
+            "parentValue": "unset",
+            "candidateValue": "baseline"
+          },
+          {
+            "factor": "ITERATIONS",
+            "parentValue": "unset",
+            "candidateValue": "4"
+          },
+          {
+            "factor": "MAX_WALLCLOCK_SECONDS",
+            "parentValue": "unset",
+            "candidateValue": "600"
+          },
+          {
+            "factor": "MLP_MULT",
+            "parentValue": "unset",
+            "candidateValue": "2"
+          },
+          {
+            "factor": "MODEL_DIM",
+            "parentValue": "unset",
+            "candidateValue": "96"
+          },
+          {
+            "factor": "NUM_HEADS",
+            "parentValue": "unset",
+            "candidateValue": "4"
+          },
+          {
+            "factor": "NUM_KV_HEADS",
+            "parentValue": "unset",
+            "candidateValue": "2"
+          },
+          {
+            "factor": "NUM_LAYERS",
+            "parentValue": "unset",
+            "candidateValue": "1"
+          },
+          {
+            "factor": "SEED",
+            "parentValue": "unset",
+            "candidateValue": "1337"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_ENABLED",
+            "parentValue": "unset",
+            "candidateValue": "0"
+          },
+          {
+            "factor": "SWIGLU_CLAMP_MODE",
+            "parentValue": "unset",
+            "candidateValue": "disabled"
+          },
+          {
+            "factor": "SWIGLU_GATE_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MAX",
+            "parentValue": "unset",
+            "candidateValue": "10.0"
+          },
+          {
+            "factor": "SWIGLU_LINEAR_CLAMP_MIN",
+            "parentValue": "unset",
+            "candidateValue": "-10.0"
+          },
+          {
+            "factor": "TRAIN_BATCH_TOKENS",
+            "parentValue": "unset",
+            "candidateValue": "2048"
+          },
+          {
+            "factor": "TRAIN_LOG_EVERY",
+            "parentValue": "unset",
+            "candidateValue": "1"
+          },
+          {
+            "factor": "TRAIN_SEQ_LEN",
+            "parentValue": "unset",
+            "candidateValue": "128"
+          },
+          {
+            "factor": "VAL_BATCH_SIZE",
+            "parentValue": "unset",
+            "candidateValue": "4096"
+          },
+          {
+            "factor": "VAL_LOSS_EVERY",
+            "parentValue": "unset",
+            "candidateValue": "2"
+          },
+          {
+            "factor": "VAL_TOKEN_LIMIT",
+            "parentValue": "unset",
+            "candidateValue": "8192"
+          },
+          {
+            "factor": "VOCAB_SIZE",
+            "parentValue": "unset",
+            "candidateValue": "1024"
+          },
+          {
+            "factor": "WARMDOWN_ITERS",
+            "parentValue": "unset",
+            "candidateValue": "0"
+          },
+          {
+            "factor": "WARMUP_STEPS",
+            "parentValue": "unset",
+            "candidateValue": "0"
+          }
+        ]
+      },
+      "lineageResolution": {
+        "status": "resolved",
+        "reasonCode": "lineage-resolved",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast52-deterministic-ranking-parent",
+        "parentFrontierId": "deepseek-v4-deterministic-ranking"
+      },
+      "attestationRef": "attestation-7c41b6ea242c6f53",
+      "attestationResolution": {
+        "status": "unresolved",
+        "reasonCode": "attestation-unresolved",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-7c41b6ea242c6f53"
+      },
+      "runnerVerificationGate": {
+        "status": "failed",
+        "reasonCode": "runner-verification-gate-failed:provenance,deterministic,seedVariance",
+        "attestationRef": "attestation-7c41b6ea242c6f53"
+      },
+      "modelFactory": {
+        "owner": "cpu-subset-runner",
+        "normalizedFactors": {
+          "ACTIVATION_MODE": "relu2",
+          "ARTIFACT_BUDGET_STRICT": "1",
+          "ATTN_NORM_EPS": "1e-6",
+          "ATTN_NORM_MODE": "baseline",
+          "ITERATIONS": "4",
+          "MAX_WALLCLOCK_SECONDS": "600",
+          "MLP_MULT": "2",
+          "MODEL_DIM": "96",
+          "NUM_HEADS": "4",
+          "NUM_KV_HEADS": "2",
+          "NUM_LAYERS": "1",
+          "SEED": "1337",
+          "SWIGLU_CLAMP_ENABLED": "0",
+          "SWIGLU_CLAMP_MODE": "disabled",
+          "SWIGLU_GATE_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MAX": "10.0",
+          "SWIGLU_LINEAR_CLAMP_MIN": "-10.0",
+          "TRAIN_BATCH_TOKENS": "2048",
+          "TRAIN_LOG_EVERY": "1",
+          "TRAIN_SEQ_LEN": "128",
+          "VAL_BATCH_SIZE": "4096",
+          "VAL_LOSS_EVERY": "2",
+          "VAL_TOKEN_LIMIT": "8192",
+          "VOCAB_SIZE": "1024",
+          "WARMDOWN_ITERS": "0",
+          "WARMUP_STEPS": "0"
+        }
+      },
+      "rankingTable": {
+        "metricName": "val_bpb",
+        "direction": "lower_is_better",
+        "candidateRank": 25,
+        "totalCandidates": 26,
+        "rows": [
+          {
+            "experimentId": "exp-lr-half-256iter-d256-cpu",
+            "objectiveValue": 2.60080495,
+            "rank": 1,
+            "deltaToBest": 0.0
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d192-cpu",
+            "objectiveValue": 2.61832018,
+            "rank": 2,
+            "deltaToBest": 0.01751523
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-d128-cpu",
+            "objectiveValue": 2.66077075,
+            "rank": 3,
+            "deltaToBest": 0.0599658
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-tiny-cpu",
+            "objectiveValue": 2.67928586,
+            "rank": 4,
+            "deltaToBest": 0.07848091
+          },
+          {
+            "experimentId": "exp-lr-half-256iter-val32k-tiny-cpu",
+            "objectiveValue": 2.70817084,
+            "rank": 5,
+            "deltaToBest": 0.10736589
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-clamped-cpu",
+            "objectiveValue": 2.73744696,
+            "rank": 6,
+            "deltaToBest": 0.13664201
+          },
+          {
+            "experimentId": "exp-fast54-swiglu-control-cpu",
+            "objectiveValue": 2.73757892,
+            "rank": 7,
+            "deltaToBest": 0.13677397
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-rmsnorm-cpu",
+            "objectiveValue": 2.74979268,
+            "rank": 8,
+            "deltaToBest": 0.14898773
+          },
+          {
+            "experimentId": "exp-fast53-attn-baseline-cpu",
+            "objectiveValue": 2.75463306,
+            "rank": 9,
+            "deltaToBest": 0.15382811
+          },
+          {
+            "experimentId": "exp-lr-half-128iter-tiny-cpu",
+            "objectiveValue": 2.80297923,
+            "rank": 10,
+            "deltaToBest": 0.20217428
+          },
+          {
+            "experimentId": "exp-fast53-attn-qk-norm-per-head-cpu",
+            "objectiveValue": 2.81660447,
+            "rank": 11,
+            "deltaToBest": 0.21579952
+          },
+          {
+            "experimentId": "exp-lr-half-64iter-tiny-cpu",
+            "objectiveValue": 2.95971435,
+            "rank": 12,
+            "deltaToBest": 0.3589094
+          },
+          {
+            "experimentId": "exp-fast51-muon-warmup80",
+            "objectiveValue": 3.17236706,
+            "rank": 13,
+            "deltaToBest": 0.57156211
+          },
+          {
+            "experimentId": "exp-fast51-muon-backend7",
+            "objectiveValue": 3.17716103,
+            "rank": 14,
+            "deltaToBest": 0.57635608
+          },
+          {
+            "experimentId": "exp-fast51-muon-baseline",
+            "objectiveValue": 3.17730065,
+            "rank": 15,
+            "deltaToBest": 0.5764957
+          },
+          {
+            "experimentId": "exp-lr-half-32iter-tiny-cpu",
+            "objectiveValue": 3.18292065,
+            "rank": 16,
+            "deltaToBest": 0.5821157
+          },
+          {
+            "experimentId": "exp-fast51-adamw-exempt-qproj",
+            "objectiveValue": 3.20857486,
+            "rank": 17,
+            "deltaToBest": 0.60776991
+          },
+          {
+            "experimentId": "exp-lr-half-16iter-tiny-cpu",
+            "objectiveValue": 3.41242975,
+            "rank": 18,
+            "deltaToBest": 0.8116248
+          },
+          {
+            "experimentId": "exp-lr-quarter-16iter-tiny-cpu",
+            "objectiveValue": 3.4320009,
+            "rank": 19,
+            "deltaToBest": 0.83119595
+          },
+          {
+            "experimentId": "exp-lr-quarter-8iter-tiny-cpu",
+            "objectiveValue": 3.62737283,
+            "rank": 20,
+            "deltaToBest": 1.02656788
+          },
+          {
+            "experimentId": "exp-lr-half-8iter-tiny-cpu",
+            "objectiveValue": 3.66020801,
+            "rank": 21,
+            "deltaToBest": 1.05940306
+          },
+          {
+            "experimentId": "exp-lr-eighth-8iter-tiny-cpu",
+            "objectiveValue": 3.7113563,
+            "rank": 22,
+            "deltaToBest": 1.11055135
+          },
+          {
+            "experimentId": "exp-lr-quarter-tiny-cpu",
+            "objectiveValue": 3.84994109,
+            "rank": 23,
+            "deltaToBest": 1.24913614
+          },
+          {
+            "experimentId": "exp-lr-half-tiny-cpu",
+            "objectiveValue": 3.88462382,
+            "rank": 24,
+            "deltaToBest": 1.28381887
+          },
+          {
+            "experimentId": "exp-fast52-deterministic-ranking-cpu",
+            "objectiveValue": 4.25974409,
+            "rank": 25,
+            "deltaToBest": 1.65893914
+          },
+          {
+            "experimentId": "exp-baseline-tiny-cpu",
+            "objectiveValue": 4.26207938,
+            "rank": 26,
+            "deltaToBest": 1.66127443
+          }
+        ],
+        "attestationRef": "attestation-7c41b6ea242c6f53",
+        "attestationRegistryRef": "trusted-runner-attestation:attestation-7c41b6ea242c6f53",
+        "lineageResolutionRef": "trusted-parent-lineage:exp-fast52-deterministic-ranking-parent",
+        "verificationStatus": "verification_failed_trust",
+        "resultClass": "cpu-subset",
+        "verificationClass": "cpu-subset"
+      },
+      "modelFactoryDecision": {
+        "promotionDecision": "hold",
+        "retirementDecision": "defer",
+        "reason": "Promotion and follow-up require runner-attested deterministic and seed-variance verification plus trusted-registry lineage resolution; fail closed on missing trust."
+      },
+      "followUpTaskProposal": null,
+      "benchmarkProgressEligible": false,
+      "observedMetricOutput": {
+        "name": "val_bpb",
+        "value": 4.25974409,
+        "valLoss": 7.32534719,
+        "direction": "lower_is_better"
+      },
+      "executionCommands": [
+        "/workspaces/parameter-golf/.venv/bin/python /workspaces/parameter-golf/.fastest-self-run/worktrees/fast-52-53bc4561/train_gpt.py"
+      ],
+      "artifactPaths": [
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/stdout.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/stderr.txt",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/result.json",
+        "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/final_model.int8.ptz"
+      ],
+      "promotionRationale": {
+        "decision": "hold",
+        "reason": "Follow-up and promotion are blocked until trusted attestation and lineage gates pass.",
+        "missingEvidence": [
+          "benchmark-verified-run"
+        ]
+      },
+      "untrustedCandidateMetadata": {
+        "declaredVerification": {
+          "verificationPassed": null,
+          "seedVariancePassed": null,
+          "runnerVerification": null
+        }
       }
     }
   ]

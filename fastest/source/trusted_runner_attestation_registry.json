@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "trustRootPolicy": {
+    "environment": "production",
+    "allowBypass": false,
+    "trustedRoots": [
+      "registry:attestation-prod-root"
+    ]
+  },
+  "runnerAttestations": {}
+}

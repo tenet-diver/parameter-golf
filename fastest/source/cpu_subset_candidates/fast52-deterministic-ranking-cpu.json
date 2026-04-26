@@ -1,0 +1,12 @@
+{
+  "taskId": "FAST-52",
+  "candidateId": "fast52-deterministic-ranking-cpu",
+  "parentExperimentId": "exp-fast52-deterministic-ranking-parent",
+  "parentFrontierId": "forged-parent-frontier-id",
+  "seed": 1337,
+  "env": {
+    "ITERATIONS": "4",
+    "VAL_TOKEN_LIMIT": "8192",
+    "VAL_BATCH_SIZE": "4096"
+  }
+}
