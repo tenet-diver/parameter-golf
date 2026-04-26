@@ -59,6 +59,30 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
 
         self.assertEqual(env["MAX_WALLCLOCK_SECONDS"], "600")
 
+    def test_accepts_muon_and_adamw_exemption_sweep_factors(self) -> None:
+        env = build_cpu_subset_env(
+            {
+                "candidateId": "muon-sweep",
+                "seed": 11,
+                "env": {
+                    "MATRIX_LR": "0.03",
+                    "MUON_BACKEND_STEPS": 7,
+                    "MUON_MOMENTUM": "0.93",
+                    "MUON_MOMENTUM_WARMUP_START": "0.8",
+                    "MUON_MOMENTUM_WARMUP_STEPS": 120,
+                    "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,q_gain,mlp_scale",
+                },
+            },
+            "cpu_subset_muon_sweep",
+        )
+
+        self.assertEqual(env["MATRIX_LR"], "0.03")
+        self.assertEqual(env["MUON_BACKEND_STEPS"], "7")
+        self.assertEqual(env["MUON_MOMENTUM"], "0.93")
+        self.assertEqual(env["MUON_MOMENTUM_WARMUP_START"], "0.8")
+        self.assertEqual(env["MUON_MOMENTUM_WARMUP_STEPS"], "120")
+        self.assertEqual(env["CONTROL_TENSOR_NAME_PATTERNS"], "attn_scale,q_gain,mlp_scale")
+
     def test_sanitizes_candidate_id_for_run_directory(self) -> None:
         self.assertEqual(sanitize_candidate_id("../muon:trial/../../bad"), "muon-trial-bad")
         self.assertEqual(sanitize_candidate_id(""), "candidate")
@@ -222,6 +246,7 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                     "taskId": "FAST-49",
                     "candidateId": "child-cpu",
                     "parentExperimentId": "exp-parent-cpu",
+                    "parentFrontierId": "deepseek-v4-muon-tuning",
                     "seed": 7,
                     "env": {"MODEL_DIM": "128", "VAL_TOKEN_LIMIT": "16384"},
                 },
@@ -239,6 +264,7 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             )
 
             self.assertEqual(record["lineage"]["parentExperimentId"], "exp-parent-cpu")
+            self.assertEqual(record["lineage"]["parentFrontierId"], "deepseek-v4-muon-tuning")
             changed_factors = record["lineage"]["changedFactors"]
             self.assertIn(
                 {"factor": "MODEL_DIM", "parentValue": "96", "candidateValue": "128"},
@@ -334,6 +360,99 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
             changed_factor_names = {entry["factor"] for entry in record["lineage"]["changedFactors"]}
             self.assertNotIn("OPENAI_API_KEY", changed_factor_names)
             self.assertNotIn("AWS_SECRET_ACCESS_KEY", changed_factor_names)
+
+    def test_serializes_muon_and_adamw_exemption_factors_into_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            evidence_path = root / "measurement_evidence.json"
+            evidence_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "kind": "parameter-golf-measurement-evidence",
+                        "updatedAt": "2026-04-25T00:00:00Z",
+                        "summary": {
+                            "artifactIds": ["evidence-exp-parent-cpu"],
+                            "trustedControlState": "established",
+                            "totalExperiments": 1,
+                            "acceptedExperiments": 1,
+                            "mostRecentEvidenceId": "evidence-exp-parent-cpu",
+                        },
+                        "recentCompletedExperiments": ["exp-parent-cpu"],
+                        "experimentRecords": [
+                            {
+                                "experimentId": "exp-parent-cpu",
+                                "evidenceId": "evidence-exp-parent-cpu",
+                                "lane": "cpu-subset",
+                                "status": "accepted",
+                                "objectiveMetricName": "val_bpb",
+                                "objectiveValue": 4.4,
+                                "modelFactory": {
+                                    "owner": "cpu-subset-runner",
+                                    "normalizedFactors": {
+                                        "MATRIX_LR": "0.04",
+                                        "MUON_BACKEND_STEPS": "5",
+                                        "MUON_MOMENTUM": "0.95",
+                                        "MUON_MOMENTUM_WARMUP_START": "0.85",
+                                        "MUON_MOMENTUM_WARMUP_STEPS": "500",
+                                        "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,q_gain",
+                                    },
+                                },
+                            }
+                        ],
+                    },
+                )
+            )
+            run_dir = root / "fastest/generated/cpu_subset_runs/cpu_subset_child"
+            run_dir.mkdir(parents=True)
+
+            candidate = {
+                "taskId": "FAST-51",
+                "candidateId": "muon-cpu",
+                "parentExperimentId": "exp-parent-cpu",
+                "seed": 13,
+                "env": {
+                    "MATRIX_LR": "0.03",
+                    "MUON_BACKEND_STEPS": "7",
+                    "MUON_MOMENTUM": "0.93",
+                    "MUON_MOMENTUM_WARMUP_START": "0.80",
+                    "MUON_MOMENTUM_WARMUP_STEPS": "120",
+                    "CONTROL_TENSOR_NAME_PATTERNS": "attn_scale,mlp_scale,q_gain",
+                },
+            }
+            train_env = build_cpu_subset_env(candidate, "cpu_subset_muon_cpu")
+            record = append_cpu_subset_evidence(
+                candidate=candidate,
+                run_id="cpu_subset_muon_cpu",
+                completed_at="2026-04-25T01:00:00Z",
+                val_loss=4.0,
+                val_bpb=4.1,
+                command=["python", "train_gpt.py"],
+                run_dir=run_dir,
+                train_env=train_env,
+                evidence_path=evidence_path,
+            )
+
+            serialized_factors = record["modelFactory"]["normalizedFactors"]
+            self.assertEqual(serialized_factors["MATRIX_LR"], "0.03")
+            self.assertEqual(serialized_factors["MUON_BACKEND_STEPS"], "7")
+            self.assertEqual(serialized_factors["MUON_MOMENTUM"], "0.93")
+            self.assertEqual(serialized_factors["MUON_MOMENTUM_WARMUP_START"], "0.80")
+            self.assertEqual(serialized_factors["MUON_MOMENTUM_WARMUP_STEPS"], "120")
+            self.assertEqual(
+                serialized_factors["CONTROL_TENSOR_NAME_PATTERNS"],
+                "attn_scale,mlp_scale,q_gain",
+            )
+
+            changed_factors = record["lineage"]["changedFactors"]
+            self.assertIn(
+                {"factor": "MATRIX_LR", "parentValue": "0.04", "candidateValue": "0.03"},
+                changed_factors,
+            )
+            self.assertIn(
+                {"factor": "MUON_BACKEND_STEPS", "parentValue": "5", "candidateValue": "7"},
+                changed_factors,
+            )
 
 
 if __name__ == "__main__":

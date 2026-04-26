@@ -67,14 +67,33 @@ RUN_CONFIG_TO_FACTOR_KEY = {
     "numLayers": "NUM_LAYERS",
 }
 
-CPU_SUBSET_ENV_OVERRIDE_ALLOWLIST = frozenset(DEFAULT_CPU_ENV.keys()) | frozenset({"SEED"})
+CPU_SUBSET_MUON_ENV_KEYS = frozenset(
+    {
+        "MATRIX_LR",
+        "MUON_BACKEND_STEPS",
+        "MUON_MOMENTUM",
+        "MUON_MOMENTUM_WARMUP_START",
+        "MUON_MOMENTUM_WARMUP_STEPS",
+        "CONTROL_TENSOR_NAME_PATTERNS",
+    }
+)
+
+CPU_SUBSET_ENV_OVERRIDE_ALLOWLIST = (
+    frozenset(DEFAULT_CPU_ENV.keys()) | frozenset({"SEED"}) | CPU_SUBSET_MUON_ENV_KEYS
+)
 CPU_SUBSET_SERIALIZED_FACTOR_ALLOWLIST = frozenset(
     {
         "ARTIFACT_BUDGET_STRICT",
+        "CONTROL_TENSOR_NAME_PATTERNS",
         "ITERATIONS",
         "MAX_WALLCLOCK_SECONDS",
+        "MATRIX_LR",
         "MLP_MULT",
         "MODEL_DIM",
+        "MUON_BACKEND_STEPS",
+        "MUON_MOMENTUM",
+        "MUON_MOMENTUM_WARMUP_START",
+        "MUON_MOMENTUM_WARMUP_STEPS",
         "NUM_HEADS",
         "NUM_KV_HEADS",
         "NUM_LAYERS",
@@ -395,6 +414,13 @@ def append_cpu_subset_evidence(
         ),
         None,
     )
+    parent_frontier_id = candidate.get("parentFrontierId")
+    if not isinstance(parent_frontier_id, str) or not parent_frontier_id:
+        fallback_frontier_id = candidate.get("frontierId")
+        if isinstance(fallback_frontier_id, str) and fallback_frontier_id:
+            parent_frontier_id = fallback_frontier_id
+        else:
+            parent_frontier_id = None
     current_factors = _factor_snapshot_from_env(train_env)
     parent_factors = _factor_snapshot_from_record(parent_record) if parent_record else {}
     ranking_table = _build_ranking_table(cpu_records, experiment_id, val_bpb)
@@ -459,6 +485,7 @@ def append_cpu_subset_evidence(
         "lineage": {
             "source": "model-factory",
             "parentExperimentId": parent_experiment_id,
+            "parentFrontierId": parent_frontier_id,
             "changedFactors": _changed_factors(parent_factors, current_factors),
         },
         "modelFactory": {
