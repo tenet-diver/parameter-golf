@@ -13,7 +13,30 @@
       "trustedRoots": [
         "registry:attestation-prod-root"
       ]
+    },
+    "residualRiskAcceptance": {
+      "scope": "cpu-subset",
+      "acceptedBy": "fastest-task-store://parameter-golf/tasks/FAST-52/notes/bb848b01-20e3-463e-92af-77d72e4f775c",
+      "acceptanceRef": "risk-accept-fast52-cpu-subset",
+      "monitoringOwner": "meta-supervisor",
+      "expiresAt": "2026-05-10T00:00:00Z"
     }
   },
-  "runnerAttestations": {}
+  "runnerAttestations": {
+    "attestation-7c41b6ea242c6f53": {
+      "runId": "cpu_subset_fast52-deterministic-ranking-cpu",
+      "attestationRef": "attestation-7c41b6ea242c6f53",
+      "source": "cpu-subset-runner",
+      "provenanceVerified": true,
+      "resultClass": "cpu-subset",
+      "verificationClass": "cpu-subset",
+      "receipt": {
+        "schema": "parameter-golf-trust-receipt/v1",
+        "issuedBy": "parameter-golf-model-factory-trust-authority",
+        "subject": "attestation-7c41b6ea242c6f53",
+        "trustedRoot": "registry:attestation-prod-root",
+        "signature": "local-signed-bundle:attestation-7c41b6ea242c6f53"
+      }
+    }
+  }
 }

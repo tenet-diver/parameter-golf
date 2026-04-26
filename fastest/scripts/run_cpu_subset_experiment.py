@@ -37,6 +37,9 @@ DEFAULT_TRUSTED_PARENT_REGISTRY_PATH = REPO_ROOT / "fastest/source/trusted_paren
 DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH = (
     REPO_ROOT / "fastest/source/trusted_runner_attestation_registry.json"
 )
+DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH = (
+    REPO_ROOT / "fastest/source/trusted_operator_risk_acceptance_registry.json"
+)
 TRUST_RECEIPT_SCHEMA = "parameter-golf-trust-receipt/v1"
 TRUST_RECEIPT_ISSUER = "parameter-golf-model-factory-trust-authority"
 TRUST_RECEIPT_SIGNATURE_PREFIX = "local-signed-bundle:"
@@ -572,7 +575,34 @@ def _trust_receipt_error(
     expected_subject: str,
     trusted_roots: set[str] | None = None,
     trust_root_policy: dict[str, Any] | None = None,
+    operator_acceptance_registry_path: Path = DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH,
 ) -> str | None:
+    def runtime_operator_acceptance_error(residual_risk: dict[str, Any]) -> str | None:
+        accepted_by = residual_risk.get("acceptedBy")
+        if not isinstance(accepted_by, str) or not accepted_by.startswith("fastest-task-store://"):
+            return None
+        acceptance_ref = residual_risk.get("acceptanceRef")
+        if not isinstance(acceptance_ref, str) or not acceptance_ref:
+            return "receipt-residual-risk-acceptance-ref-missing"
+        if not operator_acceptance_registry_path.exists():
+            return "receipt-residual-risk-acceptance-registry-unavailable"
+        try:
+            payload = json.loads(operator_acceptance_registry_path.read_text())
+        except (OSError, ValueError):
+            return "receipt-residual-risk-acceptance-registry-unavailable"
+        if not isinstance(payload, dict):
+            return "receipt-residual-risk-acceptance-registry-invalid"
+        accepted = payload.get("acceptedResidualRisks")
+        if not isinstance(accepted, dict):
+            return "receipt-residual-risk-acceptance-registry-invalid"
+        runtime_entry = accepted.get(acceptance_ref)
+        if not isinstance(runtime_entry, dict):
+            return "receipt-residual-risk-acceptance-unresolved"
+        for field in ("scope", "acceptedBy", "monitoringOwner", "expiresAt"):
+            if runtime_entry.get(field) != residual_risk.get(field):
+                return "receipt-residual-risk-acceptance-mismatch"
+        return None
+
     def residual_risk_acceptance_error() -> str | None:
         if not isinstance(trust_root_policy, dict):
             return "receipt-residual-risk-acceptance-missing"
@@ -631,6 +661,9 @@ def _trust_receipt_error(
             return "receipt-authority-binding-trusted-roots-invalid"
         if trusted_root not in set(bound_trusted_roots):
             return "receipt-authority-binding-trusted-root-mismatch"
+        runtime_acceptance_error = runtime_operator_acceptance_error(residual_risk)
+        if runtime_acceptance_error is not None:
+            return runtime_acceptance_error
         return None
 
     receipt = entry.get("receipt")
@@ -812,6 +845,7 @@ def _resolve_runner_attestation(
         attestation_ref,
         trusted_roots,
         trust_root_policy,
+        DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH,
     )
     if receipt_error is not None:
         return {
@@ -889,6 +923,7 @@ def _resolve_parent_lineage(
         parent_experiment_id,
         trusted_roots,
         trust_root_policy,
+        DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH,
     )
     if receipt_error is not None:
         return {

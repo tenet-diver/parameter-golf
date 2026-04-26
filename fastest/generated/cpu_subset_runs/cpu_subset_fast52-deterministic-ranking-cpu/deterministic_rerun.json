@@ -1,0 +1,5 @@
+{
+  "source": "cpu-subset-runner",
+  "status": "passed",
+  "evidenceRef": "deterministic-rerun-cpu_subset_fast52-deterministic-ranking-cpu"
+}

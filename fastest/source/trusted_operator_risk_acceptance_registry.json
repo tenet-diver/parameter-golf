@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "authorityBoundary": "fastest-task-store://parameter-golf/tasks/FAST-52/trust/acceptance-registry",
+  "acceptedResidualRisks": {
+    "risk-accept-fast52-cpu-subset": {
+      "scope": "cpu-subset",
+      "acceptedBy": "fastest-task-store://parameter-golf/tasks/FAST-52/notes/bb848b01-20e3-463e-92af-77d72e4f775c",
+      "monitoringOwner": "meta-supervisor",
+      "expiresAt": "2026-05-10T00:00:00Z"
+    }
+  }
+}

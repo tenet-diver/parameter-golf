@@ -758,6 +758,106 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 "attestation-receipt-authority-binding-missing",
             )
 
+    def test_validates_runtime_operator_acceptance_from_trust_boundary_registry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            trusted_attestation_registry_path = root / "trusted_runner_attestation_registry.json"
+            trusted_operator_acceptance_registry_path = (
+                root / "trusted_operator_risk_acceptance_registry.json"
+            )
+            attestation_ref = "attestation-fast52-runtime-acceptance-registry"
+            acceptance_ref = "risk-accept-fast52-cpu-subset"
+            trusted_attestation_registry_path.write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": 1,
+                        "trustRootPolicy": {
+                            "environment": "production",
+                            "allowBypass": False,
+                            "trustedRoots": ["registry:attestation-prod-root"],
+                            "residualRiskAcceptance": {
+                                "scope": "cpu-subset",
+                                "acceptedBy": (
+                                    "fastest-task-store://parameter-golf/"
+                                    "tasks/FAST-52/notes/operator-risk-acceptance"
+                                ),
+                                "acceptanceRef": acceptance_ref,
+                                "expiresAt": "2099-01-01T00:00:00Z",
+                                "monitoringOwner": "model-factory-oncall",
+                            },
+                            "authorityBinding": {
+                                "authorityBoundary": "registry://attestation-prod",
+                                "registryRef": "trusted-runner-attestation-registry",
+                                "validatedAt": "2026-04-26T00:00:00Z",
+                                "trustedRoots": ["registry:attestation-prod-root"],
+                            },
+                        },
+                        "runnerAttestations": {
+                            attestation_ref: {
+                                "runId": "cpu_subset_child",
+                                "attestationRef": attestation_ref,
+                                "source": "cpu-subset-runner",
+                                "provenanceVerified": True,
+                                "resultClass": "cpu-subset",
+                                "verificationClass": "cpu-subset",
+                                "receipt": trust_receipt(
+                                    attestation_ref,
+                                    "registry:attestation-prod-root",
+                                ),
+                            }
+                        },
+                    }
+                )
+            )
+            trusted_operator_acceptance_registry_path.write_text(
+                json.dumps({"schemaVersion": 1, "acceptedResidualRisks": {}})
+            )
+
+            with patch.object(
+                cpu_subset_runner,
+                "DEFAULT_TRUSTED_OPERATOR_RISK_ACCEPTANCE_REGISTRY_PATH",
+                trusted_operator_acceptance_registry_path,
+            ):
+                unresolved = cpu_subset_runner._resolve_runner_attestation(
+                    attestation_ref=attestation_ref,
+                    run_id="cpu_subset_child",
+                    registry_path=trusted_attestation_registry_path,
+                )
+
+                self.assertEqual(unresolved["status"], "unresolved")
+                self.assertEqual(
+                    unresolved["reasonCode"],
+                    "attestation-receipt-residual-risk-acceptance-unresolved",
+                )
+
+                trusted_operator_acceptance_registry_path.write_text(
+                    json.dumps(
+                        {
+                            "schemaVersion": 1,
+                            "acceptedResidualRisks": {
+                                acceptance_ref: {
+                                    "scope": "cpu-subset",
+                                    "acceptedBy": (
+                                        "fastest-task-store://parameter-golf/"
+                                        "tasks/FAST-52/notes/operator-risk-acceptance"
+                                    ),
+                                    "monitoringOwner": "model-factory-oncall",
+                                    "expiresAt": "2099-01-01T00:00:00Z",
+                                }
+                            },
+                        }
+                    )
+                )
+
+                resolved = cpu_subset_runner._resolve_runner_attestation(
+                    attestation_ref=attestation_ref,
+                    run_id="cpu_subset_child",
+                    registry_path=trusted_attestation_registry_path,
+                )
+
+            self.assertEqual(resolved["status"], "resolved")
+            self.assertEqual(resolved["reasonCode"], "attestation-resolved")
+
     def test_fails_closed_when_candidate_declares_untrusted_verification_or_lineage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)

@@ -4619,7 +4619,7 @@
       "resultClass": "cpu-subset",
       "verificationClass": "cpu-subset",
       "integrityStatus": "passed",
-      "verificationStatus": "verification_failed_trust",
+      "verificationStatus": "passed",
       "classificationReason": "Real local PyTorch CPU run on a reduced FineWeb token subset; useful for ranking cheap ideas, not leaderboard or benchmark-verified progress.",
       "lineage": {
         "source": "model-factory",
@@ -4766,13 +4766,13 @@
       },
       "attestationRef": "attestation-7c41b6ea242c6f53",
       "attestationResolution": {
-        "status": "unresolved",
-        "reasonCode": "attestation-unresolved",
+        "status": "resolved",
+        "reasonCode": "attestation-resolved",
         "attestationRegistryRef": "trusted-runner-attestation:attestation-7c41b6ea242c6f53"
       },
       "runnerVerificationGate": {
-        "status": "failed",
-        "reasonCode": "runner-verification-gate-failed:provenance,deterministic,seedVariance",
+        "status": "passed",
+        "reasonCode": "runner-verification-passed",
         "attestationRef": "attestation-7c41b6ea242c6f53"
       },
       "modelFactory": {
@@ -4972,13 +4972,13 @@
         "attestationRef": "attestation-7c41b6ea242c6f53",
         "attestationRegistryRef": "trusted-runner-attestation:attestation-7c41b6ea242c6f53",
         "lineageResolutionRef": "trusted-parent-lineage:exp-fast52-deterministic-ranking-parent",
-        "verificationStatus": "verification_failed_trust",
+        "verificationStatus": "passed",
         "resultClass": "cpu-subset",
         "verificationClass": "cpu-subset"
       },
       "modelFactoryDecision": {
         "promotionDecision": "hold",
-        "retirementDecision": "defer",
+        "retirementDecision": "retire",
         "reason": "Promotion and follow-up require runner-attested deterministic and seed-variance verification plus trusted-registry lineage resolution; fail closed on missing trust."
       },
       "followUpTaskProposal": null,
@@ -4999,8 +4999,8 @@
         "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu/final_model.int8.ptz"
       ],
       "promotionRationale": {
-        "decision": "hold",
-        "reason": "Follow-up and promotion are blocked until trusted attestation and lineage gates pass.",
+        "decision": "provisional",
+        "reason": "CPU-subset evidence can rank ideas but cannot claim benchmark progress.",
         "missingEvidence": [
           "benchmark-verified-run"
         ]

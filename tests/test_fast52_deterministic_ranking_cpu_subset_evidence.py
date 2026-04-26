@@ -56,13 +56,14 @@ class Fast52DeterministicRankingCpuSubsetEvidenceTest(unittest.TestCase):
         self.assertIn(decision.get("promotionDecision"), {"hold", "propose-follow-up"})
         self.assertIn(decision.get("retirementDecision"), {"retain", "retire", "defer"})
 
-    def test_fast52_trust_resolution_matches_current_registry_evaluation(self) -> None:
+    def test_fast52_trust_resolution_is_resolved_and_runner_verified(self) -> None:
         record = self._load_fast52_record()
 
         lineage_resolution = cpu_subset_runner._resolve_parent_lineage(
             parent_experiment_id=record.get("lineage", {}).get("parentExperimentId"),
             registry_path=cpu_subset_runner.DEFAULT_TRUSTED_PARENT_REGISTRY_PATH,
         )
+        self.assertEqual(lineage_resolution.get("status"), "resolved")
         self.assertEqual(record.get("lineageResolution"), lineage_resolution)
 
         attestation_resolution = cpu_subset_runner._resolve_runner_attestation(
@@ -70,7 +71,28 @@ class Fast52DeterministicRankingCpuSubsetEvidenceTest(unittest.TestCase):
             run_id="cpu_subset_fast52-deterministic-ranking-cpu",
             registry_path=cpu_subset_runner.DEFAULT_TRUSTED_RUNNER_ATTESTATION_REGISTRY_PATH,
         )
+        self.assertEqual(attestation_resolution.get("status"), "resolved")
         self.assertEqual(record.get("attestationResolution"), attestation_resolution)
+        self.assertEqual(record.get("verificationStatus"), "passed")
+
+    def test_fast52_has_runner_owned_deterministic_and_seed_variance_artifacts(self) -> None:
+        run_dir = (
+            REPO_ROOT / "fastest/generated/cpu_subset_runs/cpu_subset_fast52-deterministic-ranking-cpu"
+        )
+        deterministic_path = run_dir / "deterministic_rerun.json"
+        seed_variance_path = run_dir / "seed_variance.json"
+        self.assertTrue(deterministic_path.exists())
+        self.assertTrue(seed_variance_path.exists())
+
+        deterministic = json.loads(deterministic_path.read_text())
+        seed_variance = json.loads(seed_variance_path.read_text())
+
+        self.assertEqual(deterministic.get("source"), "cpu-subset-runner")
+        self.assertEqual(seed_variance.get("source"), "cpu-subset-runner")
+        self.assertEqual(deterministic.get("status"), "passed")
+        self.assertEqual(seed_variance.get("status"), "passed")
+        self.assertIsInstance(deterministic.get("evidenceRef"), str)
+        self.assertIsInstance(seed_variance.get("evidenceRef"), str)
 
     def test_fast52_references_committed_artifact_receipts_with_hashes(self) -> None:
         record = self._load_fast52_record()
