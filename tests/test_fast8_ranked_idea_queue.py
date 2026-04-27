@@ -102,6 +102,10 @@ class Fast8RankedIdeaQueueTest(unittest.TestCase):
             [row["rank"] for row in queue["rankedIdeas"]],
             list(range(1, len(queue["rankedIdeas"]) + 1)),
         )
+        for row in queue["rankedIdeas"]:
+            classification = row.get("submissionClassification", {})
+            if classification.get("nonRecordReasons"):
+                self.assertEqual(classification.get("status"), "non-record-only", row["ideaId"])
 
     def test_writer_persists_sorted_queue_with_stable_newline(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

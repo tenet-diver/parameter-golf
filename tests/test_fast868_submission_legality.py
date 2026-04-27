@@ -66,23 +66,77 @@ class Fast868SubmissionLegalityTest(unittest.TestCase):
         self.assertIn("missing-validation-data-use-evidence", classification["uncertaintyReasons"])
 
     def test_known_rule_violations_take_priority_over_missing_evidence(self) -> None:
+        cases = [
+            ({"artifactBytes": 17_200_000}, "artifact-exceeds-16mb"),
+            ({"objectiveMetricName": "local cpu-subset benchmark-score"}, "not-fineweb-validation-bpb"),
+            ({"track": "non-record"}, "declared-non-record-track"),
+            ({"runtimeSeconds": 601, "hardware": "8xH100"}, "runtime-exceeds-10-minute-leaderboard-cap"),
+            ({"externalDownloadsDuringEvaluation": True}, "external-access-during-evaluation"),
+            ({"usesValidationDataDuringTraining": True}, "validation-data-used-during-training"),
+        ]
+
+        for record, expected_reason in cases:
+            with self.subTest(expected_reason=expected_reason):
+                classification = classify_submission_legality(record)
+
+                self.assertEqual(classification["status"], "non-record-only")
+                self.assertIn(expected_reason, classification["nonRecordReasons"])
+                self.assertTrue(classification["uncertaintyReasons"])
+
+    def test_record_claim_requires_sota_margin_statistical_evidence_and_submission_files(self) -> None:
         classification = classify_submission_legality(
             {
-                "experimentId": "exp-fast868-known-blocker",
-                "artifactBytes": 17_200_000,
-                "objectiveMetricName": "local cpu-subset benchmark-score",
-                "runtimeSeconds": None,
-                "selfContainedArtifact": None,
-                "externalDownloadsDuringEvaluation": True,
-                "usesValidationDataDuringTraining": None,
+                "experimentId": "exp-fast868-record-claim",
+                "artifactBytes": 15_993_232,
+                "objectiveMetricName": "FineWeb validation bits-per-byte",
+                "runtimeSeconds": 587,
+                "hardware": "8xH100 SXM",
+                "selfContainedArtifact": True,
+                "externalDownloadsDuringEvaluation": False,
+                "networkAccessDuringEvaluation": False,
+                "usesValidationDataDuringTraining": False,
+                "credibleTenMinutePath": True,
+                "track": "record",
+                "sotaImprovementNats": 0.003,
+                "statisticalPValue": 0.02,
+                "changedTokenizerOrDataset": True,
+                "tokenizerDatasetProof": False,
+                "requiredSubmissionFiles": {
+                    "readme": True,
+                    "submissionJson": True,
+                    "trainLog": False,
+                    "trainScript": True,
+                },
             }
         )
 
         self.assertEqual(classification["status"], "non-record-only")
-        self.assertIn("artifact-exceeds-16mb", classification["nonRecordReasons"])
-        self.assertIn("not-fineweb-validation-bpb", classification["nonRecordReasons"])
-        self.assertIn("external-access-during-evaluation", classification["nonRecordReasons"])
-        self.assertIn("missing-runtime-or-credible-path", classification["uncertaintyReasons"])
+        self.assertIn("record-improvement-below-0.005-nats", classification["nonRecordReasons"])
+        self.assertIn("missing-statistically-significant-run-logs", classification["nonRecordReasons"])
+        self.assertIn("missing-tokenizer-dataset-correctness-proof", classification["nonRecordReasons"])
+        self.assertIn("missing-required-submission-files", classification["nonRecordReasons"])
+
+    def test_record_claim_stays_uncertain_when_record_evidence_is_not_imported(self) -> None:
+        classification = classify_submission_legality(
+            {
+                "experimentId": "exp-fast868-record-ambiguous",
+                "artifactBytes": 15_993_232,
+                "objectiveMetricName": "FineWeb validation bits-per-byte",
+                "runtimeSeconds": 587,
+                "hardware": "8xH100 SXM",
+                "selfContainedArtifact": True,
+                "externalDownloadsDuringEvaluation": False,
+                "networkAccessDuringEvaluation": False,
+                "usesValidationDataDuringTraining": False,
+                "credibleTenMinutePath": True,
+                "track": "record",
+            }
+        )
+
+        self.assertEqual(classification["status"], "uncertain")
+        self.assertIn("missing-record-improvement-evidence", classification["uncertaintyReasons"])
+        self.assertIn("missing-statistical-significance-evidence", classification["uncertaintyReasons"])
+        self.assertIn("missing-required-submission-file-evidence", classification["uncertaintyReasons"])
 
 
 if __name__ == "__main__":

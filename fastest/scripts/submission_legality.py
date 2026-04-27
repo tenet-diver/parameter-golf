@@ -5,6 +5,9 @@ from typing import Any
 
 ARTIFACT_LIMIT_BYTES = 16_000_000
 TARGET_RUNTIME_SECONDS = 600
+MIN_RECORD_IMPROVEMENT_NATS = 0.005
+MAX_RECORD_P_VALUE = 0.01
+REQUIRED_SUBMISSION_FILES = ("readme", "submissionJson", "trainLog", "trainScript")
 
 LEADERBOARD_LEGAL = "leaderboard-legal"
 NON_RECORD_ONLY = "non-record-only"
@@ -90,6 +93,36 @@ def _declared_non_record(record: dict[str, Any]) -> bool:
     return any("non-record" in value or "unlimited" in value or "cpu-subset" in value for value in values)
 
 
+def _declared_record_claim(record: dict[str, Any]) -> bool:
+    values = [
+        _text(_first_present(record, "track", "submissionClass", "submission_class", "lane")),
+        _text(_nested_first_present(record, "metadata", "track", "submissionClass")),
+    ]
+    return any(
+        value in {"record", "submission-record", "leaderboard-record"} or "leaderboard" in value or "sota" in value
+        for value in values
+    )
+
+
+def _required_submission_files_status(record: dict[str, Any]) -> bool | None:
+    files = _first_present(record, "requiredSubmissionFiles", "submissionFiles", "files")
+    if files is None:
+        return None
+    if isinstance(files, dict):
+        missing_known_files = [
+            file_name for file_name in REQUIRED_SUBMISSION_FILES if _bool_or_none(files.get(file_name)) is not True
+        ]
+        return not missing_known_files
+    if isinstance(files, list):
+        present = {_text(file_name) for file_name in files}
+        has_readme = "readme" in present or "readme.md" in present
+        has_submission_json = "submissionjson" in present or "submission.json" in present
+        has_train_log = "trainlog" in present or "train.log" in present
+        has_train_script = "trainscript" in present or "train_gpt.py" in present
+        return has_readme and has_submission_json and has_train_log and has_train_script
+    return None
+
+
 def classify_submission_legality(record: dict[str, Any]) -> dict[str, Any]:
     passed_rules: list[str] = []
     non_record_reasons: list[str] = []
@@ -154,6 +187,51 @@ def classify_submission_legality(record: dict[str, Any]) -> dict[str, Any]:
 
     if _declared_non_record(record):
         non_record_reasons.append("declared-non-record-track")
+
+    if _declared_record_claim(record):
+        speed_only = _bool_or_none(_first_present(record, "systemsOptimizationOnly", "speedOptimizationOnly"))
+        improvement_nats = _number(
+            _first_present(record, "sotaImprovementNats", "improvementNats", "deltaNats")
+        )
+        if speed_only is True:
+            passed_rules.append("sota-margin-waived-for-systems-optimization")
+        elif improvement_nats is None:
+            uncertainty_reasons.append("missing-record-improvement-evidence")
+        elif improvement_nats >= MIN_RECORD_IMPROVEMENT_NATS:
+            passed_rules.append("record-improvement-at-least-0.005-nats")
+        else:
+            non_record_reasons.append("record-improvement-below-0.005-nats")
+
+        p_value = _number(_first_present(record, "statisticalPValue", "pValue", "winPValue"))
+        if p_value is None:
+            uncertainty_reasons.append("missing-statistical-significance-evidence")
+        elif p_value < MAX_RECORD_P_VALUE:
+            passed_rules.append("statistically-significant-run-logs")
+        else:
+            non_record_reasons.append("missing-statistically-significant-run-logs")
+
+        changed_tokenizer_or_dataset = _bool_or_none(
+            _first_present(record, "changedTokenizerOrDataset", "tokenizerOrDatasetChanged")
+        )
+        tokenizer_dataset_proof = _bool_or_none(
+            _first_present(record, "tokenizerDatasetProof", "tokenizerDatasetCorrectnessProof")
+        )
+        if changed_tokenizer_or_dataset is True and tokenizer_dataset_proof is True:
+            passed_rules.append("tokenizer-dataset-correctness-proven")
+        elif changed_tokenizer_or_dataset is True and tokenizer_dataset_proof is False:
+            non_record_reasons.append("missing-tokenizer-dataset-correctness-proof")
+        elif changed_tokenizer_or_dataset is True:
+            uncertainty_reasons.append("missing-tokenizer-dataset-correctness-proof-evidence")
+        elif changed_tokenizer_or_dataset is False:
+            passed_rules.append("no-tokenizer-dataset-change")
+
+        required_files_present = _required_submission_files_status(record)
+        if required_files_present is True:
+            passed_rules.append("required-submission-files-present")
+        elif required_files_present is False:
+            non_record_reasons.append("missing-required-submission-files")
+        else:
+            uncertainty_reasons.append("missing-required-submission-file-evidence")
 
     status = LEADERBOARD_LEGAL
     if non_record_reasons:

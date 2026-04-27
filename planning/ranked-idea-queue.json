@@ -3,7 +3,7 @@
   "kind": "ranked-competition-idea-queue",
   "taskId": "FAST-8",
   "title": "Maintain ranked idea queue scored by info gain, score upside, cost, and mergeability",
-  "generatedAt": "2026-04-27T07:46:35Z",
+  "generatedAt": "2026-04-27T08:04:37Z",
   "competitionPreset": "parameter-golf",
   "competitionAnchor": {
     "artifactLimitBytes": 16000000,
@@ -294,7 +294,7 @@
         "composite": 0.5972
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -333,7 +333,7 @@
         "composite": 0.5955
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -372,7 +372,7 @@
         "composite": 0.5955
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -411,7 +411,7 @@
         "composite": 0.5831
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -451,7 +451,7 @@
         "composite": 0.5831
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -491,7 +491,7 @@
         "composite": 0.5831
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -531,7 +531,7 @@
         "composite": 0.578
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -570,7 +570,7 @@
         "composite": 0.5621
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -609,7 +609,7 @@
         "composite": 0.5621
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -648,7 +648,7 @@
         "composite": 0.5411
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -687,7 +687,7 @@
         "composite": 0.5411
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -726,7 +726,7 @@
         "composite": 0.5411
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -765,7 +765,7 @@
         "composite": 0.5386
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -804,7 +804,7 @@
         "composite": 0.5306
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -843,7 +843,7 @@
         "composite": 0.5167
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
@@ -882,7 +882,7 @@
         "composite": 0.5131
       },
       "submissionClassification": {
-        "status": "uncertain",
+        "status": "non-record-only",
         "policy": {
           "preset": "parameter-golf",
           "artifactLimitBytes": 16000000,
