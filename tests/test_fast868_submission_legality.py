@@ -65,6 +65,25 @@ class Fast868SubmissionLegalityTest(unittest.TestCase):
         self.assertIn("missing-self-contained-evidence", classification["uncertaintyReasons"])
         self.assertIn("missing-validation-data-use-evidence", classification["uncertaintyReasons"])
 
+    def test_known_rule_violations_take_priority_over_missing_evidence(self) -> None:
+        classification = classify_submission_legality(
+            {
+                "experimentId": "exp-fast868-known-blocker",
+                "artifactBytes": 17_200_000,
+                "objectiveMetricName": "local cpu-subset benchmark-score",
+                "runtimeSeconds": None,
+                "selfContainedArtifact": None,
+                "externalDownloadsDuringEvaluation": True,
+                "usesValidationDataDuringTraining": None,
+            }
+        )
+
+        self.assertEqual(classification["status"], "non-record-only")
+        self.assertIn("artifact-exceeds-16mb", classification["nonRecordReasons"])
+        self.assertIn("not-fineweb-validation-bpb", classification["nonRecordReasons"])
+        self.assertIn("external-access-during-evaluation", classification["nonRecordReasons"])
+        self.assertIn("missing-runtime-or-credible-path", classification["uncertaintyReasons"])
+
 
 if __name__ == "__main__":
     unittest.main()

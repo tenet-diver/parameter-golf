@@ -156,10 +156,10 @@ def classify_submission_legality(record: dict[str, Any]) -> dict[str, Any]:
         non_record_reasons.append("declared-non-record-track")
 
     status = LEADERBOARD_LEGAL
-    if uncertainty_reasons:
-        status = UNCERTAIN
-    elif non_record_reasons:
+    if non_record_reasons:
         status = NON_RECORD_ONLY
+    elif uncertainty_reasons:
+        status = UNCERTAIN
 
     return {
         "status": status,
