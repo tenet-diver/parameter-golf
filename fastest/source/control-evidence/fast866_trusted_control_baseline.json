@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "taskId": "FAST-866",
+  "recordedAt": "2026-04-27T08:32:00Z",
+  "competitionPreset": "parameter-golf",
+  "targetRepo": "/workspaces/parameter-golf",
+  "repoCommit": "bf2087b53a76f3c5c3d953c3bfd324c540c612ce",
+  "baselineKind": "documented-linux-cpu-smoke-control",
+  "measurement": {
+    "scoreMetric": "FineWeb validation bits-per-byte",
+    "valLoss": 6.93087029,
+    "valBpb": 4.00708791,
+    "trainValBpbBeforeQuantizedRoundtrip": 4.0073,
+    "validationTokenLimit": 4096,
+    "validationData": "/workspaces/parameter-golf/data/datasets/fineweb10B_sp1024/fineweb_val_*.bin",
+    "trainShardsObserved": 1
+  },
+  "artifact": {
+    "path": "fastest/generated/fast866_control_baseline/final_model.int8.ptz",
+    "bytes": 457074,
+    "quantizedArtifactBytes": 413275,
+    "codeBytes": 43799,
+    "limitBytes": 16000000,
+    "budgetState": "within-budget",
+    "sha256": "c5e5c6a29b547790d980257c7eec57735c5cf44fa3e48c6d3bb4cb895a2edb09",
+    "selfContained": true
+  },
+  "reproduction": {
+    "runtimeCommand": "cd /workspaces/parameter-golf/fastest/generated/fast866_control_baseline && env PYTHONPATH=/tmp DATA_PATH=/workspaces/parameter-golf/data/datasets/fineweb10B_sp1024 TOKENIZER_PATH=/workspaces/parameter-golf/data/tokenizers/fineweb_1024_bpe.model RUN_ID=fast866_control_baseline SEED=1337 ITERATIONS=2 WARMUP_STEPS=0 NUM_LAYERS=2 MODEL_DIM=128 NUM_HEADS=4 NUM_KV_HEADS=2 TRAIN_BATCH_TOKENS=8192 TRAIN_LOG_EVERY=1 VAL_LOSS_EVERY=0 VAL_BATCH_SIZE=1024 VAL_TOKEN_LIMIT=4096 MAX_WALLCLOCK_SECONDS=0 ARTIFACT_BUDGET_STRICT=1 python3 /workspaces/parameter-golf/train_gpt.py > stdout.txt 2> stderr.txt",
+    "runtimeSeconds": 9.632,
+    "runtimeSecondsSource": "train_gpt.py final validation log train_time:9632ms; wall-clock wrapper unavailable in container",
+    "hardware": "local CPU (GitHub Codespaces x86_64, torch 2.11.0+cpu, cuda unavailable)",
+    "credibleTenMinutePath": false,
+    "track": "non-record local-control cpu-smoke",
+    "externalDownloadsDuringEvaluation": false,
+    "networkAccessDuringEvaluation": false,
+    "usesValidationDataDuringTraining": false,
+    "logPath": "fastest/generated/fast866_control_baseline/stdout.txt",
+    "stderrPath": "fastest/generated/fast866_control_baseline/stderr.txt",
+    "configProvenance": {
+      "sourceFiles": [
+        {
+          "path": "train_gpt.py",
+          "sha256": "743d3ef1cee8e86c692f727b0ef75ec540279560868de53107c06a0a21d7b5f0"
+        },
+        {
+          "path": "measurement/control_measurement.yaml",
+          "sha256": "04ea6b5463202802827059d4199396502d5fe9b23df41eb485def9e3617fcdc2"
+        },
+        {
+          "path": "fastest/generated/fast866_control_baseline/stdout.txt",
+          "sha256": "7f540e29bc3b1e720a5addb6b51a9ca1692017872c01d90acdebd415d172da7b"
+        },
+        {
+          "path": "fastest/generated/fast866_control_baseline/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "env": {
+        "RUN_ID": "fast866_control_baseline",
+        "SEED": "1337",
+        "ITERATIONS": "2",
+        "WARMUP_STEPS": "0",
+        "NUM_LAYERS": "2",
+        "MODEL_DIM": "128",
+        "NUM_HEADS": "4",
+        "NUM_KV_HEADS": "2",
+        "TRAIN_BATCH_TOKENS": "8192",
+        "TRAIN_LOG_EVERY": "1",
+        "VAL_LOSS_EVERY": "0",
+        "VAL_BATCH_SIZE": "1024",
+        "VAL_TOKEN_LIMIT": "4096",
+        "MAX_WALLCLOCK_SECONDS": "0",
+        "ARTIFACT_BUDGET_STRICT": "1",
+        "DATA_PATH": "/workspaces/parameter-golf/data/datasets/fineweb10B_sp1024",
+        "TOKENIZER_PATH": "/workspaces/parameter-golf/data/tokenizers/fineweb_1024_bpe.model",
+        "PYTHONPATH": "/tmp"
+      },
+      "environmentNotes": [
+        "Default python torch import failed because typing_extensions was missing from site-packages.",
+        "Temporary /tmp/typing_extensions.py compatibility shim was used only to run installed torch; no repository source was changed for the shim.",
+        "pip install typing_extensions failed because network access is unavailable in this sandbox."
+      ]
+    }
+  },
+  "classification": {
+    "status": "non-record-only",
+    "policy": {
+      "preset": "parameter-golf",
+      "artifactLimitBytes": 16000000,
+      "leaderboardRuntimeSeconds": 600,
+      "scoring": "FineWeb validation bits-per-byte"
+    },
+    "passedRules": [
+      "artifact-under-16mb",
+      "fineweb-bpb-scoring",
+      "no-external-evaluation-access",
+      "no-validation-data-training-use",
+      "self-contained-artifact"
+    ],
+    "nonRecordReasons": [
+      "declared-non-record-track",
+      "runtime-exceeds-10-minute-leaderboard-cap"
+    ],
+    "uncertaintyReasons": []
+  }
+}

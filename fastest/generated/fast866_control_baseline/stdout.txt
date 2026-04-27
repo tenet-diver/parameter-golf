@@ -1,0 +1,32 @@
+logs/fast866_control_baseline.txt
+val_bpb:enabled tokenizer_kind=sentencepiece tokenizer_path=/workspaces/parameter-golf/data/tokenizers/fineweb_1024_bpe.model
+train_loader:dataset:fineweb10B_sp1024 train_shards:1
+val_loader:shards pattern=/workspaces/parameter-golf/data/datasets/fineweb10B_sp1024/fineweb_val_*.bin tokens:4096
+val_loader:token_limit:4096
+model_params:361608
+world_size:1 grad_accum_steps:8
+sdp_backends:cudnn=False flash=True mem_efficient=False math=False
+attention_mode:gqa num_heads:4 num_kv_heads:2 attn_norm_mode:baseline attn_norm_eps:1e-06
+candidate_impl:autoregressive_gpt
+layer_order:encoder=[0] decoder=[1] virtual_depth:2
+tie_embeddings:True embed_lr:0.05 head_lr:0.0 matrix_lr:0.04 scalar_lr:0.04
+moe:num_experts:1 top_k:1
+train_batch_tokens:8192 train_seq_len:1024 iterations:2 warmup_steps:0 max_wallclock_seconds:0.000
+artifact_budget:state:within-budget total_bytes:306007 limit_bytes:16000000 headroom_bytes:15693993 quantization:int8-per-row-zlib-projection compression_ratio:0.78
+artifact_budget_component:name:embeddings params:131072 raw_quantized_bytes:131072 estimated_bytes:102237
+artifact_budget_component:name:attention_blocks params:98304 raw_quantized_bytes:98304 estimated_bytes:76678
+artifact_budget_component:name:mlp_blocks params:131072 raw_quantized_bytes:131072 estimated_bytes:102237
+artifact_budget_component:name:control_tensors params:514 raw_quantized_bytes:1412 estimated_bytes:1412
+artifact_budget_component:name:quantization_overhead params:0 raw_quantized_bytes:11072 estimated_bytes:11072
+seed:1337
+step:1/2 train_loss:6.9323 train_time:7557ms step_avg:7556.68ms
+step:2/2 train_loss:6.9295 train_time:9630ms step_avg:4815.23ms
+step:2/2 val_loss:6.9312 val_bpb:4.0073 train_time:9632ms step_avg:4815.85ms
+peak memory allocated: cpu-run
+Serialized model: 1454673 bytes
+Code size: 43799 bytes
+Total submission size: 1498472 bytes
+Serialized model int8+zlib: 413275 bytes (payload:596512 raw_torch:603998 payload_ratio:2.42x)
+Total submission size int8+zlib: 457074 bytes
+final_int8_zlib_roundtrip val_loss:6.9309 val_bpb:4.0071 eval_time:237ms
+final_int8_zlib_roundtrip_exact val_loss:6.93087029 val_bpb:4.00708791
