@@ -3,7 +3,7 @@
   "kind": "ranked-competition-idea-queue",
   "taskId": "FAST-8",
   "title": "Maintain ranked idea queue scored by info gain, score upside, cost, and mergeability",
-  "generatedAt": "2026-04-24T22:35:34Z",
+  "generatedAt": "2026-04-27T07:46:35Z",
   "competitionPreset": "parameter-golf",
   "competitionAnchor": {
     "artifactLimitBytes": 16000000,
@@ -59,6 +59,26 @@
         "mergeability": 0.68,
         "composite": 0.7598
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [
+          "artifact-under-16mb"
+        ],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "deepen",
       "rank": 1
@@ -77,6 +97,26 @@
         "cost": 0.35,
         "mergeability": 0.68,
         "composite": 0.7325
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [
+          "artifact-under-16mb"
+        ],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "deepen",
@@ -97,6 +137,26 @@
         "mergeability": 0.68,
         "composite": 0.7279
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [
+          "artifact-under-16mb"
+        ],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "combine-later",
       "rank": 3
@@ -115,6 +175,26 @@
         "cost": 0.363,
         "mergeability": 0.68,
         "composite": 0.7072
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [
+          "artifact-under-16mb"
+        ],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "combine-later",
@@ -135,6 +215,26 @@
         "mergeability": 0.68,
         "composite": 0.6976
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [
+          "artifact-under-16mb"
+        ],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "combine-later",
       "rank": 5
@@ -153,6 +253,26 @@
         "cost": 0.35,
         "mergeability": 0.12,
         "composite": 0.6725
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [
+          "artifact-under-16mb",
+          "fineweb-bpb-scoring"
+        ],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "imported evidence requires runnable local reproduction; needs_external_8xh100_verification; verification gate blocked",
       "nextPlanningAction": "extract runnable reproduction path before promotion",
@@ -173,6 +293,26 @@
         "mergeability": 0.82,
         "composite": 0.5972
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
       "rank": 7
@@ -191,6 +331,26 @@
         "cost": 0.35,
         "mergeability": 0.82,
         "composite": 0.5955
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
@@ -211,6 +371,26 @@
         "mergeability": 0.82,
         "composite": 0.5955
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
       "rank": 9
@@ -229,6 +409,27 @@
         "cost": 0.9675,
         "mergeability": 0.82,
         "composite": 0.5831
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "declared-non-record-track",
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
@@ -249,6 +450,27 @@
         "mergeability": 0.82,
         "composite": 0.5831
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "declared-non-record-track",
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
       "rank": 11
@@ -267,6 +489,27 @@
         "cost": 0.9675,
         "mergeability": 0.82,
         "composite": 0.5831
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "declared-non-record-track",
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
@@ -287,6 +530,26 @@
         "mergeability": 0.82,
         "composite": 0.578
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
       "rank": 13
@@ -305,6 +568,26 @@
         "cost": 0.9675,
         "mergeability": 0.82,
         "composite": 0.5621
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "plan bounded follow-up experiment",
@@ -325,6 +608,26 @@
         "mergeability": 0.82,
         "composite": 0.5621
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "plan bounded follow-up experiment",
       "rank": 15
@@ -343,6 +646,26 @@
         "cost": 0.9675,
         "mergeability": 0.82,
         "composite": 0.5411
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
@@ -363,6 +686,26 @@
         "mergeability": 0.82,
         "composite": 0.5411
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
       "rank": 17
@@ -381,6 +724,26 @@
         "cost": 0.9675,
         "mergeability": 0.82,
         "composite": 0.5411
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
@@ -401,6 +764,26 @@
         "mergeability": 0.82,
         "composite": 0.5386
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
       "rank": 19
@@ -419,6 +802,26 @@
         "cost": 0.9675,
         "mergeability": 0.82,
         "composite": 0.5306
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
@@ -439,6 +842,26 @@
         "mergeability": 0.82,
         "composite": 0.5167
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
       "rank": 21
@@ -458,6 +881,26 @@
         "mergeability": 0.82,
         "composite": 0.5131
       },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [
+          "not-fineweb-validation-bpb"
+        ],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
       "rank": 22
@@ -476,6 +919,26 @@
         "cost": 0.35,
         "mergeability": 0.68,
         "composite": 0.4913
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [
+          "artifact-under-16mb"
+        ],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "rerun-near-threshold",

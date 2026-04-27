@@ -84,6 +84,11 @@ class Fast8RankedIdeaQueueTest(unittest.TestCase):
         self.assertEqual(imported["scores"]["expectedUpside"], 1.0)
         self.assertLess(imported["scores"]["mergeability"], 0.4)
         self.assertIn("needs_external_8xh100_verification", imported["mergeabilityNotes"])
+        self.assertEqual(imported["submissionClassification"]["status"], "uncertain")
+        self.assertIn(
+            "missing-self-contained-evidence",
+            imported["submissionClassification"]["uncertaintyReasons"],
+        )
 
     def test_queue_artifact_is_durable_for_next_planning_cycle(self) -> None:
         self.assertTrue(QUEUE_PATH.exists())

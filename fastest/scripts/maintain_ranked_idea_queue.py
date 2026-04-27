@@ -6,6 +6,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from fastest.scripts.submission_legality import classify_submission_legality
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_PATH = REPO_ROOT / "fastest" / "source" / "measurement_evidence.json"
@@ -152,6 +154,7 @@ def _local_experiment_ideas(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "sourceLane": lane,
                 "evidenceRefs": [str(record.get("evidenceId") or experiment_id)],
                 "scores": scores,
+                "submissionClassification": classify_submission_legality(record),
                 "mergeabilityNotes": _mergeability(record, "local-experiment")[1],
                 "nextPlanningAction": _next_action(record, "local-experiment"),
             }
@@ -177,6 +180,7 @@ def _imported_evidence_ideas(evidence: dict[str, Any]) -> list[dict[str, Any]]:
                 "sourceLane": "submission-record",
                 "evidenceRefs": [str(record.get("evidenceId") or experiment_id)],
                 "scores": scores,
+                "submissionClassification": classify_submission_legality(record),
                 "mergeabilityNotes": _mergeability(record, "imported-evidence")[1],
                 "nextPlanningAction": "extract runnable reproduction path before promotion",
             }
@@ -206,6 +210,7 @@ def _ablation_ideas(ablation_results: dict[str, Any]) -> list[dict[str, Any]]:
                 "sourceLane": "ablation-screen",
                 "evidenceRefs": [str(row.get("variant_config_ref") or run_id)],
                 "scores": scores,
+                "submissionClassification": classify_submission_legality(row),
                 "mergeabilityNotes": _mergeability(row, "local-ablation")[1],
                 "nextPlanningAction": str(row.get("next_action") or "plan bounded follow-up"),
             }
