@@ -10,6 +10,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 README_PATH = REPO_ROOT / "README.md"
 RECORDS_DIR = REPO_ROOT / "records"
 OUTPUT_PATH = REPO_ROOT / "fastest" / "source" / "leaderboard_knowledge.json"
+README_SOURCE_ID = "parameter-golf-readme-leaderboard"
+SUBMISSION_SOURCE_ID = "parameter-golf-submission-records"
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -52,6 +54,11 @@ def parse_readme_leaderboard(readme_text: str) -> list[dict[str, Any]]:
                 "date": cells[4],
                 "track": current_track,
                 "source": "README.md",
+                "provenance": {
+                    "sourceId": README_SOURCE_ID,
+                    "sourceType": "readme-leaderboard",
+                    "locator": f"README.md#{current_track}",
+                },
             }
         )
     return rows
@@ -88,6 +95,11 @@ def parse_submission_records(records_dir: Path = RECORDS_DIR) -> list[dict[str, 
                 "techniqueSummary": str(payload.get("technique_summary") or ""),
                 "compliance": payload.get("compliance") if isinstance(payload.get("compliance"), dict) else {},
                 "source": rel_path,
+                "provenance": {
+                    "sourceId": SUBMISSION_SOURCE_ID,
+                    "sourceType": "submission-record",
+                    "locator": f"record:{rel_path}",
+                },
             }
         )
     return sorted(records, key=lambda record: (record["score"], record["date"], record["name"]))
@@ -166,6 +178,23 @@ def summarize_recent_movement(records: list[dict[str, Any]], *, limit: int = 8) 
     return movement[-limit:]
 
 
+def summarize_top_records(records: list[dict[str, Any]], *, limit: int = 8) -> list[dict[str, Any]]:
+    top_records: list[dict[str, Any]] = []
+    for record in records[:limit]:
+        top_records.append(
+            {
+                "name": record["name"],
+                "score": record["score"],
+                "author": record["author"],
+                "date": record.get("date", ""),
+                "track": record.get("track", ""),
+                "source": record["source"],
+                "provenance": record["provenance"],
+            }
+        )
+    return top_records
+
+
 def build_leaderboard_knowledge(
     *,
     readme_path: Path = README_PATH,
@@ -192,6 +221,7 @@ def build_leaderboard_knowledge(
             "bestScore": best["score"] if best else None,
             "bestRecord": best["name"] if best else None,
             "bestRecordSource": best["source"] if best else None,
+            "topRecords": summarize_top_records(all_records),
         },
         "records": all_records,
         "motifs": summarize_motifs(all_records),

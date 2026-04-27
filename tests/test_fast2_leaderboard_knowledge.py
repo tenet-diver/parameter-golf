@@ -62,10 +62,20 @@ class Fast2LeaderboardKnowledgeTest(unittest.TestCase):
 
             self.assertEqual(knowledge["kind"], "parameter-golf-leaderboard-knowledge")
             self.assertEqual(knowledge["summary"]["bestScore"], 1.079)
+            self.assertEqual(knowledge["summary"]["topRecords"][0]["score"], 1.079)
+            self.assertEqual(knowledge["summary"]["topRecords"][0]["source"], "records/track_10min_16mb/winner/submission.json")
             self.assertEqual(knowledge["sources"]["submissionRecordCount"], 1)
             self.assertGreaterEqual(len(knowledge["motifs"]), 2)
             self.assertEqual(knowledge["recentMovement"][-1]["score"], 1.079)
             self.assertLess(knowledge["recentMovement"][-1]["deltaVsPreviousBest"], 0)
+            for record in knowledge["records"]:
+                provenance = record.get("provenance")
+                self.assertIsInstance(provenance, dict)
+                self.assertIsInstance(provenance.get("sourceId"), str)
+                self.assertTrue(provenance["sourceId"])
+                self.assertIn(provenance.get("sourceType"), {"readme-leaderboard", "submission-record"})
+                self.assertIsInstance(provenance.get("locator"), str)
+                self.assertTrue(provenance["locator"])
 
     def test_writer_creates_machine_readable_source_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

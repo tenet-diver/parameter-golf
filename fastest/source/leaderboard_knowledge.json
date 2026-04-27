@@ -4,16 +4,169 @@
   "sources": {
     "readme": "README.md",
     "recordsDir": "records",
-    "submissionRecordCount": 34,
+    "submissionRecordCount": 36,
     "readmeRecordCount": 32
   },
   "summary": {
-    "totalRecords": 66,
-    "bestScore": 1.081,
-    "bestRecord": "SP8192 + 3-Layer Recurrence + Parallel Residuals + QK-Gain 5.25 + Legal Score-First TTT",
-    "bestRecordSource": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+    "totalRecords": 68,
+    "bestScore": 1.06157,
+    "bestRecord": "PR1787Base + SmearGate + LQER Asymmetric + Phased TTT",
+    "bestRecordSource": "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json",
+    "topRecords": [
+      {
+        "name": "PR1787Base + SmearGate + LQER Asymmetric + Phased TTT",
+        "score": 1.06157,
+        "author": "dexhunter",
+        "date": "2026-04-24",
+        "track": "10min_16mb",
+        "source": "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json",
+        "provenance": {
+          "sourceId": "parameter-golf-submission-records",
+          "sourceType": "submission-record",
+          "locator": "record:records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json"
+        }
+      },
+      {
+        "name": "SP8192 + Hadamard Rotation + AWQ + Layer-wise Precision + Hessian-Aware Calibration + Legal Score-First TTT",
+        "score": 1.0785,
+        "author": "Victory963",
+        "date": "2026-04-19",
+        "track": "10min_16mb",
+        "source": "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/submission.json",
+        "provenance": {
+          "sourceId": "parameter-golf-submission-records",
+          "sourceType": "submission-record",
+          "locator": "record:records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/submission.json"
+        }
+      },
+      {
+        "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + QK-Gain 5.25 + Legal Score-First TTT",
+        "score": 1.081,
+        "author": "bigbag",
+        "date": "2026-04-09",
+        "track": "10min_16mb",
+        "source": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+        "provenance": {
+          "sourceId": "parameter-golf-submission-records",
+          "sourceType": "submission-record",
+          "locator": "record:records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+        }
+      },
+      {
+        "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + Legal TTT",
+        "score": 1.081,
+        "author": "bigbag",
+        "date": "2026-04-09",
+        "track": "10min_16mb",
+        "source": "README.md",
+        "provenance": {
+          "sourceId": "parameter-golf-readme-leaderboard",
+          "sourceType": "readme-leaderboard",
+          "locator": "README.md#10min_16mb"
+        }
+      },
+      {
+        "name": "SP8192 + Parallel Residuals + Score-First TTT",
+        "score": 1.08217956,
+        "author": "aryanbhosale",
+        "date": "2026-04-08",
+        "track": "10min_16mb",
+        "source": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+        "provenance": {
+          "sourceId": "parameter-golf-submission-records",
+          "sourceType": "submission-record",
+          "locator": "record:records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+        }
+      },
+      {
+        "name": "SP8192 + Parallel Residuals + Score-First TTT",
+        "score": 1.0822,
+        "author": "aryanbhosale",
+        "date": "2026-04-08",
+        "track": "10min_16mb",
+        "source": "README.md",
+        "provenance": {
+          "sourceId": "parameter-golf-readme-leaderboard",
+          "sourceType": "readme-leaderboard",
+          "locator": "README.md#10min_16mb"
+        }
+      },
+      {
+        "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
+        "score": 1.08279384,
+        "author": "dexhunter",
+        "date": "2026-04-06",
+        "track": "10min_16mb",
+        "source": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+        "provenance": {
+          "sourceId": "parameter-golf-submission-records",
+          "sourceType": "submission-record",
+          "locator": "record:records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+        }
+      },
+      {
+        "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
+        "score": 1.0828,
+        "author": "dexhunter",
+        "date": "2026-04-06",
+        "track": "10min_16mb",
+        "source": "README.md",
+        "provenance": {
+          "sourceId": "parameter-golf-readme-leaderboard",
+          "sourceType": "readme-leaderboard",
+          "locator": "README.md#10min_16mb"
+        }
+      }
+    ]
   },
   "records": [
+    {
+      "name": "PR1787Base + SmearGate + LQER Asymmetric + Phased TTT",
+      "score": 1.06157,
+      "author": "dexhunter",
+      "date": "2026-04-24",
+      "track": "10min_16mb",
+      "artifactBytes": null,
+      "trainTimeSeconds": null,
+      "techniqueSummary": "",
+      "compliance": {},
+      "source": "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json"
+      }
+    },
+    {
+      "name": "SP8192 + Hadamard Rotation + AWQ + Layer-wise Precision + Hessian-Aware Calibration + Legal Score-First TTT",
+      "score": 1.0785,
+      "author": "Victory963",
+      "date": "2026-04-19",
+      "track": "10min_16mb",
+      "artifactBytes": null,
+      "trainTimeSeconds": null,
+      "techniqueSummary": "",
+      "compliance": {
+        "track_b_legal": true,
+        "causality": true,
+        "normalized_distribution": true,
+        "score_before_update": true,
+        "single_pass": true,
+        "no_slot": true,
+        "no_pre_quant_ttt": true,
+        "no_etlb": true,
+        "no_ngram_cache": true,
+        "all_artifacts_under_16mb": true,
+        "training_under_600s": true,
+        "eval_under_600s": true
+      },
+      "source": "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/submission.json"
+      }
+    },
     {
       "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + QK-Gain 5.25 + Legal Score-First TTT",
       "score": 1.081,
@@ -34,7 +187,12 @@
         "score_first_ttt": true,
         "three_seeds": true
       },
-      "source": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      "source": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+      }
     },
     {
       "name": "SP8192 + 3-Layer Recurrence + Parallel Residuals + Legal TTT",
@@ -43,7 +201,12 @@
       "summary": "On PR #1493: 3-layer recurrence, parallel residuals, QK-Gain 5.25, and legal score-first TTT on the PR #1394 stack",
       "date": "2026-04-09",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "SP8192 + Parallel Residuals + Score-First TTT",
@@ -55,7 +218,12 @@
       "trainTimeSeconds": 588,
       "techniqueSummary": "SP8192 + MLP 4x + Parallel Residuals (layer 7+) + Score-First TTT + Depth Recurrence + MuonEq-R + QK-Gain 5.0 + SDClip + GPTQ Embeddings + Brotli",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      "source": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/submission.json"
+      }
     },
     {
       "name": "SP8192 + Parallel Residuals + Score-First TTT",
@@ -64,7 +232,12 @@
       "summary": "On PR #1477: parallel residuals on the PR #1413 SP8192 + legal score-first TTT stack",
       "date": "2026-04-08",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
@@ -86,7 +259,12 @@
         "score_first_ttt": true,
         "three_seeds": true
       },
-      "source": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      "source": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/submission.json"
+      }
     },
     {
       "name": "SP8192 + QK-Gain 5 + Legal Score-First TTT",
@@ -95,7 +273,12 @@
       "summary": "On PR #1413: QK-Gain 5.0 + legal score-first TTT on the PR #1394 SP8192 stack",
       "date": "2026-04-06",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "SP8192 + Parallel Residuals + Hessian-Aware SDClip",
@@ -104,7 +287,12 @@
       "summary": "On PR #1412: parallel residuals, Hessian-aware SDClip, and progressive recurrence on the PR #1394 stack",
       "date": "2026-04-06",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Non-record: Parallel Residuals + Hessian-Aware SDClip",
@@ -116,7 +304,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json"
+      "source": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/submission.json"
+      }
     },
     {
       "name": "SP8192 + GPTQ Embeddings + Depth Recurrence + SDClip",
@@ -125,7 +318,12 @@
       "summary": "On PR #1394: SP8192, GPTQ embeddings, looped layers 4-5, MuonEq-R, and std-based GPTQ clipping",
       "date": "2026-04-05",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "SP8192 + GPTQ Embeddings + Depth Recurrence + MuonEq-R + SD-Clip + Simplifications",
@@ -137,7 +335,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      "source": "records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-05_SP8192_GPTQ-Embeddings_SDClip_Loop45x2/submission.json"
+      }
     },
     {
       "name": "SP4096 + Depth Recurrence + Parallel Residuals + MuonEq-R",
@@ -146,7 +349,12 @@
       "summary": "On PR #1334: SP4096 + depth recurrence + parallel residuals + MuonEq-R + QK-Gain 5.0",
       "date": "2026-04-04",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "SP4096 + Depth Recurrence + Parallel Residuals + MuonEq-R + QK-Gain 5.0",
@@ -158,7 +366,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "SP4096 + MLP 4x + WD 0.090 + Depth Recurrence + Parallel Residuals + MuonEq-R + QK-Gain 5.0 + Full GPTQ int6 + Brotli",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      "source": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/submission.json"
+      }
     },
     {
       "name": "Record: MuonEq-R + Depth Recurrence + WD=0.090 + All-Int6 GPTQ",
@@ -170,7 +383,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+      "source": "records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-03_MuonEqR_DepthRecurrence_WD090_AllInt6/submission.json"
+      }
     },
     {
       "name": "MuonEq-R + Depth Recurrence + WD=0.090 + All-Int6 GPTQ",
@@ -179,7 +397,12 @@
       "summary": "On PR #1285: MuonEq-R + layers 4-5 recurrence + higher weight decay + all-int6 GPTQ",
       "date": "2026-04-03",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "4096-Vocab + Larger Model + High WD + Simplifications",
@@ -191,7 +414,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+      "source": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
+      }
     },
     {
       "name": "4096-Vocab + Larger Model + High WD + Simplifications",
@@ -200,7 +428,12 @@
       "summary": "On PR #1218: SP4096 + 4x MLP + high weight decay, with TTT, hash embeddings, SmearGate, and value residuals removed",
       "date": "2026-04-01",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Parallel Residuals + Mini Depth Recurrence",
@@ -212,7 +445,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "Parallel residuals + mini depth recurrence + mixed quantization + AR self-generated GPTQ + Brotli compression",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
+      "source": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
+      }
     },
     {
       "name": "Parallel Residuals + Mini Depth Recurrence",
@@ -221,7 +459,12 @@
       "summary": "On PR #1204: mini recurrence on layers 4-5 + parallel attention/MLP residual lanes + AR self-generated GPTQ calibration",
       "date": "2026-03-31",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "11L AR Self-Gen GPTQ + XSA",
@@ -230,7 +473,12 @@
       "summary": "On PR #1019: Self-Generated GPTQ Calibration Data + all-layer XSA on the PR #549 stack",
       "date": "2026-03-25",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "AR Self-Gen GPTQ + XSA-all + BigramHash 3072x112",
@@ -242,7 +490,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "AR self-gen GPTQ calibration + XSA-all + BigramHash 3072x112 + Parallel Muon + LZMA9",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json"
+      "source": "records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-25_ValCalib_GPTQ_XSA_BigramHash3072/submission.json"
+      }
     },
     {
       "name": "LeakyReLU\u00b2 + Legal Score-First TTT + Parallel Muon",
@@ -254,7 +507,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json"
+      "source": "records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-23_LeakyReLU_LegalTTT_ParallelMuon/submission.json"
+      }
     },
     {
       "name": "LeakyReLU\u00b2 + Legal Score-First TTT + Parallel Muon",
@@ -263,7 +521,12 @@
       "summary": "On PR #549: LeakyReLU(0.5)^2 + TTT + Parallel Muon on the PR #414 stack",
       "date": "2026-03-23",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Record: 11L EMA + GPTQ-lite + warmdown3500 + QAT@0.15",
@@ -275,7 +538,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json"
+      "source": "records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-22_11L_EMA_GPTQ-lite_warmdown3500_QAT015_1.1233/submission.json"
+      }
     },
     {
       "name": "11L EMA + GPTQ-lite + warmdown3500",
@@ -284,7 +552,12 @@
       "summary": "On PR #374: GPTQ-lite clip search + EMA, plus warmdown3500 and QAT@0.15",
       "date": "2026-03-22",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "1 Bit Quantization",
@@ -293,7 +566,12 @@
       "summary": "106M params quantized to 1 bit + misc arch changes + 2hr training",
       "date": "2026-03-24",
       "track": "non_record_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#non_record_16mb"
+      }
     },
     {
       "name": "106.2M Binary U-Net \u2014 1-bit + NeoMuon + 4x relu\u00b2 MLP + FP8 QAT + Smear + LZMA",
@@ -305,7 +583,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_non_record_16mb/2026-03-24_106M_Binary_Asymmetric_UNet_FP8_15L_8192BPE_YaRN_NeoMuon_Smear/submission_binary.json"
+      "source": "records/track_non_record_16mb/2026-03-24_106M_Binary_Asymmetric_UNet_FP8_15L_8192BPE_YaRN_NeoMuon_Smear/submission_binary.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_non_record_16mb/2026-03-24_106M_Binary_Asymmetric_UNet_FP8_15L_8192BPE_YaRN_NeoMuon_Smear/submission_binary.json"
+      }
     },
     {
       "name": "11L Partial RoPE + LN Scale + EMA + XSA4",
@@ -314,7 +597,12 @@
       "summary": "On PR #287: Partial RoPE (16/64) + layerwise LN scale",
       "date": "2026-03-21",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Record: 11L Partial RoPE + LN Scale + EMA + XSA4",
@@ -326,7 +614,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      "source": "records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-21_11L_XSA4_EMA_PartialRoPE_LateQAT_1.1248/submission.json"
+      }
     },
     {
       "name": "Record: 11L XSA + EMA + Int6 MLP3x + WD=0.04",
@@ -338,7 +631,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      "source": "records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-20_11L_XSA4_EMA_Int6_MLP3x_WD04_1.1271/submission.json"
+      }
     },
     {
       "name": "11L XSA4 + EMA + Int6 MLP3x",
@@ -347,7 +645,12 @@
       "summary": "On PR #198: XSA on the last 4 layers + EMA replacing SWA",
       "date": "2026-03-20",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "11L Efficient Partial XSA",
@@ -356,7 +659,12 @@
       "summary": "On PR #198: Efficient Partial XSA on the deepest 3 layers",
       "date": "2026-03-20",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "11L + Efficient Partial XSA + FA3 + SWA/120 (val_bpb: 1.1307)",
@@ -368,7 +676,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+      "source": "records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-20_11L_EfficientPartialXSA_FA3_SWA120/submission.json"
+      }
     },
     {
       "name": "10L Int5-MLP + BigramHash(10240)",
@@ -377,7 +690,12 @@
       "summary": "10 layers, mixed int5/int6 quantization, BigramHash(10240), SWA(0.4), WD=0.04",
       "date": "2026-03-20",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Int6 MLP3x + SmearGate + BigramHash",
@@ -386,7 +704,12 @@
       "summary": "3x MLP + SmearGate + BigramHash + OrthoInit + Muon WD + SWA",
       "date": "2026-03-20",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Int6 MLP3x + SmearGate + BigramHash + OrthoInit + Muon WD + SWA",
@@ -398,7 +721,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      "source": "records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-20_Int6_MLP3x_SmearGate_BigramHash_MuonWD_SWA/submission.json"
+      }
     },
     {
       "name": "2026-03-19_MLP3x_QAT_Int6_SlidingWindow",
@@ -410,7 +738,12 @@
       "trainTimeSeconds": 600,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_MLP3x_QAT_Int6_SlidingWindow/submission.json"
+      }
     },
     {
       "name": "11L MLP3x + Int6 QAT",
@@ -419,7 +752,12 @@
       "summary": "11 layers, 3x MLP, int6 QAT, zstd-22, WD=0.04, sliding eval",
       "date": "2026-03-20",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "2026-03-19_smeargate_orthoinit_muonwd",
@@ -431,7 +769,12 @@
       "trainTimeSeconds": 600,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_smeargate_orthoinit_muonwd/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_smeargate_orthoinit_muonwd/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_smeargate_orthoinit_muonwd/submission.json"
+      }
     },
     {
       "name": "SmearGate + OrthoInit + Muon WD",
@@ -440,7 +783,12 @@
       "summary": "SmearGate + BigramHash + 3x MLP + int6 STE QAT + sliding eval",
       "date": "2026-03-19",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "73.7M Ternary U-Net \u2014 BitNet b1.58 + NeoMuon + 4x relu\u00b2 MLP + FP8 QAT + Base-3 LZMA",
@@ -452,7 +800,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-24_74M_Ternary_UNet_FP8_10L_8192BPE_YaRN_NeoMuon/submission_ternary.json"
+      "source": "records/track_10min_16mb/2026-03-24_74M_Ternary_UNet_FP8_10L_8192BPE_YaRN_NeoMuon/submission_ternary.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-24_74M_Ternary_UNet_FP8_10L_8192BPE_YaRN_NeoMuon/submission_ternary.json"
+      }
     },
     {
       "name": "Ternary Quantization",
@@ -461,7 +814,12 @@
       "summary": "73.7M params quantized to 1 0 -1 + misc arch changes",
       "date": "2026-03-24",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Int6 MLP3x Sliding Window",
@@ -473,7 +831,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_WarmdownQuantization/submission.json"
+      }
     },
     {
       "name": "10L Int6 QAT + Zstd MLP2.6x",
@@ -482,7 +845,12 @@
       "summary": "10 layers, int6 QAT + zstd-22, MLP 1344, Muon 0.99, sliding eval",
       "date": "2026-03-19",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "10L Int6 QAT + Zstd MLP2.6x Muon0.99 Sliding Window",
@@ -494,7 +862,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_Seq2048_FP16Emb_TunedLR/submission.json"
+      }
     },
     {
       "name": "Mixed Quant + Sliding Window Eval",
@@ -503,7 +876,12 @@
       "summary": "Int6 block weights + int8 embeddings + 3x MLP + sliding eval",
       "date": "2026-03-19",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Mixed Quant (int6 blocks + int8 embeddings) + Sliding Window Eval, val_bpb=1.1630",
@@ -515,7 +893,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_MixedQuant_Int6Int8_SlidingWindow/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_MixedQuant_Int6Int8_SlidingWindow/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_MixedQuant_Int6Int8_SlidingWindow/submission.json"
+      }
     },
     {
       "name": "Muon WD + 10 layer",
@@ -524,7 +907,12 @@
       "summary": "Includes prev. wins + Spectral embed init + resid mix",
       "date": "2026-03-19",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Sliding Window Eval",
@@ -533,7 +921,12 @@
       "summary": "Sliding window evaluation at stride=64, increasing context for eval",
       "date": "2026-03-19",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Sliding Window Eval (stride=64)",
@@ -545,7 +938,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_SlidingWindowEval/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_SlidingWindowEval/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_SlidingWindowEval/submission.json"
+      }
     },
     {
       "name": "Lora TTT",
@@ -554,7 +952,12 @@
       "summary": "Test-time training with LORAs",
       "date": "2026-03-19",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "LoRA TTT",
@@ -566,7 +969,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-17_LoRA_TTT/submission.json"
+      "source": "records/track_10min_16mb/2026-03-17_LoRA_TTT/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-17_LoRA_TTT/submission.json"
+      }
     },
     {
       "name": "4k seq length",
@@ -575,7 +983,12 @@
       "summary": "4k seq length + better hypers",
       "date": "2026-03-19",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "Training Opt Seq4096 v1",
@@ -587,7 +1000,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_TrainingOptSeq4096/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_TrainingOptSeq4096/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_TrainingOptSeq4096/submission.json"
+      }
     },
     {
       "name": "Long Context Seq2048 v2",
@@ -599,7 +1017,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-18_LongContextSeq2048/submission.json"
+      "source": "records/track_10min_16mb/2026-03-18_LongContextSeq2048/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-18_LongContextSeq2048/submission.json"
+      }
     },
     {
       "name": "2048 seq length",
@@ -608,7 +1031,12 @@
       "summary": "2048 seq length (train + val)",
       "date": "2026-03-18",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "4-Hour Quasi-10B SP1024",
@@ -620,7 +1048,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_non_record_16mb/2026-03-18_Quasi10Bfrom50B_SP1024_9x512_KV4_4h_pgut3/submission.json"
+      "source": "records/track_non_record_16mb/2026-03-18_Quasi10Bfrom50B_SP1024_9x512_KV4_4h_pgut3/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_non_record_16mb/2026-03-18_Quasi10Bfrom50B_SP1024_9x512_KV4_4h_pgut3/submission.json"
+      }
     },
     {
       "name": "4-Hour Baseline",
@@ -629,7 +1062,12 @@
       "summary": "Testing unlimited compute, 4 hours on 8xH100",
       "date": "2026-03-18",
       "track": "non_record_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#non_record_16mb"
+      }
     },
     {
       "name": "int6 mixed precision",
@@ -638,7 +1076,12 @@
       "summary": "10 layers, mixed int8/int6",
       "date": "2026-03-18",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "10L Mixed Precision",
@@ -650,7 +1093,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-19_10L_MixedPrecision/submission.json"
+      "source": "records/track_10min_16mb/2026-03-19_10L_MixedPrecision/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-19_10L_MixedPrecision/submission.json"
+      }
     },
     {
       "name": "fp16 Embed",
@@ -659,7 +1107,12 @@
       "summary": "FP16 Tied Embedding + LR/Warmdown Tuning",
       "date": "2026-03-18",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "FP16 Tied Embedding + LR/Warmdown Tuning",
@@ -671,7 +1124,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-18_FP16Embed_WD3600/submission.json"
+      "source": "records/track_10min_16mb/2026-03-18_FP16Embed_WD3600/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-18_FP16Embed_WD3600/submission.json"
+      }
     },
     {
       "name": "Lower LR",
@@ -683,7 +1141,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-18_LowerLR/submission.json"
+      "source": "records/track_10min_16mb/2026-03-18_LowerLR/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-18_LowerLR/submission.json"
+      }
     },
     {
       "name": "Naive Baseline",
@@ -695,7 +1158,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_10min_16mb/2026-03-17_NaiveBaseline/submission.json"
+      "source": "records/track_10min_16mb/2026-03-17_NaiveBaseline/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_10min_16mb/2026-03-17_NaiveBaseline/submission.json"
+      }
     },
     {
       "name": "Naive Baseline",
@@ -704,7 +1172,12 @@
       "summary": "9layer 512dim 1024vocab TiedEmbeddings 4 KV heads",
       "date": "2026-03-18",
       "track": "10min_16mb",
-      "source": "README.md"
+      "source": "README.md",
+      "provenance": {
+        "sourceId": "parameter-golf-readme-leaderboard",
+        "sourceType": "readme-leaderboard",
+        "locator": "README.md#10min_16mb"
+      }
     },
     {
       "name": "SwiGLU + Warmdown Fix + Quarter Batch (1x5090)",
@@ -716,7 +1189,12 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_non_record_16mb/2026-03-19_SwiGLU_WarmdownFix_QuarterBatch_1x5090/submission.json"
+      "source": "records/track_non_record_16mb/2026-03-19_SwiGLU_WarmdownFix_QuarterBatch_1x5090/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_non_record_16mb/2026-03-19_SwiGLU_WarmdownFix_QuarterBatch_1x5090/submission.json"
+      }
     },
     {
       "name": "Depth Recurrence + Mixed-Precision Quantization",
@@ -728,10 +1206,20 @@
       "trainTimeSeconds": null,
       "techniqueSummary": "",
       "compliance": {},
-      "source": "records/track_non_record_16mb/2026-03-21_DepthRecurrence_MixedPrecisionQuant/submission.json"
+      "source": "records/track_non_record_16mb/2026-03-21_DepthRecurrence_MixedPrecisionQuant/submission.json",
+      "provenance": {
+        "sourceId": "parameter-golf-submission-records",
+        "sourceType": "submission-record",
+        "locator": "record:records/track_non_record_16mb/2026-03-21_DepthRecurrence_MixedPrecisionQuant/submission.json"
+      }
     }
   ],
   "motifs": [
+    {
+      "motif": "legal_ttt",
+      "recordCount": 13,
+      "bestScore": 1.06157
+    },
     {
       "motif": "depth_recurrence",
       "recordCount": 13,
@@ -745,11 +1233,6 @@
     {
       "motif": "gptq",
       "recordCount": 13,
-      "bestScore": 1.081
-    },
-    {
-      "motif": "legal_ttt",
-      "recordCount": 11,
       "bestScore": 1.081
     },
     {
@@ -779,22 +1262,6 @@
     }
   ],
   "recentMovement": [
-    {
-      "date": "2026-03-31",
-      "name": "Parallel Residuals + Mini Depth Recurrence",
-      "score": 1.10625353,
-      "previousBestScore": 1.1147,
-      "deltaVsPreviousBest": -0.008446,
-      "source": "records/track_10min_16mb/2026-03-31_ParallelResiduals_MiniDepthRecurrence/submission.json"
-    },
-    {
-      "date": "2026-04-01",
-      "name": "4096-Vocab + Larger Model + High WD + Simplifications",
-      "score": 1.09785,
-      "previousBestScore": 1.10625353,
-      "deltaVsPreviousBest": -0.008404,
-      "source": "records/track_10min_16mb/2026-04-01_Vocab4096_MLPMult4_WD085/submission.json"
-    },
     {
       "date": "2026-04-03",
       "name": "Record: MuonEq-R + Depth Recurrence + WD=0.090 + All-Int6 GPTQ",
@@ -842,6 +1309,22 @@
       "previousBestScore": 1.08217956,
       "deltaVsPreviousBest": -0.00118,
       "source": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json"
+    },
+    {
+      "date": "2026-04-19",
+      "name": "SP8192 + Hadamard Rotation + AWQ + Layer-wise Precision + Hessian-Aware Calibration + Legal Score-First TTT",
+      "score": 1.0785,
+      "previousBestScore": 1.081,
+      "deltaVsPreviousBest": -0.0025,
+      "source": "records/track_10min_16mb/2026-04-19_SP8192_QuantumFusionPlus_Hadamard_AWQ/submission.json"
+    },
+    {
+      "date": "2026-04-24",
+      "name": "PR1787Base + SmearGate + LQER Asymmetric + Phased TTT",
+      "score": 1.06157,
+      "previousBestScore": 1.0785,
+      "deltaVsPreviousBest": -0.01693,
+      "source": "records/track_10min_16mb/2026-04-24_PR1787Base_Smear_LQERAsym_PhasedTTT_1.06157/submission.json"
     }
   ]
 }
