@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import argparse
+import json
 import math
+import sys
 import zlib
 from dataclasses import dataclass
 from pathlib import Path
@@ -52,6 +55,28 @@ class ArtifactBudgetEstimate:
                 f"estimated_bytes:{component.estimated_bytes}"
             )
         return lines
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "limitBytes": self.limit_bytes,
+            "totalEstimatedBytes": self.total_estimated_bytes,
+            "modelEstimatedBytes": self.model_estimated_bytes,
+            "codeEstimatedBytes": self.code_estimated_bytes,
+            "overBudget": self.over_budget,
+            "headroomBytes": self.headroom_bytes,
+            "quantizationScheme": self.quantization_scheme,
+            "compressionRatio": self.compression_ratio,
+            "components": [
+                {
+                    "name": component.name,
+                    "parameterCount": component.parameter_count,
+                    "rawQuantizedBytes": component.raw_quantized_bytes,
+                    "estimatedBytes": component.estimated_bytes,
+                    "tensorCount": component.tensor_count,
+                }
+                for component in self.components
+            ],
+        }
 
 
 def _attr(config: Any, name: str, default: Any | None = None) -> Any:
@@ -265,3 +290,44 @@ def estimate_artifact_budget(
         compression_ratio=compression_ratio,
         components=tuple(components),
     )
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Estimate packed model artifact bytes before training or final packing."
+    )
+    parser.add_argument("--config", type=Path, required=True, help="JSON candidate/model config path.")
+    parser.add_argument(
+        "--code-path",
+        type=Path,
+        default=None,
+        help="Optional training or submission script to include as compressed code bytes.",
+    )
+    parser.add_argument("--limit-bytes", type=int, default=DEFAULT_LIMIT_BYTES)
+    parser.add_argument("--compression-ratio", type=float, default=DEFAULT_COMPRESSION_RATIO)
+    parser.add_argument("--format", choices=("text", "json"), default="text")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _build_parser().parse_args(argv)
+    config = json.loads(args.config.read_text(encoding="utf-8"))
+    if not isinstance(config, dict):
+        raise ValueError("config JSON must contain an object")
+
+    estimate = estimate_artifact_budget(
+        config,
+        limit_bytes=args.limit_bytes,
+        compression_ratio=args.compression_ratio,
+        code_path=args.code_path,
+    )
+    if args.format == "json":
+        print(json.dumps(estimate.to_dict(), indent=2, sort_keys=True))
+    else:
+        for line in estimate.to_log_lines():
+            print(line)
+    return 2 if estimate.over_budget else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

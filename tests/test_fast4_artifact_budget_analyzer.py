@@ -1,3 +1,6 @@
+import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -82,6 +85,46 @@ class Fast4ArtifactBudgetAnalyzerTest(unittest.TestCase):
     def test_invalid_attention_shape_fails_closed(self) -> None:
         with self.assertRaises(ValueError):
             estimate_artifact_budget({**self._baseline_config(), "model_dim": 513})
+
+    def test_cli_flags_over_budget_candidate_before_training(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            config_path = Path(tmp_dir) / "candidate.json"
+            config_path.write_text(
+                json.dumps(
+                    {
+                        **self._baseline_config(),
+                        "vocab_size": 8192,
+                        "num_layers": 15,
+                        "model_dim": 768,
+                        "num_kv_heads": 8,
+                        "mlp_mult": 4,
+                        "tie_embeddings": False,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "fastest/scripts/artifact_budget_analyzer.py",
+                    "--config",
+                    str(config_path),
+                    "--format",
+                    "json",
+                ],
+                check=False,
+                cwd=Path(__file__).resolve().parents[1],
+                text=True,
+                capture_output=True,
+            )
+
+        self.assertEqual(result.returncode, 2, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertTrue(payload["overBudget"])
+        self.assertLess(payload["headroomBytes"], 0)
+        self.assertEqual(payload["limitBytes"], 16_000_000)
+        self.assertIn("attention_blocks", {component["name"] for component in payload["components"]})
 
 
 if __name__ == "__main__":
