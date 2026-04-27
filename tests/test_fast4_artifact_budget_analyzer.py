@@ -30,6 +30,25 @@ class Fast4ArtifactBudgetAnalyzerTest(unittest.TestCase):
         self.assertGreater(components["attention_blocks"].estimated_bytes, 0)
         self.assertGreater(components["mlp_blocks"].estimated_bytes, 0)
 
+    def test_estimate_exposes_heads_and_quantization_overhead_for_packing_decisions(self) -> None:
+        estimate = estimate_artifact_budget(
+            {
+                **self._baseline_config(),
+                "tie_embeddings": False,
+                "quantization_bits": 6,
+                "quantization_scheme": "int6-per-row-zlib-projection",
+            }
+        )
+
+        components = {component.name: component for component in estimate.components}
+
+        self.assertEqual(estimate.quantization_scheme, "int6-per-row-zlib-projection")
+        self.assertIn("output_head", components)
+        self.assertIn("quantization_overhead", components)
+        self.assertGreater(components["output_head"].parameter_count, 0)
+        self.assertGreater(components["quantization_overhead"].raw_quantized_bytes, 0)
+        self.assertIn("quantization_overhead", "\n".join(estimate.to_log_lines()))
+
     def test_large_candidate_flags_16mb_violation_before_training(self) -> None:
         config = {
             **self._baseline_config(),

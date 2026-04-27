@@ -83,8 +83,16 @@ def _compressed_bytes(raw_quantized_bytes: int, compression_ratio: float) -> int
     return int(math.ceil(raw_quantized_bytes * compression_ratio))
 
 
-def _matrix_int8_bytes(rows: int, cols: int) -> int:
-    return rows * cols + rows * 4 + TENSOR_METADATA_BYTES
+def _quantized_payload_bytes(parameter_count: int, quantization_bits: int) -> int:
+    return int(math.ceil(parameter_count * quantization_bits / 8))
+
+
+def _matrix_quantized_payload_bytes(rows: int, cols: int, quantization_bits: int) -> int:
+    return _quantized_payload_bytes(rows * cols, quantization_bits)
+
+
+def _matrix_quantization_overhead_bytes(rows: int) -> int:
+    return rows * 4 + TENSOR_METADATA_BYTES
 
 
 def _vector_fp16_bytes(size: int) -> int:
@@ -122,11 +130,17 @@ def estimate_artifact_budget(
     num_kv_heads = _int_attr(config, "num_kv_heads", 4)
     mlp_mult = _int_attr(config, "mlp_mult", 2)
     tie_embeddings = _bool_attr(config, "tie_embeddings", True)
+    quantization_bits = _int_attr(config, "quantization_bits", 8)
+    quantization_scheme = str(
+        _attr(config, "quantization_scheme", "int8-per-row-zlib-projection")
+    )
 
     if model_dim <= 0 or vocab_size <= 0 or num_layers <= 0:
         raise ValueError("vocab_size, model_dim, and num_layers must be positive")
     if num_heads <= 0 or num_kv_heads <= 0:
         raise ValueError("num_heads and num_kv_heads must be positive")
+    if quantization_bits <= 0:
+        raise ValueError("quantization_bits must be positive")
     if model_dim % num_heads != 0:
         raise ValueError("model_dim must be divisible by num_heads")
     if num_heads % num_kv_heads != 0:
@@ -137,24 +151,49 @@ def estimate_artifact_budget(
     hidden_dim = model_dim * mlp_mult
 
     embedding_params = vocab_size * model_dim
-    embedding_raw = _matrix_int8_bytes(vocab_size, model_dim)
+    embedding_raw = _matrix_quantized_payload_bytes(
+        vocab_size,
+        model_dim,
+        quantization_bits,
+    )
+    quantization_overhead_raw = _matrix_quantization_overhead_bytes(vocab_size)
     output_head_params = 0
     output_head_raw = 0
     if not tie_embeddings:
         output_head_params = vocab_size * model_dim
-        output_head_raw = _matrix_int8_bytes(vocab_size, model_dim)
+        output_head_raw = _matrix_quantized_payload_bytes(
+            vocab_size,
+            model_dim,
+            quantization_bits,
+        )
+        quantization_overhead_raw += _matrix_quantization_overhead_bytes(vocab_size)
 
     attention_params_per_layer = model_dim * model_dim * 2 + model_dim * kv_dim * 2
     attention_raw_per_layer = (
-        _matrix_int8_bytes(model_dim, model_dim)
-        + _matrix_int8_bytes(kv_dim, model_dim)
-        + _matrix_int8_bytes(kv_dim, model_dim)
-        + _matrix_int8_bytes(model_dim, model_dim)
+        _matrix_quantized_payload_bytes(model_dim, model_dim, quantization_bits)
+        + _matrix_quantized_payload_bytes(kv_dim, model_dim, quantization_bits)
+        + _matrix_quantized_payload_bytes(kv_dim, model_dim, quantization_bits)
+        + _matrix_quantized_payload_bytes(model_dim, model_dim, quantization_bits)
+    )
+    quantization_overhead_raw += num_layers * (
+        _matrix_quantization_overhead_bytes(model_dim)
+        + _matrix_quantization_overhead_bytes(kv_dim)
+        + _matrix_quantization_overhead_bytes(kv_dim)
+        + _matrix_quantization_overhead_bytes(model_dim)
     )
     mlp_params_per_layer = model_dim * hidden_dim * 2
-    mlp_raw_per_layer = _matrix_int8_bytes(hidden_dim, model_dim) + _matrix_int8_bytes(
+    mlp_raw_per_layer = _matrix_quantized_payload_bytes(
+        hidden_dim,
+        model_dim,
+        quantization_bits,
+    ) + _matrix_quantized_payload_bytes(
         model_dim,
         hidden_dim,
+        quantization_bits,
+    )
+    quantization_overhead_raw += num_layers * (
+        _matrix_quantization_overhead_bytes(hidden_dim)
+        + _matrix_quantization_overhead_bytes(model_dim)
     )
     control_params_per_layer = model_dim * 2 + 1
     control_raw_per_layer = _vector_fp16_bytes(model_dim) * 2 + _vector_fp16_bytes(1)
@@ -188,6 +227,13 @@ def estimate_artifact_budget(
             tensor_count=3 * num_layers,
             compression_ratio=1.0,
         ),
+        _component(
+            "quantization_overhead",
+            parameter_count=0,
+            raw_quantized_bytes=quantization_overhead_raw,
+            tensor_count=7 * num_layers + (2 if not tie_embeddings else 1),
+            compression_ratio=1.0,
+        ),
     ]
     if output_head_params:
         components.append(
@@ -215,7 +261,7 @@ def estimate_artifact_budget(
         code_estimated_bytes=code_estimated_bytes,
         over_budget=total_estimated_bytes > limit_bytes,
         headroom_bytes=limit_bytes - total_estimated_bytes,
-        quantization_scheme="int8-per-row-zlib-projection",
+        quantization_scheme=quantization_scheme,
         compression_ratio=compression_ratio,
         components=tuple(components),
     )
