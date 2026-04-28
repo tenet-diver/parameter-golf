@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "taskId": "FAST-870",
+  "generatedAt": "2026-04-28T00:00:00Z",
+  "artifactLimitBytes": 16000000,
+  "competitionPreset": "parameter-golf",
+  "scoringMetric": "FineWeb validation bits per byte",
+  "trustedControl": {
+    "controlConfigId": "control-2026-04-09-sp8192-3layer-parres-qk525-legalttt",
+    "recordPath": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/README.md",
+    "configHash": "record:records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/submission.json",
+    "commandOrEntrypoint": "SEED=42 QK_GAIN_INIT=5.25 TTT_ENABLED=1 TTT_LR=0.005 TTT_EPOCHS=3 torchrun --standalone --nproc_per_node=8 train_gpt.py",
+    "seedPolicy": {
+      "mode": "visible-leaderboard-3-seed-mean",
+      "seeds": [42, 314, 999],
+      "scoreStdBpb": 0.0002
+    },
+    "validationBpb": 1.081,
+    "artifactBytes": 15993232,
+    "artifactBytesPolicy": "maximum checked-in seed artifact from visible record",
+    "legalityClass": "legal",
+    "runtimeClass": "credible-10min-8xh100",
+    "runDurationEstimate": "train 588s on 8xH100 SXM; eval approximately 500s including score-first TTT",
+    "trustRationale": "Strongest visible 10min_16mb leaderboard record for the target motif family; all three seed artifacts are under 16MB and the record declares score-first TTT compliance."
+  },
+  "ablations": [
+    {
+      "motifId": "sp8192-tokenizer",
+      "motif": "SP8192 tokenizer",
+      "controlConfigId": "control-2026-04-09-sp8192-3layer-parres-qk525-legalttt",
+      "ablationConfigId": "ablate-sp8192-via-sp4096-depthrec-parres-qk5",
+      "recordPath": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/README.md",
+      "commandOrEntrypoint": "MATCHED_FINEWEB_REPO_ID=kevclark/parameter-golf python3 data/cached_challenge_fineweb.py --variant sp4096 --skip-manifest && SEED=42 RECUR_LAYERS=4,5 RECUR_START_STEP=3000 PARALLEL_START_LAYER=7 torchrun --standalone --nproc_per_node=8 train_gpt.py",
+      "seedPolicy": {
+        "mode": "visible-leaderboard-3-seed-mean",
+        "seeds": [42, 314, 999],
+        "scoreStdBpb": 0.0003
+      },
+      "artifactPath": "records/track_10min_16mb/2026-04-04_SP4096_DepthRecurrence_ParallelResid_MuonEqR/",
+      "artifactBytes": 15999533,
+      "validationBpb": 1.0897,
+      "scoreDeltaBpb": 0.0087,
+      "artifactDeltaBytes": 6301,
+      "legalityClass": "legal",
+      "isolationClass": "partial-confounded",
+      "confounds": ["uses SP4096 instead of SP8192", "omits legal score-first TTT", "uses 2-layer rather than 3-layer recurrence"],
+      "runDurationEstimate": "train/eval within visible 10min_16mb record envelope; artifact has 467 bytes of 16MB headroom",
+      "operationalDelta": "Tighter artifact margin than control; still on the 8xH100 leaderboard path.",
+      "nextAction": "isolate-tokenizer-toggle-before-combination"
+    },
+    {
+      "motifId": "3-layer-recurrence",
+      "motif": "3-layer recurrence",
+      "controlConfigId": "control-2026-04-09-sp8192-3layer-parres-qk525-legalttt",
+      "ablationConfigId": "ablate-3layer-via-sp8192-parres-ttt-2layer-loop",
+      "recordPath": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/README.md",
+      "commandOrEntrypoint": "SEED=42 TTT_ENABLED=1 PARALLEL_START_LAYER=7 torchrun --standalone --nproc_per_node=8 train_gpt.py",
+      "seedPolicy": {
+        "mode": "visible-leaderboard-3-seed-mean",
+        "seeds": [42, 314, 999],
+        "scoreStdBpb": 0.0005
+      },
+      "artifactPath": "records/track_10min_16mb/2026-04-08_SP8192_ParallelResid_ScoreFirstTTT/",
+      "artifactBytes": 15991486,
+      "validationBpb": 1.0822,
+      "scoreDeltaBpb": 0.0012,
+      "artifactDeltaBytes": -1746,
+      "legalityClass": "legal",
+      "isolationClass": "partial-confounded",
+      "confounds": ["uses 2-layer loop recurrence rather than a clean recurrence-off toggle", "QK gain is 5.0 rather than 5.25"],
+      "runDurationEstimate": "visible 3-seed 8xH100 leaderboard run; no runtime warning beyond control envelope",
+      "operationalDelta": "Small score regression relative to control with slightly smaller artifact.",
+      "nextAction": "keep-and-run-clean-recurrence-toggle"
+    },
+    {
+      "motifId": "parallel-residuals",
+      "motif": "parallel residuals",
+      "controlConfigId": "control-2026-04-09-sp8192-3layer-parres-qk525-legalttt",
+      "ablationConfigId": "ablate-parres-via-sp8192-qk5-legalttt",
+      "recordPath": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/README.md",
+      "commandOrEntrypoint": "QK_GAIN_INIT=5.0 TTT_ENABLED=1 TTT_LR=0.005 TTT_EPOCHS=3 torchrun --standalone --nproc_per_node=8 train_gpt.py",
+      "seedPolicy": {
+        "mode": "visible-leaderboard-3-seed-mean",
+        "seeds": [0, 42, 1234],
+        "scoreStdBpb": 0.00049
+      },
+      "artifactPath": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/",
+      "artifactBytes": 15992546,
+      "validationBpb": 1.08279,
+      "scoreDeltaBpb": 0.00179,
+      "artifactDeltaBytes": -686,
+      "legalityClass": "legal",
+      "isolationClass": "partial-confounded",
+      "confounds": ["no parallel residuals", "QK gain 5.0 rather than 5.25", "2-layer rather than 3-layer recurrence"],
+      "runDurationEstimate": "train approximately 588s; eval approximately 382s including score-first TTT",
+      "operationalDelta": "No evidence of 10-minute training risk; TTT eval time remains material.",
+      "nextAction": "keep-and-run-clean-parallel-residual-toggle"
+    },
+    {
+      "motifId": "legal-score-first-ttt",
+      "motif": "legal score-first TTT",
+      "controlConfigId": "control-2026-04-09-sp8192-3layer-parres-qk525-legalttt",
+      "ablationConfigId": "ablate-ttt-via-control-sliding-score",
+      "recordPath": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/README.md",
+      "commandOrEntrypoint": "QK_GAIN_INIT=5.25 TTT_ENABLED=0 torchrun --standalone --nproc_per_node=8 train_gpt.py",
+      "seedPolicy": {
+        "mode": "same-record-sliding-3-seed-mean",
+        "seeds": [42, 314, 999],
+        "scoreStdBpb": 0.0002
+      },
+      "artifactPath": "records/track_10min_16mb/2026-04-09_SP8192_3LayerRecur_ParResid_QK525_LegalTTT/",
+      "artifactBytes": 15993232,
+      "validationBpb": 1.0827,
+      "scoreDeltaBpb": 0.0017,
+      "artifactDeltaBytes": 0,
+      "legalityClass": "legal",
+      "isolationClass": "clean-visible-contrast",
+      "confounds": [],
+      "runDurationEstimate": "removes approximately 370s of TTT eval from control; training unchanged",
+      "operationalDelta": "Score-first TTT improves bpb but consumes a large share of eval budget.",
+      "nextAction": "keep-with-eval-budget-watch"
+    },
+    {
+      "motifId": "qk-gain-tuning",
+      "motif": "QK-gain tuning",
+      "controlConfigId": "control-2026-04-09-sp8192-3layer-parres-qk525-legalttt",
+      "ablationConfigId": "ablate-qk525-via-qk5-legalttt-record",
+      "recordPath": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/README.md",
+      "commandOrEntrypoint": "QK_GAIN_INIT=5.0 TTT_ENABLED=1 TTT_LR=0.005 TTT_EPOCHS=3 torchrun --standalone --nproc_per_node=8 train_gpt.py",
+      "seedPolicy": {
+        "mode": "visible-leaderboard-3-seed-mean",
+        "seeds": [0, 42, 1234],
+        "scoreStdBpb": 0.00049
+      },
+      "artifactPath": "records/track_10min_16mb/2026-04-06_SP8192_QK5_LegalTTT_1.0828/",
+      "artifactBytes": 15992546,
+      "validationBpb": 1.08279,
+      "scoreDeltaBpb": 0.00179,
+      "artifactDeltaBytes": -686,
+      "legalityClass": "legal",
+      "isolationClass": "partial-confounded",
+      "confounds": ["QK gain differs from control", "also lacks 3-layer recurrence and parallel residual additions present in control"],
+      "runDurationEstimate": "train approximately 588s; eval approximately 382s including score-first TTT",
+      "operationalDelta": "No artifact-size pressure observed from QK gain tuning itself.",
+      "nextAction": "run-clean-qk5p0-to-qk5p25-sweep"
+    },
+    {
+      "motifId": "hessian-aware-clipping",
+      "motif": "Hessian-aware clipping",
+      "controlConfigId": "control-2026-04-09-sp8192-3layer-parres-qk525-legalttt",
+      "ablationConfigId": "ablate-hessian-via-hessian-sdclip-progressive-recurrence",
+      "recordPath": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/README.md",
+      "commandOrEntrypoint": "HESSIAN_CLIP_LAMBDA=0.175 LOOP_PHASE2_AT=0.65 PARALLEL_RESIDUAL_START=7 SEED=1337 torchrun --standalone --nproc_per_node=8 train_gpt_sweep.py",
+      "seedPolicy": {
+        "mode": "visible-leaderboard-3-seed-mean",
+        "seeds": [1337, 42, 3141],
+        "scoreStdBpb": 0.0005
+      },
+      "artifactPath": "records/track_10min_16mb/2026-04-06_SP8192_HessianSDClip_ProgressiveRecurrence/",
+      "artifactBytes": 15979649,
+      "validationBpb": 1.08354,
+      "scoreDeltaBpb": 0.00254,
+      "artifactDeltaBytes": -13583,
+      "legalityClass": "legal",
+      "isolationClass": "partial-confounded",
+      "confounds": ["no legal score-first TTT", "progressive recurrence differs from control recurrence schedule"],
+      "runDurationEstimate": "visible 8xH100 run within 600s training envelope; fixed-predictor eval",
+      "operationalDelta": "Improves artifact headroom relative to control; no eval adaptation cost.",
+      "nextAction": "port-hessian-clipping-onto-control-stack"
+    }
+  ],
+  "decisionPolicy": {
+    "combineCandidateRule": "Only clean or follow-up-isolated legal rows with score gain beyond visible variance may enter combination attempts.",
+    "varianceRule": "If visible std is within the same order as score delta, rerun or run a clean toggle before combining.",
+    "legalityRule": "Any artifact over 16000000 bytes is illegal-size; any uncertain eval-time adaptation becomes legality-review."
+  }
+}
