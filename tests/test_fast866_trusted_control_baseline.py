@@ -1,3 +1,4 @@
+import hashlib
 import json
 import unittest
 from pathlib import Path
@@ -66,6 +67,38 @@ class Fast866TrustedControlBaselineTest(unittest.TestCase):
                 }
             ),
         )
+
+    def test_reproduction_import_path_is_controlled_and_has_no_temp_dependency(self) -> None:
+        self.assertTrue(REPORT_PATH.exists(), "FAST-866 control baseline report is missing")
+
+        report = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+        reproduction = report.get("reproduction")
+        self.assertIsInstance(reproduction, dict)
+
+        dependency_trust = reproduction.get("dependencyTrust")
+        self.assertIsInstance(dependency_trust, dict)
+        self.assertEqual(dependency_trust.get("pythonImportPathPolicy"), "repo-root-only")
+        self.assertEqual(dependency_trust.get("uncontrolledWritableImportPaths"), [])
+        self.assertFalse(dependency_trust.get("usesTemporaryPythonPathDependency"))
+
+        controlled_paths = dependency_trust.get("controlledPythonPathEntries")
+        self.assertIsInstance(controlled_paths, list)
+        self.assertEqual(len(controlled_paths), 1)
+        repo_entry = controlled_paths[0]
+        self.assertEqual(repo_entry.get("path"), "/workspaces/parameter-golf")
+        self.assertEqual(repo_entry.get("control"), "git-commit")
+        self.assertEqual(repo_entry.get("commit"), report.get("repoCommit"))
+        self.assertIsInstance(repo_entry.get("sourceFileHashes"), list)
+        self.assertGreater(len(repo_entry["sourceFileHashes"]), 0)
+        self.assertTrue(
+            all(item.get("sha256") for item in repo_entry["sourceFileHashes"]),
+            "controlled import path entries must be hash-verifiable",
+        )
+        for item in repo_entry["sourceFileHashes"]:
+            source_path = REPO_ROOT / item["path"]
+            self.assertTrue(source_path.exists(), f"controlled source file is missing: {item['path']}")
+            actual_sha256 = hashlib.sha256(source_path.read_bytes()).hexdigest()
+            self.assertEqual(item["sha256"], actual_sha256)
 
 
 if __name__ == "__main__":
