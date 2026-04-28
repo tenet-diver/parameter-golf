@@ -39,8 +39,10 @@ class Fast866TrustedControlBaselineTest(unittest.TestCase):
         self.assertIsInstance(reproduction.get("runtimeCommand"), str)
         self.assertIn("python3", reproduction["runtimeCommand"])
         self.assertIn("train_gpt.py", reproduction["runtimeCommand"])
+        self.assertNotIn("PYTHONPATH=/tmp", reproduction["runtimeCommand"])
         self.assertIsInstance(reproduction.get("configProvenance"), dict)
         self.assertTrue(reproduction["configProvenance"].get("sourceFiles"))
+        self.assertNotEqual(reproduction["configProvenance"].get("env", {}).get("PYTHONPATH"), "/tmp")
         self.assertTrue(reproduction.get("logPath"))
         self.assertTrue((REPO_ROOT / reproduction["logPath"]).exists(), "control stdout log is missing")
 
