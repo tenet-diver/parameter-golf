@@ -86,6 +86,17 @@ class Fast4ArtifactBudgetAnalyzerTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             estimate_artifact_budget({**self._baseline_config(), "model_dim": 513})
 
+    def test_invalid_numeric_config_values_fail_closed(self) -> None:
+        invalid_configs = [
+            {**self._baseline_config(), "num_layers": "many"},
+            {**self._baseline_config(), "quantization_bits": True},
+        ]
+
+        for config in invalid_configs:
+            with self.subTest(config=config):
+                with self.assertRaises(ValueError):
+                    estimate_artifact_budget(config)
+
     def test_cli_flags_over_budget_candidate_before_training(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             config_path = Path(tmp_dir) / "candidate.json"

@@ -13,6 +13,7 @@ from typing import Any
 DEFAULT_LIMIT_BYTES = 16_000_000
 DEFAULT_COMPRESSION_RATIO = 0.78
 TENSOR_METADATA_BYTES = 64
+_MISSING = object()
 
 
 @dataclass(frozen=True)
@@ -79,20 +80,22 @@ class ArtifactBudgetEstimate:
         }
 
 
-def _attr(config: Any, name: str, default: Any | None = None) -> Any:
+def _attr(config: Any, name: str, default: Any = _MISSING) -> Any:
     if isinstance(config, dict):
         return config.get(name, default)
     return getattr(config, name, default)
 
 
 def _int_attr(config: Any, name: str, default: int) -> int:
-    value = _attr(config, name, default)
-    if isinstance(value, bool):
+    value = _attr(config, name, _MISSING)
+    if value is _MISSING:
         return default
+    if isinstance(value, bool):
+        raise ValueError(f"{name} must be an integer")
     try:
         return int(value)
     except (TypeError, ValueError):
-        return default
+        raise ValueError(f"{name} must be an integer") from None
 
 
 def _bool_attr(config: Any, name: str, default: bool) -> bool:
