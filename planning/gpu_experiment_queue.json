@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "kind": "parameter-golf-gpu-experiment-queue",
+  "generatedAt": "2026-04-28T23:00:00Z",
+  "runCommand": "python fastest/scripts/run_gpu_experiment_queue.py --queue planning/gpu_experiment_queue.json --auto-tune-batch",
+  "gpuPolicy": {
+    "firstPass": "Run ready 1xH100 experiments first; promote only high-signal winners to 8xH100 record attempts.",
+    "batching": "Queue is CPU-generated and GPU-consumed by one command so GPU time is spent only on selected runnable experiments. This queue is not capped; ticket/status lane inventory caps live in Fastest planning policy, not the GPU execution backlog.",
+    "quality": "External Parameter Golf code remains subject to security and maintainability review; queueing optimizes idle GPU time, not quality gates."
+  },
+  "experiments": [
+    {
+      "id": "gpuq_clean_recurrence_toggle_control",
+      "lane": "h100-1x-clean-ablation",
+      "status": "ready",
+      "priority": 1,
+      "expectedSignal": "Isolate recurrence value from the strongest visible motif stack before any 8xH100 spend.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "beats baseline or loses less than visible variance while improving artifact/runtime headroom"
+      },
+      "candidate": {
+        "id": "gpuq_clean_recurrence_toggle_control",
+        "family": "recurrent_autoregressive_transformer",
+        "hypothesis": "clean_3_layer_recurrence_improves_bpb_under_control_stack",
+        "hypothesisTags": ["depth_recurrence", "clean_ablation", "control_stack"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Control-stack recurrence toggle derived from visible FAST-870 recurrence evidence.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5",
+          "DECODER_LAYER_ORDER": "3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "1",
+          "TTT_LR": "0.005",
+          "TTT_EPOCHS": "3"
+        }
+      }
+    },
+    {
+      "id": "gpuq_parallel_residual_control_toggle",
+      "lane": "h100-1x-clean-ablation",
+      "status": "ready",
+      "priority": 2,
+      "expectedSignal": "Measure parallel residual contribution without dropping legal TTT or QK gain.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "score gain beyond noise or equal score with faster runtime"
+      },
+      "candidate": {
+        "id": "gpuq_parallel_residual_control_toggle",
+        "family": "autoregressive",
+        "hypothesis": "parallel_residuals_improve_optimization_on_control_stack",
+        "hypothesisTags": ["parallel_residual", "clean_ablation", "control_stack"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Parallel residual toggle on control-like QK and legal TTT settings.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "1",
+          "TTT_LR": "0.005",
+          "TTT_EPOCHS": "3"
+        }
+      }
+    },
+    {
+      "id": "gpuq_qk_gain_5p25_clean_sweep",
+      "lane": "h100-1x-param-sweep",
+      "status": "queued",
+      "priority": 3,
+      "expectedSignal": "Confirm whether QK 5.25 is worth retaining before combining with recurrence.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "better bpb than QK 5.0 evidence with legal artifact size"
+      },
+      "candidate": {
+        "id": "gpuq_qk_gain_5p25_clean_sweep",
+        "family": "autoregressive",
+        "hypothesis": "qk_gain_5p25_beats_qk5_on_legal_ttt_path",
+        "hypothesisTags": ["qk_gain", "param_sweep", "legal_ttt"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Focused QK gain 5.25 run with legal score-first TTT enabled.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "1",
+          "TTT_LR": "0.005",
+          "TTT_EPOCHS": "3"
+        }
+      }
+    },
+    {
+      "id": "gpuq_hessian_clip_on_control_stack",
+      "lane": "h100-1x-port-motif",
+      "status": "queued",
+      "priority": 4,
+      "expectedSignal": "Port Hessian clipping motif onto control stack to test if prior weaker visible score was confounded.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "improves artifact headroom without material bpb regression"
+      },
+      "candidate": {
+        "id": "gpuq_hessian_clip_on_control_stack",
+        "family": "autoregressive_optimizer",
+        "hypothesis": "hessian_clip_adds_stability_and_artifact_headroom_on_control_stack",
+        "hypothesisTags": ["hessian_clip", "motif_port", "artifact_headroom"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Hessian clipping port combined with control-like QK and legal TTT settings.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "HESSIAN_CLIP_LAMBDA": "0.175",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "1",
+          "TTT_LR": "0.005",
+          "TTT_EPOCHS": "3"
+        }
+      }
+    },
+    {
+      "id": "gpuq_ttt_disabled_runtime_control",
+      "lane": "h100-1x-runtime-ablation",
+      "status": "queued",
+      "priority": 5,
+      "expectedSignal": "Quantify score/runtime tradeoff from legal score-first TTT so 8xH100 runs do not waste eval time.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "large runtime win with acceptable bpb regression"
+      },
+      "candidate": {
+        "id": "gpuq_ttt_disabled_runtime_control",
+        "family": "autoregressive_eval_policy",
+        "hypothesis": "disabling_ttt_trades_small_bpb_for_large_eval_time_savings",
+        "hypothesisTags": ["ttt", "runtime_ablation", "eval_budget"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Runtime control for legal score-first TTT cost before large GPU batch promotion.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "0"
+        }
+      }
+    }
+  ]
+}
