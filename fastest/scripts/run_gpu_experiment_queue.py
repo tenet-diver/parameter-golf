@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -62,7 +63,13 @@ def select_experiments(
     lanes: set[str],
     only: set[str],
     max_experiments: int | None,
+    shard_count: int = 1,
+    shard_index: int = 0,
 ) -> list[dict[str, Any]]:
+    if shard_count < 1:
+        raise ValueError("shard_count must be at least 1")
+    if shard_index < 0 or shard_index >= shard_count:
+        raise ValueError("shard_index must be between 0 and shard_count - 1")
     selected = []
     for experiment in queue["experiments"]:
         status = str(experiment.get("status") or "")
@@ -75,6 +82,21 @@ def select_experiments(
         if only and experiment_id not in only:
             continue
         selected.append(experiment)
+    selected = sorted(
+        selected,
+        key=lambda experiment: (
+            int(experiment.get("priority", 1_000_000))
+            if isinstance(experiment.get("priority"), int)
+            else 1_000_000,
+            str(experiment["id"]),
+        ),
+    )
+    if shard_count > 1:
+        selected = [
+            experiment
+            for index, experiment in enumerate(selected)
+            if index % shard_count == shard_index
+        ]
     if max_experiments is not None:
         selected = selected[:max_experiments]
     return selected
@@ -109,6 +131,64 @@ def materialize_candidate_file(
     return candidate_file
 
 
+def build_batch_command(args: argparse.Namespace, candidate_file: Path) -> list[str]:
+    command = [
+        "python",
+        "fastest/scripts/run_h100_candidate_batch.py",
+        "--candidate-file",
+        str(candidate_file),
+        "--output-root",
+        str(args.output_root),
+        "--timeout-seconds",
+        str(args.timeout_seconds),
+    ]
+    if args.stop_on_failure:
+        command.append("--stop-on-failure")
+    if args.smoke:
+        command.append("--smoke")
+    if args.keep_raw_checkpoints:
+        command.append("--keep-raw-checkpoints")
+    if args.auto_tune_batch:
+        command.append("--auto-tune-batch")
+    if args.tune_only:
+        command.append("--tune-only")
+    command.extend(["--batch-tune-target-memory-fraction", str(args.batch_tune_target_memory_fraction)])
+    command.extend(["--batch-tune-max-tokens", str(args.batch_tune_max_tokens)])
+    command.extend(["--batch-tune-timeout-seconds", str(args.batch_tune_timeout_seconds)])
+    return command
+
+
+def write_export_runbook(
+    *,
+    candidate_file: Path,
+    experiments: list[dict[str, Any]],
+    args: argparse.Namespace,
+) -> None:
+    export_dir = candidate_file.parent
+    command = build_batch_command(args, candidate_file)
+    shell_command = " ".join(shlex.quote(part) for part in command)
+    run_command_path = export_dir / "run_command.sh"
+    run_command_path.write_text(f"#!/usr/bin/env bash\nset -euo pipefail\n{shell_command}\n", encoding="utf-8")
+    run_command_path.chmod(run_command_path.stat().st_mode | 0o111)
+    (export_dir / "run_manifest.json").write_text(
+        json.dumps(
+            {
+                "schema": "parameter-golf-gpu-queue-export/v1",
+                "queuePath": str(args.queue),
+                "candidateFile": str(candidate_file),
+                "selectedExperimentIds": [str(experiment["id"]) for experiment in experiments],
+                "shard": {"index": args.shard_index, "count": args.shard_count},
+                "batchCommand": command,
+                "shellCommand": shell_command,
+                "expectedEvidenceArtifact": str(args.output_root / "<run-slug>" / "model_factory_evidence.json"),
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def run_queue(args: argparse.Namespace) -> int:
     queue = load_queue(args.queue)
     if args.print_inventory:
@@ -122,20 +202,30 @@ def run_queue(args: argparse.Namespace) -> int:
         lanes=lanes,
         only=only,
         max_experiments=args.max_experiments,
+        shard_count=args.shard_count,
+        shard_index=args.shard_index,
     )
     if not experiments:
         raise ValueError("no GPU experiments selected")
     print(f"selected {len(experiments)} experiment(s)")
     if args.dry_run:
         for experiment in experiments:
-            print(f"{experiment['id']}: {experiment.get('lane')} {experiment.get('status')}")
+            print(
+                f"{experiment['id']}: {experiment.get('lane')} {experiment.get('status')} "
+                f"priority={experiment.get('priority')} shard={args.shard_index}/{args.shard_count}"
+            )
         return 0
     candidate_file = materialize_candidate_file(
         experiments,
         queue_path=args.queue,
         export_root=args.export_root,
     )
+    write_export_runbook(candidate_file=candidate_file, experiments=experiments, args=args)
     print(f"candidate_file={candidate_file}")
+    if args.export_only:
+        print(f"run_manifest={candidate_file.parent / 'run_manifest.json'}")
+        print(f"run_command={candidate_file.parent / 'run_command.sh'}")
+        return 0
     batch_args = SimpleNamespace(
         candidate_file=candidate_file,
         output_root=args.output_root,
@@ -164,9 +254,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--lane", action="append", default=[])
     parser.add_argument("--only", action="append", default=[])
     parser.add_argument("--max-experiments", type=int, default=None)
+    parser.add_argument("--shard-count", type=int, default=1, help="Split selected experiments into N independent GPU-pod shards.")
+    parser.add_argument("--shard-index", type=int, default=0, help="Run the zero-based shard index for this pod.")
     parser.add_argument("--timeout-seconds", type=int, default=900)
     parser.add_argument("--stop-on-failure", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--export-only", action="store_true", help="Materialize shard candidates and runbook without starting training.")
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--keep-raw-checkpoints", action="store_true")
     parser.add_argument("--auto-tune-batch", action="store_true")

@@ -7,6 +7,7 @@ from fastest.scripts import run_h100_candidate_batch as batch_runner
 from fastest.scripts.run_h100_candidate_batch import (
     apply_smoke_overrides,
     build_analysis_payload,
+    build_model_factory_evidence_payload,
     command_for_candidate,
     load_candidates,
     parse_args,
@@ -249,6 +250,37 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
 
         self.assertIn("byHardware", payload["views"])
         self.assertEqual(payload["views"]["byHardware"][0]["groupKey"], "1xH100")
+
+    def test_model_factory_evidence_payload_exports_argumentation_records(self) -> None:
+        payload = build_model_factory_evidence_payload(
+            [
+                {
+                    "id": "candidate",
+                    "status": "completed",
+                    "family": "autoregressive",
+                    "quantization": "int8",
+                    "hypothesis": "control",
+                    "hypothesisTags": ["control", "qk_gain"],
+                    "finalValBpb": 1.1,
+                    "tokensPerSecond": 1234.0,
+                    "int8SubmissionBytes": 15_000_000,
+                    "artifactBudgetState": "within-budget",
+                    "selectedTrainBatchTokens": 524_288,
+                    "hardware": {"gpus": [{"name": "H100"}]},
+                    "runDir": "/tmp/run",
+                    "env": {"RUN_ID": "run-1"},
+                }
+            ],
+            started_at="20260426T000000Z",
+        )
+
+        record = payload["records"][0]
+        self.assertEqual(record["sourceKind"], "model-factory")
+        self.assertEqual(record["candidateId"], "candidate")
+        self.assertEqual(record["trustSignals"]["trustClass"], "candidate")
+        self.assertIn("benchmark-measurement-evidence", record["submissionSignals"]["presentEvidence"])
+        self.assertIn("hardware-manifest", record["submissionSignals"]["presentEvidence"])
+        self.assertEqual(record["metricReadings"][0]["metricName"], "final_int8_zlib_roundtrip_exact.val_bpb")
 
     def test_run_batch_returns_nonzero_when_candidate_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -756,11 +756,150 @@ def build_analysis_payload(
     }
 
 
+def present_evidence_for_row(row: dict[str, Any]) -> list[str]:
+    present: list[str] = []
+    if numeric(row.get("finalValBpb")) is not None:
+        present.append("benchmark-measurement-evidence")
+    if numeric(row.get("int8SubmissionBytes")) is not None or numeric(row.get("artifactBudgetBytes")) is not None:
+        present.append("artifact-budget")
+    if row.get("batchTuneStatus") in {"completed", "skipped"} or numeric(row.get("selectedTrainBatchTokens")) is not None:
+        present.append("runner-config")
+    if row.get("hardware"):
+        present.append("hardware-manifest")
+    if row.get("quantizedArtifactPath"):
+        present.append("quantized-artifact")
+    return sorted(set(present))
+
+
+def build_model_factory_evidence_payload(
+    rows: list[dict[str, Any]],
+    *,
+    started_at: str,
+    output_dir: Path | None = None,
+) -> dict[str, Any]:
+    records: list[dict[str, Any]] = []
+    for row in rank_rows([dict(item) for item in rows]):
+        candidate_id = str(row.get("id") or "unknown")
+        safe_candidate_id = safe_id(candidate_id)
+        present_evidence = present_evidence_for_row(row)
+        metric_readings = []
+        if numeric(row.get("finalValBpb")) is not None:
+            metric_readings.append(
+                {
+                    "metricName": "final_int8_zlib_roundtrip_exact.val_bpb",
+                    "metricValue": float(row["finalValBpb"]),
+                    "unit": "bpb",
+                    "direction": "minimize",
+                }
+            )
+        if numeric(row.get("tokensPerSecond")) is not None:
+            metric_readings.append(
+                {
+                    "metricName": "train_tokens_per_second",
+                    "metricValue": float(row["tokensPerSecond"]),
+                    "unit": "tokens/second",
+                    "direction": "maximize",
+                }
+            )
+        if numeric(row.get("int8SubmissionBytes")) is not None:
+            metric_readings.append(
+                {
+                    "metricName": "int8_zlib_submission_bytes",
+                    "metricValue": int(row["int8SubmissionBytes"]),
+                    "unit": "bytes",
+                    "direction": "minimize",
+                }
+            )
+        run_dir = str(row.get("runDir") or "")
+        artifact_refs = [
+            {"kind": "log", "uri": f"{run_dir}/stdout.txt"},
+            {"kind": "log", "uri": f"{run_dir}/stderr.txt"},
+            {"kind": "report", "uri": f"{run_dir}/result.json"},
+        ]
+        if row.get("quantizedArtifactPath"):
+            artifact_refs.append({"kind": "checkpoint", "uri": str(row["quantizedArtifactPath"])})
+        if output_dir is not None:
+            artifact_refs.append({"kind": "report", "uri": str(output_dir / "summary.md")})
+            artifact_refs.append({"kind": "report", "uri": str(output_dir / "analysis/analysis.json")})
+
+        status = str(row.get("status") or "unknown")
+        completed = status == "completed"
+        artifact_budget_state = str(row.get("artifactBudgetState") or "")
+        if artifact_budget_state == "within-budget":
+            legality_status = "clear"
+        elif artifact_budget_state:
+            legality_status = "conflict"
+        else:
+            legality_status = "unknown"
+        factors = sorted(
+            set(
+                [
+                    str(row.get("family") or "unknown"),
+                    *[str(tag) for tag in row.get("hypothesisTags", [])],
+                ]
+            )
+        )
+        records.append(
+            {
+                "evidenceId": f"evidence-h100-batch-{started_at}-{safe_candidate_id}",
+                "campaignId": "parameter-golf",
+                "candidateId": candidate_id,
+                "sourceId": "run_h100_candidate_batch.py",
+                "sourceKind": "model-factory",
+                "observedAt": started_at,
+                "producedBy": "fastest/scripts/run_h100_candidate_batch.py",
+                "runId": row.get("env", {}).get("RUN_ID") if isinstance(row.get("env"), dict) else run_dir,
+                "experimentId": candidate_id,
+                "claim": {
+                    "claimId": f"claim-{safe_candidate_id}",
+                    "claimType": "idea",
+                    "text": str(row.get("hypothesis") or row.get("description") or candidate_id),
+                },
+                "metricReadings": metric_readings,
+                "factorSet": {
+                    "factors": factors,
+                    "incompatibleWith": [],
+                },
+                "trustSignals": {
+                    "trustClass": "candidate" if completed else "unknown",
+                    "reproducibilityClass": "candidate" if completed else "unknown",
+                    "independentSource": False,
+                    "freshness": "current",
+                },
+                "legalitySignals": {
+                    "status": legality_status,
+                    "conflicts": [] if legality_status == "clear" else ["artifact-budget-or-run-incomplete"],
+                },
+                "submissionSignals": {
+                    "readiness": "not-ready",
+                    "leaderboardClaim": "none",
+                    "requiredEvidence": [
+                        "benchmark-measurement-evidence",
+                        "artifact-budget",
+                        "hardware-manifest",
+                        "reproducibility-manifest",
+                    ],
+                    "presentEvidence": present_evidence,
+                },
+                "artifactRefs": artifact_refs,
+                "supersedesEvidenceIds": [],
+            }
+        )
+    return {
+        "schema": "parameter-golf-model-factory-evidence-export/v1",
+        "generatedAt": started_at,
+        "records": records,
+    }
+
+
 def write_analysis_outputs(output_dir: Path, rows: list[dict[str, Any]], hardware: dict[str, Any], started_at: str) -> None:
     analysis_dir = output_dir / "analysis"
     analysis_dir.mkdir(exist_ok=True)
     payload = build_analysis_payload(rows, hardware=hardware, started_at=started_at)
     (analysis_dir / "analysis.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    evidence_payload = build_model_factory_evidence_payload(rows, started_at=started_at, output_dir=output_dir)
+    (analysis_dir / "model_factory_evidence.json").write_text(json.dumps(evidence_payload, indent=2) + "\n", encoding="utf-8")
+    (output_dir / "model_factory_evidence.json").write_text(json.dumps(evidence_payload, indent=2) + "\n", encoding="utf-8")
     write_group_csv(analysis_dir / "by_family.csv", payload["views"]["byFamily"])
     write_group_csv(analysis_dir / "by_hardware.csv", payload["views"]["byHardware"])
     write_group_csv(analysis_dir / "by_quantization.csv", payload["views"]["byQuantization"])
