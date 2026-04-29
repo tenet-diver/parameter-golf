@@ -87,6 +87,15 @@ def _append_eval_drift_violations(
     if evaluation.get("metric_name") != _nested(snapshot, "metric", "name"):
         violations.append("eval-drift:metric-name")
 
+    candidate_metric = candidate.get("metric")
+    if not isinstance(candidate_metric, dict):
+        violations.append("eval-drift:candidate-metric-missing")
+        return
+    if candidate_metric.get("name") != _nested(snapshot, "metric", "name"):
+        violations.append("eval-drift:candidate-metric-name")
+    if candidate_metric.get("direction") != _nested(snapshot, "metric", "direction"):
+        violations.append("eval-drift:candidate-metric-direction")
+
 
 def _append_artifact_mismatch_violations(
     violations: list[str],

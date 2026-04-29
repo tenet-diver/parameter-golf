@@ -100,6 +100,28 @@ class Fast7RegressionGateTest(unittest.TestCase):
             self.assertIn("eval-drift:control-bundle-id", result["violations"])
             self.assertIn("eval-drift:control-spec-hash", result["violations"])
 
+    def test_rejects_candidate_primary_metric_name_drift_against_trusted_control(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
+            claim = self._valid_promising_claim(bundle_path)
+            claim["metric"]["name"] = "accuracy"
+
+            result = validateCandidateRegressionGate(claim, bundle_path=bundle_path, spec_ref=spec_path)
+
+            self.assertEqual("reject", result["decision"])
+            self.assertIn("eval-drift:candidate-metric-name", result["violations"])
+
+    def test_rejects_candidate_primary_metric_direction_drift_against_trusted_control(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
+            claim = self._valid_promising_claim(bundle_path)
+            claim["metric"] = {"name": "val_bpb", "direction": "higher_is_better", "value": 1.30}
+
+            result = validateCandidateRegressionGate(claim, bundle_path=bundle_path, spec_ref=spec_path)
+
+            self.assertEqual("reject", result["decision"])
+            self.assertIn("eval-drift:candidate-metric-direction", result["violations"])
+
     def test_rejects_artifact_compression_mismatch_against_claimed_config(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
