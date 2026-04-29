@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -51,6 +52,10 @@ def _metric_improved(candidate_value: float, control_value: float, direction: st
     return candidate_value < control_value
 
 
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def _append_eval_drift_violations(
     violations: list[str],
     candidate: dict[str, Any],
@@ -65,6 +70,15 @@ def _append_eval_drift_violations(
     if not isinstance(snapshot, dict):
         violations.append("eval-drift:control-fingerprint-missing")
         return
+
+    control_reference = candidate.get("control_reference")
+    if not isinstance(control_reference, dict):
+        violations.append("eval-drift:control-reference-missing")
+    else:
+        if control_reference.get("bundle_id") != control_bundle.get("bundle_id"):
+            violations.append("eval-drift:control-bundle-id")
+        if control_reference.get("spec_hash") != control_bundle.get("spec_hash"):
+            violations.append("eval-drift:control-spec-hash")
 
     if evaluation.get("dataset_id") != snapshot.get("dataset_id"):
         violations.append("eval-drift:dataset-id")
@@ -91,6 +105,8 @@ def _append_artifact_mismatch_violations(
         violations.append("artifact-mismatch:bytes")
     if not _numbers_match(artifact.get("claimed_limit_bytes"), manifest.get("limit_bytes")):
         violations.append("artifact-mismatch:limit-bytes")
+    if artifact.get("claimed_sha256") != manifest.get("sha256"):
+        violations.append("artifact-mismatch:sha256")
 
     claimed_bytes = _number(artifact.get("claimed_bytes"))
     claimed_limit = _number(artifact.get("claimed_limit_bytes"))
@@ -109,6 +125,19 @@ def _append_artifact_mismatch_violations(
 
     if artifact.get("claimed_quantization_scheme") != manifest.get("quantization_scheme"):
         violations.append("artifact-mismatch:quantization-scheme")
+
+    manifest_path = _text(manifest.get("path"))
+    if manifest_path:
+        artifact_path = Path(manifest_path)
+        if not artifact_path.exists():
+            violations.append("artifact-mismatch:file-missing")
+            return
+        manifest_bytes = _number(manifest.get("bytes"))
+        if manifest_bytes is None or artifact_path.stat().st_size != int(manifest_bytes):
+            violations.append("artifact-mismatch:file-bytes")
+        manifest_sha256 = _text(manifest.get("sha256"))
+        if manifest_sha256 is None or _sha256_file(artifact_path) != manifest_sha256:
+            violations.append("artifact-mismatch:file-sha256")
 
 
 def _append_reproduction_violations(

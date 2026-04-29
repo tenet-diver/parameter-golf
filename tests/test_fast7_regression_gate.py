@@ -39,9 +39,14 @@ class Fast7RegressionGateTest(unittest.TestCase):
         )
         return spec_path, bundle_path
 
-    def _valid_promising_claim(self) -> dict:
+    def _valid_promising_claim(self, bundle_path: Path) -> dict:
+        bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
         return {
             "candidateId": "candidate-fast7-001",
+            "control_reference": {
+                "bundle_id": bundle["bundle_id"],
+                "spec_hash": bundle["spec_hash"],
+            },
             "metric": {"name": "val_bpb", "direction": "lower_is_better", "value": 1.18},
             "evaluation": {
                 "dataset_id": "fineweb_val_v1",
@@ -51,12 +56,14 @@ class Fast7RegressionGateTest(unittest.TestCase):
             "artifact": {
                 "claimed_bytes": 1200,
                 "claimed_limit_bytes": 16_000_000,
+                "claimed_sha256": "fake-valid-artifact-sha256",
                 "claimed_compression": {"codec": "zlib", "ratio": 0.78},
                 "claimed_quantization_scheme": "int8-per-row-zlib-projection",
             },
             "artifact_manifest": {
                 "bytes": 1200,
                 "limit_bytes": 16_000_000,
+                "sha256": "fake-valid-artifact-sha256",
                 "compression": {"codec": "zlib", "ratio": 0.78},
                 "quantization_scheme": "int8-per-row-zlib-projection",
             },
@@ -70,7 +77,7 @@ class Fast7RegressionGateTest(unittest.TestCase):
     def test_rejects_eval_drift_against_trusted_control_fingerprint(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
-            claim = self._valid_promising_claim()
+            claim = self._valid_promising_claim(bundle_path)
             claim["evaluation"]["dataset_id"] = "fineweb_train_sample"
 
             result = validateCandidateRegressionGate(claim, bundle_path=bundle_path, spec_ref=spec_path)
@@ -78,10 +85,25 @@ class Fast7RegressionGateTest(unittest.TestCase):
             self.assertEqual("reject", result["decision"])
             self.assertIn("eval-drift:dataset-id", result["violations"])
 
+    def test_rejects_stale_control_reference_against_trusted_control_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
+            claim = self._valid_promising_claim(bundle_path)
+            claim["control_reference"] = {
+                "bundle_id": "stale-control-bundle",
+                "spec_hash": "stale-spec-hash",
+            }
+
+            result = validateCandidateRegressionGate(claim, bundle_path=bundle_path, spec_ref=spec_path)
+
+            self.assertEqual("reject", result["decision"])
+            self.assertIn("eval-drift:control-bundle-id", result["violations"])
+            self.assertIn("eval-drift:control-spec-hash", result["violations"])
+
     def test_rejects_artifact_compression_mismatch_against_claimed_config(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
-            claim = self._valid_promising_claim()
+            claim = self._valid_promising_claim(bundle_path)
             claim["artifact_manifest"]["compression"]["codec"] = "brotli"
             claim["artifact_manifest"]["bytes"] = 1300
 
@@ -91,10 +113,25 @@ class Fast7RegressionGateTest(unittest.TestCase):
             self.assertIn("artifact-mismatch:bytes", result["violations"])
             self.assertIn("artifact-mismatch:compression-codec", result["violations"])
 
+    def test_rejects_artifact_manifest_when_actual_file_bytes_or_hash_differ(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            spec_path, bundle_path = self._trusted_control_bundle(root)
+            artifact_path = root / "candidate.ptz"
+            artifact_path.write_bytes(b"actual artifact bytes")
+            claim = self._valid_promising_claim(bundle_path)
+            claim["artifact_manifest"]["path"] = str(artifact_path)
+
+            result = validateCandidateRegressionGate(claim, bundle_path=bundle_path, spec_ref=spec_path)
+
+            self.assertEqual("reject", result["decision"])
+            self.assertIn("artifact-mismatch:file-bytes", result["violations"])
+            self.assertIn("artifact-mismatch:file-sha256", result["violations"])
+
     def test_rejects_promising_result_when_reproduction_is_not_verified(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
-            claim = self._valid_promising_claim()
+            claim = self._valid_promising_claim(bundle_path)
             claim["reproduction"] = {"status": "failed", "reason": "rerun metric regressed"}
 
             result = validateCandidateRegressionGate(claim, bundle_path=bundle_path, spec_ref=spec_path)
@@ -108,7 +145,7 @@ class Fast7RegressionGateTest(unittest.TestCase):
             spec_path, bundle_path = self._trusted_control_bundle(Path(tmp_dir))
 
             result = validateCandidateRegressionGate(
-                self._valid_promising_claim(),
+                self._valid_promising_claim(bundle_path),
                 bundle_path=bundle_path,
                 spec_ref=spec_path,
             )
