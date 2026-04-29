@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "kind": "parameter-golf-product-owner-research-queue",
+  "generatedAt": "2026-04-29T23:30:00Z",
+  "ownerLane": "product-owner/research-to-implementation",
+  "purpose": "Hold paper-backed experiment ideas until implementation exists. Items in this queue are not GPU-runnable packets; they should become GPU queue entries only after code, CPU smoke, artifact-budget checks, and one-H100 rehearsal criteria exist.",
+  "admissionPolicy": {
+    "gpuQueueContract": "planning/gpu_experiment_queue.json contains only runnable current-code experiments.",
+    "poQueueContract": "Research ideas live here while they need design, implementation, or legality/provenance work.",
+    "promotionToGpuQueue": [
+      "candidate implementation is registered and selected by CANDIDATE_IMPL or explicit command",
+      "CPU smoke test exercises the new code path",
+      "artifact budget impact is measured under int8+zlib",
+      "one-H100 rehearsal command and retirement criteria are explicit"
+    ]
+  },
+  "sources": [
+    {
+      "sourceId": "arxiv-1904.10509-sparse-transformer",
+      "title": "Generating Long Sequences with Sparse Transformers",
+      "url": "https://arxiv.org/abs/1904.10509",
+      "theme": "fixed sparse/factorized attention"
+    },
+    {
+      "sourceId": "arxiv-2004.05150-longformer",
+      "title": "Longformer: The Long-Document Transformer",
+      "url": "https://arxiv.org/abs/2004.05150",
+      "theme": "local sliding-window attention plus global tokens"
+    },
+    {
+      "sourceId": "arxiv-2007.14062-bigbird",
+      "title": "Big Bird: Transformers for Longer Sequences",
+      "url": "https://arxiv.org/abs/2007.14062",
+      "theme": "local, random, and global sparse attention"
+    },
+    {
+      "sourceId": "arxiv-1911.02972-blockbert",
+      "title": "Blockwise Self-Attention for Long Document Understanding",
+      "url": "https://arxiv.org/abs/1911.02972",
+      "theme": "block-sparse attention"
+    },
+    {
+      "sourceId": "arxiv-2003.05997-routing-transformer",
+      "title": "Efficient Content-Based Sparse Attention with Routing Transformers",
+      "url": "https://arxiv.org/abs/2003.05997",
+      "theme": "content-routed sparse attention"
+    },
+    {
+      "sourceId": "arxiv-2205.14135-flashattention",
+      "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+      "url": "https://arxiv.org/abs/2205.14135",
+      "theme": "IO-aware exact and block-sparse attention kernels"
+    },
+    {
+      "sourceId": "arxiv-2407.02490-minference",
+      "title": "MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention",
+      "url": "https://arxiv.org/abs/2407.02490",
+      "theme": "dynamic sparse inference patterns"
+    },
+    {
+      "sourceId": "arxiv-2406.10774-quest",
+      "title": "Quest: Query-Aware Sparsity for Efficient Long-Context LLM Inference",
+      "url": "https://arxiv.org/abs/2406.10774",
+      "theme": "query-aware KV-page sparsity"
+    },
+    {
+      "sourceId": "arxiv-2503.16428-xattention",
+      "title": "XAttention: Block Sparse Attention with Antidiagonal Scoring",
+      "url": "https://arxiv.org/abs/2503.16428",
+      "theme": "block importance scoring"
+    },
+    {
+      "sourceId": "arxiv-2512.07011-block-sparse-flashattention",
+      "title": "Block Sparse Flash Attention",
+      "url": "https://arxiv.org/abs/2512.07011",
+      "theme": "drop-in sparse FlashAttention"
+    },
+    {
+      "sourceId": "arxiv-2510.21270-pbs-attn",
+      "title": "Sparser Block-Sparse Attention via Token Permutation",
+      "url": "https://arxiv.org/abs/2510.21270",
+      "theme": "permutation-based block sparsity"
+    }
+  ],
+  "queuedIdeas": [
+    {
+      "ideaId": "po-sparse-attn-local-global-v1",
+      "title": "Implement local/global sparse attention ablation",
+      "status": "needs-implementation",
+      "priority": 1,
+      "sourceIds": [
+        "arxiv-2004.05150-longformer",
+        "arxiv-2007.14062-bigbird",
+        "arxiv-1904.10509-sparse-transformer"
+      ],
+      "hypothesis": "A simple local-window attention path with a small number of global summary tokens can reduce attention dependencies while preserving enough long-range mixing for Parameter Golf's short training budget.",
+      "implementationTask": {
+        "lane": "architect/coder",
+        "candidateFamily": "sparse_attention_gpt",
+        "codeTargets": [
+          "candidates/autoregressive/architecture.py",
+          "train_gpt.py",
+          "tests/"
+        ],
+        "requiredControls": [
+          "SPARSE_ATTN_MODE=local_global",
+          "SPARSE_ATTN_WINDOW",
+          "SPARSE_ATTN_GLOBAL_TOKENS"
+        ]
+      },
+      "cpuPreflight": {
+        "objective": "Prove output shape parity, causal masking, and deterministic dense fallback on tiny CPU smoke.",
+        "successSignal": "CPU smoke passes and dense mode remains bitwise unchanged for the baseline path."
+      },
+      "gpuPromotionDraft": {
+        "lane": "h100-1x-sparse-attention",
+        "oneH100Criteria": "At least equal bpb within noise while improving tokens/sec or memory headroom versus dense-control batch-tune.",
+        "eightH100Criteria": "Only promote after 1xH100 has positive throughput signal and no artifact-budget regression.",
+        "retirementCriteria": "Retire if window/global routing loses bpb without measurable throughput gain."
+      }
+    },
+    {
+      "ideaId": "po-block-sparse-flash-v1",
+      "title": "Implement block-sparse attention scoring rehearsal",
+      "status": "needs-implementation",
+      "priority": 2,
+      "sourceIds": [
+        "arxiv-2205.14135-flashattention",
+        "arxiv-2503.16428-xattention",
+        "arxiv-2512.07011-block-sparse-flashattention",
+        "arxiv-2510.21270-pbs-attn"
+      ],
+      "hypothesis": "Block-level importance scoring can skip enough attention blocks to matter only if it is implemented in an IO-aware way; dense mask simulation is useful for correctness but not sufficient for GPU promotion.",
+      "implementationTask": {
+        "lane": "architect/coder",
+        "candidateFamily": "block_sparse_attention_gpt",
+        "codeTargets": [
+          "candidates/autoregressive/architecture.py",
+          "train_gpt.py",
+          "fastest/scripts/run_cpu_subset_experiment.py"
+        ],
+        "requiredControls": [
+          "BLOCK_SPARSE_ATTN_ENABLED=1",
+          "BLOCK_SPARSE_ATTN_BLOCK_SIZE",
+          "BLOCK_SPARSE_ATTN_TOPK",
+          "BLOCK_SPARSE_ATTN_SCORER=antidiagonal|max|permuted"
+        ]
+      },
+      "cpuPreflight": {
+        "objective": "Compare dense attention to block-selected attention on tiny sequences and record selected-block ratios.",
+        "successSignal": "No causal leakage; selected-block telemetry is emitted; dense fallback remains unchanged."
+      },
+      "gpuPromotionDraft": {
+        "lane": "h100-1x-kernel-rehearsal",
+        "oneH100Criteria": "Real H100 timing improves over dense flash policy, not just theoretical FLOP count.",
+        "eightH100Criteria": "Requires 1xH100 speedup plus stable batch auto-tune behavior.",
+        "retirementCriteria": "Retire if scorer overhead erases sparse attention savings."
+      }
+    },
+    {
+      "ideaId": "po-routing-transformer-v1",
+      "title": "Implement content-routed sparse attention cheap screen",
+      "status": "needs-design",
+      "priority": 3,
+      "sourceIds": [
+        "arxiv-2003.05997-routing-transformer",
+        "arxiv-2407.02490-minference",
+        "arxiv-2406.10774-quest"
+      ],
+      "hypothesis": "Content-based routing may find useful long-range dependencies, but it is risky in a 10-minute training contest unless routing overhead is tightly bounded.",
+      "implementationTask": {
+        "lane": "product-owner/architect",
+        "candidateFamily": "routing_sparse_attention_gpt",
+        "codeTargets": [
+          "planning/",
+          "candidates/autoregressive/architecture.py"
+        ],
+        "requiredControls": [
+          "ROUTED_ATTN_ENABLED=1",
+          "ROUTED_ATTN_BUCKETS",
+          "ROUTED_ATTN_REFRESH_EVERY"
+        ]
+      },
+      "cpuPreflight": {
+        "objective": "Design an O(n log n) or bounded-cost routing approximation before any GPU implementation.",
+        "successSignal": "Routing overhead estimate is below dense attention savings on the Parameter Golf sequence length."
+      },
+      "gpuPromotionDraft": {
+        "lane": "h100-1x-content-routing",
+        "oneH100Criteria": "Only after CPU profiling predicts net savings and implementation exposes routing telemetry.",
+        "eightH100Criteria": "Requires clear 1xH100 bpb or throughput win.",
+        "retirementCriteria": "Retire if routing refresh cost or instability dominates."
+      }
+    },
+    {
+      "ideaId": "po-inference-sparse-eval-v1",
+      "title": "Evaluate inference-only sparse attention for final scoring",
+      "status": "needs-legality-review",
+      "priority": 4,
+      "sourceIds": [
+        "arxiv-2407.02490-minference",
+        "arxiv-2406.10774-quest",
+        "arxiv-2503.16428-xattention"
+      ],
+      "hypothesis": "Inference-only sparse attention may reduce final eval time, but it must preserve exact legality, scoring semantics, and roundtrip artifact reproducibility.",
+      "implementationTask": {
+        "lane": "product-owner/security/qa",
+        "candidateFamily": "sparse_eval_policy",
+        "codeTargets": [
+          "train_gpt.py",
+          "fastest/scripts/submission_legality.py",
+          "tests/"
+        ],
+        "requiredControls": [
+          "SPARSE_EVAL_ENABLED=1",
+          "SPARSE_EVAL_TOPK_PAGES",
+          "SPARSE_EVAL_STRICT_REPRO=1"
+        ]
+      },
+      "cpuPreflight": {
+        "objective": "Prove deterministic final_int8_zlib_roundtrip evaluation and no validation-data leakage or adaptive cheating.",
+        "successSignal": "Legality note and deterministic CPU smoke exist before GPU run."
+      },
+      "gpuPromotionDraft": {
+        "lane": "h100-1x-eval-runtime-ablation",
+        "oneH100Criteria": "Final eval time improves with bpb regression below retirement threshold.",
+        "eightH100Criteria": "Only if legality review passes and final score remains reproducible.",
+        "retirementCriteria": "Retire immediately on nondeterminism or legality uncertainty."
+      }
+    }
+  ]
+}
