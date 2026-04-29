@@ -1,13 +1,46 @@
 {
   "schemaVersion": 1,
   "kind": "parameter-golf-gpu-experiment-queue",
-  "generatedAt": "2026-04-28T23:00:00Z",
+  "generatedAt": "2026-04-29T23:05:00Z",
   "runCommand": "python fastest/scripts/run_gpu_experiment_queue.py --queue planning/gpu_experiment_queue.json --auto-tune-batch",
   "gpuPolicy": {
     "firstPass": "Run ready 1xH100 experiments first; promote only high-signal winners to 8xH100 record attempts.",
     "batching": "Queue is CPU-generated and GPU-consumed by one command so GPU time is spent only on selected runnable experiments. This queue is not capped; ticket/status lane inventory caps live in Fastest planning policy, not the GPU execution backlog.",
-    "quality": "External Parameter Golf code remains subject to security and maintainability review; queueing optimizes idle GPU time, not quality gates."
+    "quality": "External Parameter Golf code remains subject to security and maintainability review; queueing optimizes idle GPU time, not quality gates.",
+    "parallelPods": "To split independent work across rented GPUs, run the same command with --shard-count N and a distinct --shard-index per pod; the queue remains uncapped."
   },
+  "researchSources": [
+    {
+      "sourceId": "arxiv-1911.11134-rigl",
+      "title": "Rigging the Lottery: Making All Tickets Winners",
+      "url": "https://arxiv.org/abs/1911.11134",
+      "idea": "Dynamic sparse training can update sparse topology with infrequent dense-gradient information while keeping parameter and compute budgets fixed."
+    },
+    {
+      "sourceId": "arxiv-2305.02299-srigl",
+      "title": "Dynamic Sparse Training with Structured Sparsity",
+      "url": "https://arxiv.org/abs/2305.02299",
+      "idea": "Structured RigL learns fine-grained structured sparsity that is more likely to map to real hardware speedups than unstructured sparsity."
+    },
+    {
+      "sourceId": "arxiv-2401.09135-async-local-sgd",
+      "title": "Asynchronous Local-SGD Training for Language Modeling",
+      "url": "https://arxiv.org/abs/2401.09135",
+      "idea": "Local-SGD reduces synchronization dependencies; delayed momentum and speed-adjusted local steps protect convergence under asynchronous workers."
+    },
+    {
+      "sourceId": "arxiv-2507.03117-blast",
+      "title": "BLaST: High Performance Inference and Pretraining using BLock Sparse Transformers",
+      "url": "https://arxiv.org/abs/2507.03117",
+      "idea": "Block-sparse linear layers can reduce data movement and MLP compute while preserving model quality if kernels and block layouts are hardware-aligned."
+    },
+    {
+      "sourceId": "neurips-2019-qsparse-local-sgd",
+      "title": "Qsparse-local-SGD: Distributed SGD with Quantization, Sparsification and Local Computations",
+      "url": "https://papers.nips.cc/paper/9610-qsparse-local-sgd-distributed-sgd-with-quantization-sparsification-and-local-computations",
+      "idea": "Compression plus local computation is a communication-throughput direction for distributed training."
+    }
+  ],
   "experiments": [
     {
       "id": "gpuq_clean_recurrence_toggle_control",
@@ -144,6 +177,219 @@
           "CANDIDATE_IMPL": "autoregressive_gpt",
           "QK_GAIN_INIT": "5.25",
           "TTT_ENABLED": "0"
+        }
+      }
+    },
+    {
+      "id": "gpuq_moe_top2_4expert_qk525_batch_tune",
+      "lane": "h100-1x-moe-throughput",
+      "status": "ready",
+      "priority": 6,
+      "expectedSignal": "Test whether existing routed MoE support can improve conditional capacity without violating the 16MB int8+zlib artifact budget, while auto-tune measures per-step throughput.",
+      "argumentation": {
+        "acceptedArgumentIds": ["research-moe-dependency-reduction", "existing-routed-moe-implementation"],
+        "evidenceIds": ["train_gpt.py:MOE_NUM_EXPERTS", "candidates/moe/candidates.py", "arxiv-2401.09135-async-local-sgd"],
+        "expectedDecision": "Keep MoE only if routed conditional capacity beats dense control or yields equal bpb with better tokens/sec.",
+        "stopConditions": ["Retire if artifact budget is over limit", "Retire if auto-tuned tokens/sec drops below dense control by more than 20% without bpb gain"]
+      },
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "final bpb improves over dense control and int8+zlib artifact remains under 16MB",
+        "eightH100PromotionGate": "only after 1xH100 shows positive bpb and batch tuning selects stable tokens/sec"
+      },
+      "candidate": {
+        "id": "gpuq_moe_top2_4expert_qk525_batch_tune",
+        "family": "mixture_of_experts",
+        "hypothesis": "top2_moe_adds_conditional_capacity_with_acceptable_throughput_and_artifact_cost",
+        "hypothesisTags": ["moe", "top2_routing", "batch_tune", "throughput"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Existing routed MoE path combined with control QK gain and batch auto-tuning.",
+        "implementation": "routed_moe_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "routed_moe_gpt",
+          "NUM_LAYERS": "5",
+          "MODEL_DIM": "384",
+          "NUM_HEADS": "6",
+          "NUM_KV_HEADS": "3",
+          "MLP_MULT": "2",
+          "MOE_NUM_EXPERTS": "4",
+          "MOE_TOP_K": "2",
+          "QK_GAIN_INIT": "5.25",
+          "PARALLEL_RESIDUAL": "1",
+          "TTT_ENABLED": "1",
+          "TTT_LR": "0.005",
+          "TTT_EPOCHS": "3"
+        }
+      }
+    },
+    {
+      "id": "gpuq_dense_control_batch_tune_max_tokens",
+      "lane": "h100-1x-throughput-baseline",
+      "status": "ready",
+      "priority": 7,
+      "expectedSignal": "Measure dense-control max usable microbatch tokens on the current H100 image before comparing MoE, sparse, or Local-SGD throughput claims.",
+      "argumentation": {
+        "acceptedArgumentIds": ["throughput-baseline-needed-before-parallelism-claims"],
+        "evidenceIds": ["fastest/scripts/run_gpu_experiment_queue.py:auto-tune-batch", "train_gpt.py:BATCH_TUNE_ONLY"],
+        "expectedDecision": "Use measured tokens/sec and memory headroom as the control for all throughput-oriented research packets.",
+        "stopConditions": ["Stop if batch-tune probes cannot complete", "Retire stale throughput claims when the pod image or CUDA stack changes"]
+      },
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "establishes stable dense-control throughput artifact for comparison",
+        "eightH100PromotionGate": "not applicable; this is a calibration packet"
+      },
+      "candidate": {
+        "id": "gpuq_dense_control_batch_tune_max_tokens",
+        "family": "autoregressive_throughput_control",
+        "hypothesis": "auto_tuned_microbatching_increases_tokens_per_second_without_score_regression",
+        "hypothesisTags": ["microbatch", "batch_tune", "throughput_baseline"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Dense control configured to make batch auto-tuning the primary signal.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "QK_GAIN_INIT": "5.25",
+          "PARALLEL_RESIDUAL": "1",
+          "TTT_ENABLED": "0",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "gpuq_local_sgd_periodic_average_preflight",
+      "lane": "h100-1x-implementation-preflight",
+      "status": "blocked",
+      "priority": 8,
+      "expectedSignal": "Unblock Local-SGD only after train_gpt.py can perform K local optimizer steps before parameter averaging without per-step DDP/Muon all-reduce.",
+      "argumentation": {
+        "undecidedArgumentIds": ["async-local-sgd-reduces-sync-dependency", "muon-ddp-currently-syncs-every-step"],
+        "evidenceIds": ["arxiv-2401.09135-async-local-sgd", "neurips-2019-qsparse-local-sgd", "train_gpt.py:DDP.require_backward_grad_sync", "train_gpt.py:Muon.step"],
+        "expectedDecision": "Implement CPU smoke plus 1xH100 ablation for LOCAL_SGD_PERIOD in {2,4,8}; promote only if wall-clock tokens/sec improves without bpb collapse.",
+        "stopConditions": ["Do not run until LOCAL_SGD_PERIOD and parameter averaging are implemented", "Retire if 1xH100 local periods lose more bpb than recovered by throughput"]
+      },
+      "gpuPlan": {
+        "firstPass": "CPU smoke for averaging correctness, then 1xH100 local-period sweep",
+        "promotionGate": ">=15% wall-clock throughput gain with no more than small bpb regression on equal token budget",
+        "eightH100PromotionGate": "8xH100 only after 1xH100 and 2x/4x process smoke prove synchronization reduction"
+      },
+      "candidate": {
+        "id": "gpuq_local_sgd_periodic_average_preflight",
+        "family": "distributed_optimizer_preflight",
+        "hypothesis": "periodic_parameter_averaging_reduces_gpu_sync_dependency",
+        "hypothesisTags": ["local_sgd", "periodic_averaging", "throughput", "blocked_until_implemented"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Blocked Local-SGD packet documenting the exact implementation and validation gate before GPU spend.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "LOCAL_SGD_PERIOD": "4",
+          "LOCAL_SGD_AVERAGE": "parameters",
+          "LOCAL_SGD_MOMENTUM_MODE": "delayed_nesterov"
+        }
+      }
+    },
+    {
+      "id": "gpuq_srigl_structured_sparse_mlp_preflight",
+      "lane": "h100-1x-implementation-preflight",
+      "status": "blocked",
+      "priority": 9,
+      "expectedSignal": "Create a cheap ablation for structured dynamic sparsity before any full sparse training run: fixed fan-in masks, periodic regrowth, artifact-size accounting, and dense fallback parity.",
+      "argumentation": {
+        "undecidedArgumentIds": ["structured-rigl-may-reduce-compute", "current-linear-layers-are-dense"],
+        "evidenceIds": ["arxiv-1911.11134-rigl", "arxiv-2305.02299-srigl", "candidates/autoregressive/architecture.py:CastedLinear"],
+        "expectedDecision": "Implement structured sparse MLP masks only if CPU smoke and artifact analysis prove legal payload and measurable dense-matmul replacement path.",
+        "stopConditions": ["Do not run on H100 until sparse layer implementation exists", "Retire if sparse mask metadata erases 16MB artifact headroom"]
+      },
+      "gpuPlan": {
+        "firstPass": "CPU smoke for mask determinism, then 1xH100 90% sparse MLP ablation",
+        "promotionGate": "bpb within acceptable loss while reducing step time or artifact bytes",
+        "eightH100PromotionGate": "only if kernel path shows real speedup, not just fewer theoretical FLOPs"
+      },
+      "candidate": {
+        "id": "gpuq_srigl_structured_sparse_mlp_preflight",
+        "family": "structured_sparse_training_preflight",
+        "hypothesis": "structured_rigl_sparse_mlp_improves_artifact_and_training_throughput",
+        "hypothesisTags": ["structured_rigl", "dynamic_sparse_training", "sparse_mlp", "blocked_until_implemented"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Blocked SRigL packet for fixed fan-in sparse MLP implementation and legality checks.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "STRUCTURED_RIGL_ENABLED": "1",
+          "STRUCTURED_RIGL_SPARSITY": "0.90",
+          "STRUCTURED_RIGL_UPDATE_EVERY": "100",
+          "STRUCTURED_RIGL_LAYER_TARGET": "mlp"
+        }
+      }
+    },
+    {
+      "id": "gpuq_blast_block_sparse_linear_preflight",
+      "lane": "h100-1x-implementation-preflight",
+      "status": "blocked",
+      "priority": 10,
+      "expectedSignal": "Evaluate BLaST-style block-sparse linear layers only after a hardware-aligned SpMM or block-masked dense fallback exists and reports real step-time impact.",
+      "argumentation": {
+        "undecidedArgumentIds": ["blast-block-sparse-mlp-could-cut-data-movement", "kernel-support-not-yet-present"],
+        "evidenceIds": ["arxiv-2507.03117-blast", "candidates/autoregressive/architecture.py:MLP"],
+        "expectedDecision": "Prototype block-sparse MLP with explicit kernel/fallback metadata; promote only if measured H100 step-time beats dense control.",
+        "stopConditions": ["Do not spend GPU on this packet until BLOCK_SPARSE_LINEAR implementation exists", "Retire if block sparsity improves artifact size but worsens wall-clock throughput"]
+      },
+      "gpuPlan": {
+        "firstPass": "CPU shape/parity smoke plus 1xH100 kernel timing microbenchmark",
+        "promotionGate": "measured training step speedup with legal artifact and no severe bpb regression",
+        "eightH100PromotionGate": "requires 1xH100 speedup and compatibility with batch auto-tune"
+      },
+      "candidate": {
+        "id": "gpuq_blast_block_sparse_linear_preflight",
+        "family": "block_sparse_transformer_preflight",
+        "hypothesis": "block_sparse_mlp_reduces_data_movement_and_improves_training_throughput",
+        "hypothesisTags": ["blast", "block_sparse", "sparse_mlp", "throughput", "blocked_until_implemented"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Blocked BLaST-inspired packet for hardware-aligned block-sparse MLP/linear implementation.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "BLOCK_SPARSE_LINEAR_ENABLED": "1",
+          "BLOCK_SPARSE_PATTERN": "blast",
+          "BLOCK_SPARSE_TARGET": "mlp",
+          "BLOCK_SPARSE_BLOCK_SIZE": "64",
+          "BLOCK_SPARSE_SPARSITY": "0.90"
+        }
+      }
+    },
+    {
+      "id": "gpuq_flash_attention_kernel_policy_rehearsal",
+      "lane": "h100-1x-throughput-baseline",
+      "status": "queued",
+      "priority": 11,
+      "expectedSignal": "Confirm the current flash-only SDPA backend policy remains faster than alternative attention backend settings after batch auto-tune.",
+      "argumentation": {
+        "acceptedArgumentIds": ["flash-attention-like-kernels-already-enabled"],
+        "evidenceIds": ["train_gpt.py:sdp_backends", "arxiv-2507.03117-blast"],
+        "expectedDecision": "Keep flash-only attention policy unless dense-control timing shows instability or fallback errors.",
+        "stopConditions": ["Retire if backend policy is unchanged and timing matches dense control", "Create implementation task if backend fallback is needed for sparse attention"]
+      },
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run",
+        "promotionGate": "no promotion; this is a kernel-policy rehearsal tied to throughput calibration",
+        "eightH100PromotionGate": "not applicable"
+      },
+      "candidate": {
+        "id": "gpuq_flash_attention_kernel_policy_rehearsal",
+        "family": "attention_kernel_policy",
+        "hypothesis": "flash_sdp_policy_is_still_the_fastest_safe_attention_path",
+        "hypothesisTags": ["flash_attention", "kernel_policy", "throughput_baseline"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Throughput rehearsal for the current flash SDPA-only training policy.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "QK_GAIN_INIT": "5.25",
+          "PARALLEL_RESIDUAL": "1",
+          "TTT_ENABLED": "0",
+          "TRAIN_BATCH_TOKENS": "1048576"
         }
       }
     }
