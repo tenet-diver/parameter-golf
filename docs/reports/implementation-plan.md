@@ -1,3 +1,34 @@
+# FAST-871 Implementation Plan
+
+## Tests first
+
+1. Add `tests/test_fast871_motif_composition_matrix.py` to require a FAST-871
+   composition matrix, summary, architecture handoff, and implementation plan.
+2. Assert ranked combinations expose motif IDs, interaction class, verdict,
+   artifact headroom, evidence paths, and follow-up tasks.
+3. Assert positive, neutral, and negative interactions all appear so the next
+   planning cycle can promote, hold, or reject work deliberately.
+
+## Implementation
+
+1. Use FAST-870 visible motif evidence as the source packet.
+2. Rank combinations by submission relevance, artifact headroom, visible bpb,
+   and whether the interaction is clean enough to justify more work.
+3. Mark rows as `promote`, `hold`, or `reject`; include follow-up task packets
+   only for promote/hold rows.
+4. Keep all claims at planning-evidence strength until a real runner validates
+   them.
+
+## Validators
+
+- `python -m unittest tests.test_fast871_motif_composition_matrix`
+- `git diff --check`
+
+## Handoff
+
+The next executable work is to convert promoted rows into cheap-screen or
+one-H100 rehearsal packets with explicit stop conditions.
+
 # FAST-870 Implementation Plan
 
 ## Tests first

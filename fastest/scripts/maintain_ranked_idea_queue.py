@@ -2,16 +2,21 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 from fastest.scripts.submission_legality import classify_submission_legality
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_PATH = REPO_ROOT / "fastest" / "source" / "measurement_evidence.json"
 ABLATION_RESULTS_PATH = REPO_ROOT / "records" / "fast5_visible_motif_ablation_screen_results.json"
+H100_RESULTS_PATH = REPO_ROOT / "records" / "h100_candidate_batch" / "20260426T191455Z" / "results.json"
 OUTPUT_PATH = REPO_ROOT / "planning" / "ranked-idea-queue.json"
 
 ARTIFACT_LIMIT_BYTES = 16_000_000
@@ -32,13 +37,25 @@ def _load_json(path: Path) -> dict[str, Any]:
     return payload
 
 
+def _load_json_list(path: Path) -> list[dict[str, Any]]:
+    payload = json.loads(path.read_text())
+    if not isinstance(payload, list):
+        raise ValueError(f"expected list JSON at {path}")
+    return [item for item in payload if isinstance(item, dict)]
+
+
 def _clamp(value: float) -> float:
     return round(max(0.0, min(1.0, value)), 4)
 
 
 def _runtime_seconds(record: dict[str, Any]) -> float:
     budget = record.get("budgetCaps") if isinstance(record.get("budgetCaps"), dict) else {}
-    value = record.get("runtime_seconds") or budget.get("maxRuntimeSeconds") or TARGET_RUNTIME_SECONDS
+    value = (
+        record.get("runtime_seconds")
+        or record.get("elapsedSeconds")
+        or budget.get("maxRuntimeSeconds")
+        or TARGET_RUNTIME_SECONDS
+    )
     return float(value) if isinstance(value, (int, float)) else float(TARGET_RUNTIME_SECONDS)
 
 
@@ -48,7 +65,13 @@ def _cost_score(record: dict[str, Any]) -> float:
 
 
 def _artifact_score(record: dict[str, Any]) -> float:
-    artifact_bytes = record.get("artifactBytes") or record.get("artifact_bytes")
+    artifact_bytes = (
+        record.get("artifactBytes")
+        or record.get("artifact_bytes")
+        or record.get("int8SubmissionBytes")
+        or record.get("quantizedArtifactBytes")
+        or record.get("artifactBudgetBytes")
+    )
     if not isinstance(artifact_bytes, (int, float)):
         return 0.7
     if artifact_bytes > ARTIFACT_LIMIT_BYTES:
@@ -69,6 +92,9 @@ def _mergeability(record: dict[str, Any], source_kind: str) -> tuple[float, str]
     if source_kind == "local-experiment":
         score = 0.82
         notes.append("local experiment already has campaign evidence")
+    if source_kind == "local-h100-batch":
+        score = 0.74
+        notes.append("local batch result needs full-duration reproduction before merge")
 
     reproduction = record.get("reproductionStatus")
     if isinstance(reproduction, dict) and reproduction.get("status"):
@@ -81,6 +107,10 @@ def _mergeability(record: dict[str, Any], source_kind: str) -> tuple[float, str]
     if _artifact_score(record) == 0.0:
         notes.append("artifact exceeds 16MB limit")
         score = min(score, 0.1)
+    family = str(record.get("family") or "")
+    if source_kind == "local-h100-batch" and "proxy" in family:
+        notes.append("proxy family needs native implementation before promotion")
+        score -= 0.12
     return _clamp(score), "; ".join(notes)
 
 
@@ -112,6 +142,13 @@ def _ablation_upside(record: dict[str, Any], baseline_score: float) -> float:
     return 0.0
 
 
+def _h100_batch_upside(record: dict[str, Any], baseline_bpb: float) -> float:
+    value = record.get("finalValBpb")
+    if not isinstance(value, (int, float)):
+        return 0.0
+    return _clamp((baseline_bpb - float(value)) / 0.25)
+
+
 def _info_gain(record: dict[str, Any], source_kind: str) -> float:
     lane = str(record.get("lane") or source_kind)
     base = {
@@ -121,6 +158,7 @@ def _info_gain(record: dict[str, Any], source_kind: str) -> float:
         "non-record-exploration": 0.9,
         "submission-record": 0.64,
         "local-ablation": 0.72,
+        "local-h100-batch": 0.86,
     }.get(lane, 0.65)
     if source_kind == "imported-evidence":
         base += 0.08
@@ -218,6 +256,52 @@ def _ablation_ideas(ablation_results: dict[str, Any]) -> list[dict[str, Any]]:
     return ideas
 
 
+def _relative_result_ref(record: dict[str, Any]) -> str:
+    run_dir = record.get("runDir")
+    if isinstance(run_dir, str) and run_dir:
+        path = Path(run_dir) / "result.json"
+        try:
+            return str(path.resolve().relative_to(REPO_ROOT))
+        except ValueError:
+            return str(path)
+    return f"records/h100_candidate_batch/20260426T191455Z/runs/{record.get('id')}/result.json"
+
+
+def _h100_batch_baseline(results: list[dict[str, Any]]) -> float:
+    for row in results:
+        if row.get("hypothesis") == "baseline_control" and isinstance(row.get("finalValBpb"), (int, float)):
+            return float(row["finalValBpb"])
+    scored = [float(row["finalValBpb"]) for row in results if isinstance(row.get("finalValBpb"), (int, float))]
+    return max(scored) if scored else 4.0
+
+
+def _h100_batch_ideas(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    baseline = _h100_batch_baseline(results)
+    ideas = []
+    for row in results:
+        if row.get("status") != "completed" or row.get("hypothesis") == "baseline_control":
+            continue
+        if not isinstance(row.get("finalValBpb"), (int, float)):
+            continue
+        candidate_id = str(row.get("id"))
+        scores = _score_record(row, "local-h100-batch", _h100_batch_upside(row, baseline))
+        hypothesis = str(row.get("hypothesis") or candidate_id)
+        ideas.append(
+            {
+                "ideaId": f"local-h100-batch-{candidate_id}",
+                "title": f"Promote local batch learning: {candidate_id}",
+                "sourceKind": "local-h100-batch",
+                "sourceLane": "h100-candidate-batch",
+                "evidenceRefs": [_relative_result_ref(row)],
+                "scores": scores,
+                "submissionClassification": classify_submission_legality(row),
+                "mergeabilityNotes": _mergeability(row, "local-h100-batch")[1],
+                "nextPlanningAction": f"reproduce and scale hypothesis {hypothesis}",
+            }
+        )
+    return ideas
+
+
 def _score_record(record: dict[str, Any], source_kind: str, expected_upside: float) -> dict[str, float]:
     mergeability, _ = _mergeability(record, source_kind)
     scores = {
@@ -244,16 +328,19 @@ def build_ranked_idea_queue(
     *,
     evidence: dict[str, Any] | None = None,
     ablation_results: dict[str, Any] | None = None,
+    h100_results: list[dict[str, Any]] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     evidence = evidence if evidence is not None else _load_json(EVIDENCE_PATH)
     ablation_results = ablation_results if ablation_results is not None else _load_json(ABLATION_RESULTS_PATH)
+    h100_results = h100_results if h100_results is not None else _load_json_list(H100_RESULTS_PATH)
     generated_at = generated_at or datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     ideas = [
         *_local_experiment_ideas(evidence),
         *_imported_evidence_ideas(evidence),
         *_ablation_ideas(ablation_results),
+        *_h100_batch_ideas(h100_results),
     ]
     ranked = sorted(
         ideas,
@@ -265,7 +352,7 @@ def build_ranked_idea_queue(
     return {
         "schemaVersion": 1,
         "kind": "ranked-competition-idea-queue",
-        "taskId": "FAST-8",
+        "taskId": "FAST-873",
         "title": "Maintain ranked idea queue scored by info gain, score upside, cost, and mergeability",
         "generatedAt": generated_at,
         "competitionPreset": "parameter-golf",
@@ -277,6 +364,7 @@ def build_ranked_idea_queue(
         "sourceInputs": [
             "fastest/source/measurement_evidence.json",
             "records/fast5_visible_motif_ablation_screen_results.json",
+            "records/h100_candidate_batch/20260426T191455Z/results.json",
         ],
         "architectureHandoff": {
             "implementationBoundary": "planning artifact builder only; runners continue consuming explicit task packets",

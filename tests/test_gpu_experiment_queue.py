@@ -8,6 +8,7 @@ from fastest.scripts.run_gpu_experiment_queue import (
     build_batch_command,
     inventory_by_lane_status,
     load_queue,
+    materialize_all_shard_runbooks,
     materialize_candidate_file,
     select_experiments,
     write_export_runbook,
@@ -112,6 +113,7 @@ class GpuExperimentQueueTest(unittest.TestCase):
                 queue=Path("planning/gpu_experiment_queue.json"),
                 output_root=Path("records/h100_candidate_batch"),
                 timeout_seconds=900,
+                nproc_per_node=1,
                 stop_on_failure=False,
                 smoke=False,
                 keep_raw_checkpoints=False,
@@ -132,6 +134,51 @@ class GpuExperimentQueueTest(unittest.TestCase):
         self.assertEqual(manifest["shard"], {"index": 0, "count": 2})
         self.assertEqual(manifest["batchCommand"], command)
         self.assertEqual(command[0:2], ["python", "fastest/scripts/run_h100_candidate_batch.py"])
+        self.assertIn("--nproc-per-node", command)
+
+    def test_export_all_shards_materializes_one_runbook_per_gpu_pod(self) -> None:
+        queue = {
+            "experiments": [
+                {"id": "p1", "lane": "h100", "status": "ready", "priority": 1, "candidate": {"id": "p1"}},
+                {"id": "p2", "lane": "h100", "status": "ready", "priority": 2, "candidate": {"id": "p2"}},
+                {"id": "p3", "lane": "h100", "status": "ready", "priority": 3, "candidate": {"id": "p3"}},
+                {"id": "p4", "lane": "h100", "status": "ready", "priority": 4, "candidate": {"id": "p4"}},
+            ]
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            args = argparse.Namespace(
+                queue=Path("planning/gpu_experiment_queue.json"),
+                export_root=Path(tmp),
+                output_root=Path("records/h100_candidate_batch"),
+                status=None,
+                lane=[],
+                only=[],
+                max_experiments=None,
+                shard_index=0,
+                shard_count=2,
+                export_only=True,
+                timeout_seconds=900,
+                nproc_per_node=1,
+                stop_on_failure=False,
+                smoke=False,
+                keep_raw_checkpoints=False,
+                auto_tune_batch=True,
+                tune_only=False,
+                batch_tune_target_memory_fraction=0.9,
+                batch_tune_max_tokens=2_097_152,
+                batch_tune_timeout_seconds=180,
+            )
+
+            export_dir = materialize_all_shard_runbooks(args, queue)
+            manifest = json.loads((export_dir / "all_shards_manifest.json").read_text(encoding="utf-8"))
+
+            self.assertEqual(manifest["schema"], "parameter-golf-gpu-queue-all-shards-export/v1")
+            self.assertEqual(manifest["shardCount"], 2)
+            self.assertEqual(manifest["shards"][0]["selectedExperimentIds"], ["p1", "p3"])
+            self.assertEqual(manifest["shards"][1]["selectedExperimentIds"], ["p2", "p4"])
+            for shard in manifest["shards"]:
+                self.assertTrue(Path(shard["candidateFile"]).exists())
+                self.assertTrue(Path(shard["runCommand"]).exists())
 
 
 if __name__ == "__main__":

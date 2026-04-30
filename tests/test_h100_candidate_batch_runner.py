@@ -51,6 +51,13 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
         self.assertTrue(command[0].endswith("python") or "python" in Path(command[0]).name)
         self.assertTrue(command[-1].endswith("train_gpt.py"))
 
+    def test_default_command_uses_configured_process_count(self) -> None:
+        command = command_for_candidate({"id": "baseline"}, nproc_per_node=8)
+
+        self.assertEqual(command[0], "torchrun")
+        self.assertIn("--nproc_per_node=8", command)
+        self.assertTrue(command[-1].endswith("train_gpt.py"))
+
     def test_smoke_overrides_clear_incompatible_layer_orders(self) -> None:
         env = {
             "ENCODER_LAYER_ORDER": "0,1,2,3,4,5",
@@ -163,6 +170,8 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
                 "--batch-tune-timeout-seconds",
                 "45",
                 "--tune-only",
+                "--nproc-per-node",
+                "8",
             ]
         )
 
@@ -171,6 +180,7 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
         self.assertEqual(args.batch_tune_max_tokens, 1048576)
         self.assertEqual(args.batch_tune_timeout_seconds, 45)
         self.assertTrue(args.tune_only)
+        self.assertEqual(args.nproc_per_node, 8)
 
     def test_prunes_raw_checkpoint_by_default_but_keeps_quantized_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "kind": "ranked-competition-idea-queue",
-  "taskId": "FAST-8",
+  "taskId": "FAST-873",
   "title": "Maintain ranked idea queue scored by info gain, score upside, cost, and mergeability",
-  "generatedAt": "2026-04-27T08:04:37Z",
+  "generatedAt": "2026-04-30T00:57:29Z",
   "competitionPreset": "parameter-golf",
   "competitionAnchor": {
     "artifactLimitBytes": 16000000,
@@ -12,7 +12,8 @@
   },
   "sourceInputs": [
     "fastest/source/measurement_evidence.json",
-    "records/fast5_visible_motif_ablation_screen_results.json"
+    "records/fast5_visible_motif_ablation_screen_results.json",
+    "records/h100_candidate_batch/20260426T191455Z/results.json"
   ],
   "architectureHandoff": {
     "implementationBoundary": "planning artifact builder only; runners continue consuming explicit task packets",
@@ -44,6 +45,44 @@
     "updateCommand": "python fastest/scripts/maintain_ranked_idea_queue.py"
   },
   "rankedIdeas": [
+    {
+      "ideaId": "local-h100-batch-text_diffusion_proxy",
+      "title": "Promote local batch learning: text_diffusion_proxy",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/10_text_diffusion_proxy/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 1.0,
+        "cost": 0.9899,
+        "mergeability": 0.62,
+        "composite": 0.8925
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge; proxy family needs native implementation before promotion",
+      "nextPlanningAction": "reproduce and scale hypothesis diffusion_like_soft_targets_need_native_objective",
+      "rank": 1
+    },
     {
       "ideaId": "local-ablation-fast5-3-layer-recurrence",
       "title": "Develop ablation motif: 3-layer recurrence",
@@ -81,7 +120,7 @@
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "deepen",
-      "rank": 1
+      "rank": 2
     },
     {
       "ideaId": "local-ablation-fast5-hessian-aware-clipping",
@@ -120,7 +159,7 @@
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "deepen",
-      "rank": 2
+      "rank": 3
     },
     {
       "ideaId": "local-ablation-fast5-legal-score-first-ttt",
@@ -159,7 +198,7 @@
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "combine-later",
-      "rank": 3
+      "rank": 4
     },
     {
       "ideaId": "local-ablation-fast5-qk-gain-tuning",
@@ -198,7 +237,7 @@
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "combine-later",
-      "rank": 4
+      "rank": 5
     },
     {
       "ideaId": "local-ablation-fast5-sp8192-tokenizer",
@@ -237,7 +276,7 @@
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "combine-later",
-      "rank": 5
+      "rank": 6
     },
     {
       "ideaId": "imported-evidence-exp-fast44-pr1732-import-001",
@@ -276,7 +315,7 @@
       },
       "mergeabilityNotes": "imported evidence requires runnable local reproduction; needs_external_8xh100_verification; verification gate blocked",
       "nextPlanningAction": "extract runnable reproduction path before promotion",
-      "rank": 6
+      "rank": 7
     },
     {
       "ideaId": "local-experiment-fast36-candidate-003",
@@ -315,7 +354,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
-      "rank": 7
+      "rank": 8
     },
     {
       "ideaId": "local-experiment-exp-fast37-combination-001",
@@ -354,7 +393,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
-      "rank": 8
+      "rank": 9
     },
     {
       "ideaId": "local-experiment-exp-fast40-combination-001",
@@ -393,7 +432,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
-      "rank": 9
+      "rank": 10
     },
     {
       "ideaId": "local-experiment-exp-fast35-non-record-001",
@@ -433,7 +472,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
-      "rank": 10
+      "rank": 11
     },
     {
       "ideaId": "local-experiment-exp-fast38-non-record-001",
@@ -473,7 +512,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
-      "rank": 11
+      "rank": 12
     },
     {
       "ideaId": "local-experiment-exp-fast41-non-record-001",
@@ -513,7 +552,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "convert learning into legal bounded candidate if signal persists",
-      "rank": 12
+      "rank": 13
     },
     {
       "ideaId": "local-experiment-exp-fast34-combination-001",
@@ -552,7 +591,83 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
-      "rank": 13
+      "rank": 14
+    },
+    {
+      "ideaId": "local-h100-batch-moe_proxy_wide_mlp",
+      "title": "Promote local batch learning: moe_proxy_wide_mlp",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/12_moe_proxy_wide_mlp/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0964,
+        "cost": 0.9842,
+        "mergeability": 0.62,
+        "composite": 0.5754
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge; proxy family needs native implementation before promotion",
+      "nextPlanningAction": "reproduce and scale hypothesis conditional_capacity_merits_native_moe",
+      "rank": 15
+    },
+    {
+      "ideaId": "local-h100-batch-qk_rmsnorm_longctx",
+      "title": "Promote local batch learning: qk_rmsnorm_longctx",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/06_qk_rmsnorm_longctx/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0145,
+        "cost": 0.9796,
+        "mergeability": 0.74,
+        "composite": 0.564
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge",
+      "nextPlanningAction": "reproduce and scale hypothesis long_context_qk_norm_improves_byte_compression",
+      "rank": 16
     },
     {
       "ideaId": "local-experiment-exp-fast28-ablation-001",
@@ -591,7 +706,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "plan bounded follow-up experiment",
-      "rank": 14
+      "rank": 17
     },
     {
       "ideaId": "local-experiment-exp-fast33-ablation-001",
@@ -630,7 +745,311 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "plan bounded follow-up experiment",
-      "rank": 15
+      "rank": 18
+    },
+    {
+      "ideaId": "local-h100-batch-narrow_deep",
+      "title": "Promote local batch learning: narrow_deep",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/08_narrow_deep/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0,
+        "cost": 0.9925,
+        "mergeability": 0.74,
+        "composite": 0.5609
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge",
+      "nextPlanningAction": "reproduce and scale hypothesis depth_beats_width_at_fixed_artifact_budget",
+      "rank": 19
+    },
+    {
+      "ideaId": "local-h100-batch-swiglu_clamped",
+      "title": "Promote local batch learning: swiglu_clamped",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/05_swiglu_clamped/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0,
+        "cost": 0.9903,
+        "mergeability": 0.74,
+        "composite": 0.5605
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge",
+      "nextPlanningAction": "reproduce and scale hypothesis swiglu_clamps_improve_capacity_stability",
+      "rank": 20
+    },
+    {
+      "ideaId": "local-h100-batch-ar_nonquant_reference",
+      "title": "Promote local batch learning: ar_nonquant_reference",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/02_ar_nonquant_reference/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0,
+        "cost": 0.9881,
+        "mergeability": 0.74,
+        "composite": 0.5602
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge",
+      "nextPlanningAction": "reproduce and scale hypothesis quantization_artifact_cost",
+      "rank": 21
+    },
+    {
+      "ideaId": "local-h100-batch-parallel_residual_qk5",
+      "title": "Promote local batch learning: parallel_residual_qk5",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/03_parallel_residual_qk5/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0,
+        "cost": 0.9874,
+        "mergeability": 0.74,
+        "composite": 0.5601
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge",
+      "nextPlanningAction": "reproduce and scale hypothesis parallel_residual_improves_optimization",
+      "rank": 22
+    },
+    {
+      "ideaId": "local-h100-batch-wide_shallow",
+      "title": "Promote local batch learning: wide_shallow",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/07_wide_shallow/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0,
+        "cost": 0.9853,
+        "mergeability": 0.74,
+        "composite": 0.5598
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge",
+      "nextPlanningAction": "reproduce and scale hypothesis width_beats_depth_at_fixed_artifact_budget",
+      "rank": 23
+    },
+    {
+      "ideaId": "local-h100-batch-depth_recurrence_loop45",
+      "title": "Promote local batch learning: depth_recurrence_loop45",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/04_depth_recurrence_loop45/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0105,
+        "cost": 0.9919,
+        "mergeability": 0.62,
+        "composite": 0.5465
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge; proxy family needs native implementation before promotion",
+      "nextPlanningAction": "reproduce and scale hypothesis depth_recurrence_increases_compute_per_parameter",
+      "rank": 24
+    },
+    {
+      "ideaId": "local-h100-batch-jepa_style_encoder_decoder_proxy",
+      "title": "Promote local batch learning: jepa_style_encoder_decoder_proxy",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/09_jepa_style_encoder_decoder_proxy/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0,
+        "cost": 0.9937,
+        "mergeability": 0.62,
+        "composite": 0.5431
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge; proxy family needs native implementation before promotion",
+      "nextPlanningAction": "reproduce and scale hypothesis latent_prediction_scaffold_merits_native_jepa",
+      "rank": 25
+    },
+    {
+      "ideaId": "local-h100-batch-ssm_proxy_linear_attention_budget",
+      "title": "Promote local batch learning: ssm_proxy_linear_attention_budget",
+      "sourceKind": "local-h100-batch",
+      "sourceLane": "h100-candidate-batch",
+      "evidenceRefs": [
+        "records/h100_candidate_batch/20260426T191455Z/runs/11_ssm_proxy_linear_attention_budget/result.json"
+      ],
+      "scores": {
+        "expectedInfoGain": 0.86,
+        "expectedUpside": 0.0,
+        "cost": 0.986,
+        "mergeability": 0.62,
+        "composite": 0.5419
+      },
+      "submissionClassification": {
+        "status": "uncertain",
+        "policy": {
+          "preset": "parameter-golf",
+          "artifactLimitBytes": 16000000,
+          "leaderboardRuntimeSeconds": 600,
+          "scoring": "FineWeb validation bits-per-byte"
+        },
+        "passedRules": [],
+        "nonRecordReasons": [],
+        "uncertaintyReasons": [
+          "missing-artifact-size",
+          "missing-external-access-evidence",
+          "missing-fineweb-bpb-scoring-evidence",
+          "missing-runtime-or-credible-path",
+          "missing-self-contained-evidence",
+          "missing-validation-data-use-evidence"
+        ]
+      },
+      "mergeabilityNotes": "local batch result needs full-duration reproduction before merge; proxy family needs native implementation before promotion",
+      "nextPlanningAction": "reproduce and scale hypothesis cheap_sequence_mixing_can_trade_attention_for_depth",
+      "rank": 26
     },
     {
       "ideaId": "local-experiment-exp-fast39-cheap-screen-001",
@@ -669,7 +1088,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
-      "rank": 16
+      "rank": 27
     },
     {
       "ideaId": "local-experiment-exp-fast4-cheap-screen-20260423-attempt2-001",
@@ -708,7 +1127,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
-      "rank": 17
+      "rank": 28
     },
     {
       "ideaId": "local-experiment-exp-fast4-qa-smoke-20260423-001",
@@ -747,7 +1166,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
-      "rank": 18
+      "rank": 29
     },
     {
       "ideaId": "local-experiment-fast36-candidate-002",
@@ -786,7 +1205,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
-      "rank": 19
+      "rank": 30
     },
     {
       "ideaId": "local-experiment-exp-fast42-combination-001",
@@ -825,7 +1244,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
-      "rank": 20
+      "rank": 31
     },
     {
       "ideaId": "local-experiment-exp-fast32-cheap-screen-001",
@@ -864,7 +1283,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "screen adjacent cheap variant before expensive promotion",
-      "rank": 21
+      "rank": 32
     },
     {
       "ideaId": "local-experiment-exp-fast29-combination-001",
@@ -903,7 +1322,7 @@
       },
       "mergeabilityNotes": "local experiment already has campaign evidence",
       "nextPlanningAction": "prepare mergeable reproduction packet for strongest combination",
-      "rank": 22
+      "rank": 33
     },
     {
       "ideaId": "local-ablation-fast5-parallel-residuals",
@@ -942,7 +1361,7 @@
       },
       "mergeabilityNotes": "local ablation needs implementation extraction before merge",
       "nextPlanningAction": "rerun-near-threshold",
-      "rank": 23
+      "rank": 34
     }
   ]
 }

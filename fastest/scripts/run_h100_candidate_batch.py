@@ -177,15 +177,22 @@ def safe_id(raw: str) -> str:
     return cleaned or "candidate"
 
 
-def command_for_candidate(candidate: dict[str, Any], *, smoke: bool = False) -> list[str]:
+def command_for_candidate(
+    candidate: dict[str, Any],
+    *,
+    smoke: bool = False,
+    nproc_per_node: int = 1,
+) -> list[str]:
     command = candidate.get("command")
     if command is None:
         if smoke:
             return [sys.executable, str(REPO_ROOT / "train_gpt.py")]
+        if nproc_per_node < 1:
+            raise ValueError(f"nproc_per_node must be at least 1, got {nproc_per_node}")
         return [
             "torchrun",
             "--standalone",
-            "--nproc_per_node=1",
+            f"--nproc_per_node={nproc_per_node}",
             str(REPO_ROOT / "train_gpt.py"),
         ]
     if isinstance(command, str):
@@ -387,6 +394,7 @@ def run_batch_tune_probe(
     env: dict[str, str],
     tokens: int,
     timeout_seconds: int,
+    nproc_per_node: int,
 ) -> dict[str, Any]:
     probe_dir = run_dir / "batch_tune" / f"tokens_{tokens}"
     probe_dir.mkdir(parents=True, exist_ok=True)
@@ -403,7 +411,7 @@ def run_batch_tune_probe(
         }
     )
     completed = stream_subprocess(
-        command=command_for_candidate(candidate, smoke=False),
+        command=command_for_candidate(candidate, smoke=False, nproc_per_node=nproc_per_node),
         cwd=probe_dir,
         env=probe_env,
         stdout_path=probe_dir / "stdout.txt",
@@ -436,6 +444,7 @@ def auto_tune_batch_size(
     target_memory_fraction: float,
     max_tokens: int,
     timeout_seconds: int,
+    nproc_per_node: int,
 ) -> dict[str, Any]:
     train_seq_len = int_env(env, "TRAIN_SEQ_LEN", 1024)
     initial_tokens = round_batch_tokens(int_env(env, "TRAIN_BATCH_TOKENS", 524_288), train_seq_len)
@@ -453,6 +462,7 @@ def auto_tune_batch_size(
             env=env,
             tokens=tokens,
             timeout_seconds=timeout_seconds,
+            nproc_per_node=nproc_per_node,
         )
         probes.append(result)
         return result
@@ -960,7 +970,7 @@ def format_float(value: Any) -> str:
 def write_hypothesis_graph_json(path: Path, payload: dict[str, Any]) -> None:
     nodes: list[dict[str, Any]] = [
         {"id": "objective", "kind": "objective", "label": "Lower validation BPB"},
-        {"id": "constraint", "kind": "constraint", "label": "10 min, 1xH100, 16MB artifact"},
+        {"id": "constraint", "kind": "constraint", "label": "10 min, H100 budget, 16MB artifact"},
     ]
     edges: list[dict[str, str]] = [{"source": "constraint", "target": "objective", "relation": "bounds"}]
     seen_nodes = {node["id"] for node in nodes}
@@ -993,7 +1003,7 @@ def write_hypothesis_graph(path: Path, payload: dict[str, Any]) -> None:
         "",
         "```mermaid",
         "graph LR",
-        "  constraint[\"10 min / 1xH100 / 16MB\"] --> objective[\"lower val_bpb\"]",
+        "  constraint[\"10 min / H100 budget / 16MB\"] --> objective[\"lower val_bpb\"]",
     ]
     for row in payload["views"]["leaderboard"]:
         family = mermaid_id(f"family_{row.get('family') or 'unknown'}")
@@ -1319,8 +1329,9 @@ def run_batch(args: argparse.Namespace) -> int:
                     target_memory_fraction=args.batch_tune_target_memory_fraction,
                     max_tokens=args.batch_tune_max_tokens,
                     timeout_seconds=args.batch_tune_timeout_seconds,
+                    nproc_per_node=args.nproc_per_node,
                 )
-        command = command_for_candidate(candidate, smoke=args.smoke)
+        command = command_for_candidate(candidate, smoke=args.smoke, nproc_per_node=args.nproc_per_node)
         if args.tune_only:
             completed = {
                 "returnCode": 0,
@@ -1366,6 +1377,7 @@ def run_batch(args: argparse.Namespace) -> int:
             "elapsedSeconds": completed["elapsedSeconds"],
             "runDir": str(run_dir),
             "command": command,
+            "nprocPerNode": args.nproc_per_node,
             "env": {
                 key: env[key]
                 for key in sorted(
@@ -1419,10 +1431,11 @@ def run_batch(args: argparse.Namespace) -> int:
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run sequential 1xH100 Parameter Golf candidate experiments.")
+    parser = argparse.ArgumentParser(description="Run sequential Parameter Golf candidate experiments on H100 pods.")
     parser.add_argument("--candidate-file", type=Path, default=None, help="JSON list of candidate definitions.")
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT, help="Directory for batch outputs.")
     parser.add_argument("--timeout-seconds", type=int, default=900, help="Host timeout per candidate, including final eval.")
+    parser.add_argument("--nproc-per-node", type=int, default=1, help="torchrun processes per node for default candidate commands.")
     parser.add_argument("--only", action="append", default=[], help="Candidate id to run; can be repeated.")
     parser.add_argument("--max-candidates", type=int, default=None, help="Run only the first N selected candidates.")
     parser.add_argument("--stop-on-failure", action="store_true", help="Stop the batch after the first failed candidate.")

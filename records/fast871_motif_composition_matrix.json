@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "taskId": "FAST-871",
+  "generatedAt": "2026-04-30T00:00:00Z",
+  "competitionPreset": "parameter-golf",
+  "artifactLimitBytes": 16000000,
+  "sourceAblationPacket": {
+    "taskId": "FAST-870",
+    "path": "records/fast870_visible_motif_ablation_screen_results.json"
+  },
+  "basis": {
+    "verificationClass": "planning-from-visible-record-evidence",
+    "scoreMetric": "FineWeb validation bits per byte",
+    "controlBpb": 1.081,
+    "controlArtifactBytes": 15993232,
+    "note": "This matrix ranks motif combinations for follow-up design. It is not benchmark-verified combination evidence."
+  },
+  "combinations": [
+    {
+      "rank": 1,
+      "combinationId": "recurrence-parallel-residuals-legal-score-first-ttt",
+      "motifIds": ["3-layer-recurrence", "parallel-residuals", "legal-score-first-ttt"],
+      "arity": 3,
+      "evidenceRecordPaths": ["records/fast870_visible_motif_ablation_screen_results.json"],
+      "validationBpb": 1.081,
+      "artifactBytes": 15993232,
+      "artifactHeadroomBytes": 6768,
+      "interactionClass": "positive",
+      "compositionVerdict": "promote",
+      "rankRationale": "Top visible record already combines recurrence, parallel residuals, QK gain, and legal score-first TTT under the artifact cap; clean toggles should isolate exact contribution before full rerun.",
+      "followUpTask": {
+        "taskTitle": "FAST-871 follow-up: isolate recurrence + parallel residual + legal TTT stack",
+        "lane": "benchmark-rehearsal",
+        "evidenceBasis": ["FAST-870 trusted control", "visible 1.0810 bpb record", "artifact under 16MB"],
+        "stopCondition": "retire if clean toggle loses beyond visible variance or exceeds artifact cap"
+      }
+    },
+    {
+      "rank": 2,
+      "combinationId": "recurrence-legal-score-first-ttt-qk-gain",
+      "motifIds": ["3-layer-recurrence", "legal-score-first-ttt", "qk-gain-tuning"],
+      "arity": 3,
+      "evidenceRecordPaths": ["records/fast870_visible_motif_ablation_screen_results.json"],
+      "validationBpb": 1.0822,
+      "artifactBytes": 15991486,
+      "artifactHeadroomBytes": 8514,
+      "interactionClass": "positive",
+      "compositionVerdict": "promote",
+      "rankRationale": "Adjacent SP8192 legal TTT records imply recurrence and QK gain remain valuable with small artifact movement.",
+      "followUpTask": {
+        "taskTitle": "FAST-871 follow-up: QK 5.0 vs 5.25 recurrence TTT sweep",
+        "lane": "ablation",
+        "evidenceBasis": ["FAST-870 recurrence row", "FAST-870 qk-gain row"],
+        "stopCondition": "promote only if sweep keeps artifact below 16MB and improves common-control bpb"
+      }
+    },
+    {
+      "rank": 3,
+      "combinationId": "sp8192-tokenizer-recurrence-legal-score-first-ttt",
+      "motifIds": ["sp8192-tokenizer", "3-layer-recurrence", "legal-score-first-ttt"],
+      "arity": 3,
+      "evidenceRecordPaths": ["records/fast870_visible_motif_ablation_screen_results.json"],
+      "validationBpb": 1.08563,
+      "artifactBytes": 15985678,
+      "artifactHeadroomBytes": 14322,
+      "interactionClass": "neutral",
+      "compositionVerdict": "hold",
+      "rankRationale": "SP8192 appears necessary for current leaders, but visible rows are confounded and need a controlled tokenizer toggle.",
+      "followUpTask": {
+        "taskTitle": "FAST-871 follow-up: controlled SP4096 vs SP8192 tokenizer toggle",
+        "lane": "cheap-screen",
+        "evidenceBasis": ["FAST-870 tokenizer row"],
+        "stopCondition": "retire tokenizer-specific claim if controlled toggle fails to beat variance"
+      }
+    },
+    {
+      "rank": 4,
+      "combinationId": "hessian-clipping-recurrence-parallel-residuals",
+      "motifIds": ["hessian-aware-clipping", "3-layer-recurrence", "parallel-residuals"],
+      "arity": 3,
+      "evidenceRecordPaths": ["records/fast870_visible_motif_ablation_screen_results.json"],
+      "validationBpb": 1.08354,
+      "artifactBytes": 15979649,
+      "artifactHeadroomBytes": 20351,
+      "interactionClass": "neutral",
+      "compositionVerdict": "hold",
+      "rankRationale": "Hessian clipping gives artifact headroom but visible record lacks legal TTT, so it should be ported only after cheap control-stack check.",
+      "followUpTask": {
+        "taskTitle": "FAST-871 follow-up: port Hessian clipping onto control stack",
+        "lane": "cheap-screen",
+        "evidenceBasis": ["FAST-870 hessian-aware-clipping row"],
+        "stopCondition": "hold unless headroom improves without bpb regression"
+      }
+    },
+    {
+      "rank": 5,
+      "combinationId": "parallel-residuals-qk-gain",
+      "motifIds": ["parallel-residuals", "qk-gain-tuning"],
+      "arity": 2,
+      "evidenceRecordPaths": ["records/fast870_visible_motif_ablation_screen_results.json"],
+      "validationBpb": 1.08279,
+      "artifactBytes": 15992546,
+      "artifactHeadroomBytes": 7454,
+      "interactionClass": "negative",
+      "compositionVerdict": "hold",
+      "rankRationale": "Visible contrast is too confounded to attribute gain to parallel residuals alone; run clean toggle before combination.",
+      "followUpTask": {
+        "taskTitle": "FAST-871 follow-up: clean parallel residual toggle",
+        "lane": "ablation",
+        "evidenceBasis": ["FAST-870 parallel-residuals row", "FAST-870 qk-gain row"],
+        "stopCondition": "reject if parallel residuals do not improve common-control bpb"
+      }
+    },
+    {
+      "rank": 6,
+      "combinationId": "sp8192-tokenizer-hessian-clipping",
+      "motifIds": ["sp8192-tokenizer", "hessian-aware-clipping"],
+      "arity": 2,
+      "evidenceRecordPaths": ["records/fast870_visible_motif_ablation_screen_results.json"],
+      "validationBpb": 1.0897,
+      "artifactBytes": 15999533,
+      "artifactHeadroomBytes": 467,
+      "interactionClass": "negative",
+      "compositionVerdict": "reject",
+      "rankRationale": "Visible SP4096 contrast leaves almost no artifact headroom and does not justify pairing tokenizer changes with clipping before cleaner evidence.",
+      "followUpTask": null
+    }
+  ]
+}

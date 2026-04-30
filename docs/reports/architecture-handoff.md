@@ -1,3 +1,40 @@
+# FAST-871 Architecture Handoff
+
+Date: 2026-04-30
+Task: FAST-871 Compose strongest visible motifs into a ranked follow-up matrix
+
+## Boundary
+
+Implementation stays in `/workspaces/parameter-golf`. No Fastest runtime, API, or fast-ui interface changes are required.
+The work product is a composition matrix derived from FAST-870 visible motif
+evidence. It ranks which motif bundles deserve cheap toggles, one-H100
+rehearsal packets, or rejection.
+
+## Changed Experiment Surfaces
+
+- `records/fast871_motif_composition_matrix.json` records positive, neutral,
+  and negative motif interactions plus follow-up task packets.
+- `records/fast871_motif_composition_matrix_summary.md` gives operator review
+  summary and follow-up direction.
+- `tests/test_fast871_motif_composition_matrix.py` locks the matrix contract.
+
+## Control Decision
+
+The matrix uses the FAST-870 trusted control and visible leaderboard evidence.
+It does not claim benchmark-verified combination results. Positive rows only
+promote to clean toggles or rehearsal preparation.
+
+## Rollback Constraints
+
+Rollback is file-local: remove the FAST-871 records and test, then restore this
+handoff document if needed. No model artifacts, task-store state, or platform
+routes are changed.
+
+## Validation Evidence
+
+Use `python -m unittest tests.test_fast871_motif_composition_matrix` for the
+packet contract and `git diff --check` for markdown/JSON whitespace hygiene.
+
 # FAST-870 Architecture Handoff
 
 Date: 2026-04-28

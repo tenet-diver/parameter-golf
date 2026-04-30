@@ -7,7 +7,7 @@
     "firstPass": "Run ready 1xH100 experiments first; promote only high-signal winners to 8xH100 record attempts.",
     "batching": "Queue is CPU-generated and GPU-consumed by one command so GPU time is spent only on selected runnable experiments. This queue is not capped; ticket/status lane inventory caps live in Fastest planning policy, not the GPU execution backlog.",
     "quality": "External Parameter Golf code remains subject to security and maintainability review; queueing optimizes idle GPU time, not quality gates.",
-    "parallelPods": "To split independent work across rented GPUs, run the same command with --shard-count N and a distinct --shard-index per pod; the queue remains uncapped."
+    "parallelPods": "To split independent work across rented GPUs, pre-batch all pod runbooks from one CPU queue snapshot with python fastest/scripts/run_gpu_experiment_queue.py --queue planning/gpu_experiment_queue.json --export-only --export-all-shards --shard-count N --auto-tune-batch, then run each shard_N/run_command.sh on a distinct pod; the queue remains uncapped."
   },
   "researchSources": [
     {

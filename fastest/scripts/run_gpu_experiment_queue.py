@@ -107,8 +107,9 @@ def materialize_candidate_file(
     *,
     queue_path: Path,
     export_root: Path,
+    export_dir: Path | None = None,
 ) -> Path:
-    export_dir = export_root / utc_slug()
+    export_dir = export_dir or export_root / utc_slug()
     export_dir.mkdir(parents=True, exist_ok=False)
     candidates = []
     for experiment in experiments:
@@ -141,6 +142,8 @@ def build_batch_command(args: argparse.Namespace, candidate_file: Path) -> list[
         str(args.output_root),
         "--timeout-seconds",
         str(args.timeout_seconds),
+        "--nproc-per-node",
+        str(args.nproc_per_node),
     ]
     if args.stop_on_failure:
         command.append("--stop-on-failure")
@@ -189,10 +192,94 @@ def write_export_runbook(
     )
 
 
+def materialize_all_shard_runbooks(args: argparse.Namespace, queue: dict[str, Any]) -> Path:
+    if args.shard_count < 1:
+        raise ValueError("shard_count must be at least 1")
+    if args.shard_count == 1:
+        raise ValueError("--export-all-shards requires --shard-count greater than 1")
+    if not args.export_only:
+        raise ValueError("--export-all-shards must be combined with --export-only")
+
+    statuses = set(args.status or RUNNABLE_STATUSES)
+    lanes = set(args.lane or [])
+    only = set(args.only or [])
+    export_dir = args.export_root / f"{utc_slug()}_all_shards"
+    export_dir.mkdir(parents=True, exist_ok=False)
+    shard_manifests: list[dict[str, Any]] = []
+
+    for shard_index in range(args.shard_count):
+        experiments = select_experiments(
+            queue,
+            statuses=statuses,
+            lanes=lanes,
+            only=only,
+            max_experiments=args.max_experiments,
+            shard_count=args.shard_count,
+            shard_index=shard_index,
+        )
+        shard_dir = export_dir / f"shard_{shard_index:02d}_of_{args.shard_count:02d}"
+        if experiments:
+            shard_args = argparse.Namespace(**vars(args))
+            shard_args.shard_index = shard_index
+            candidate_file = materialize_candidate_file(
+                experiments,
+                queue_path=args.queue,
+                export_root=args.export_root,
+                export_dir=shard_dir,
+            )
+            write_export_runbook(candidate_file=candidate_file, experiments=experiments, args=shard_args)
+            shard_manifests.append(
+                {
+                    "shardIndex": shard_index,
+                    "experimentCount": len(experiments),
+                    "selectedExperimentIds": [str(experiment["id"]) for experiment in experiments],
+                    "candidateFile": str(candidate_file),
+                    "runManifest": str(candidate_file.parent / "run_manifest.json"),
+                    "runCommand": str(candidate_file.parent / "run_command.sh"),
+                }
+            )
+        else:
+            shard_dir.mkdir(parents=True, exist_ok=False)
+            (shard_dir / "EMPTY_SHARD.txt").write_text("No experiments selected for this shard.\n", encoding="utf-8")
+            shard_manifests.append(
+                {
+                    "shardIndex": shard_index,
+                    "experimentCount": 0,
+                    "selectedExperimentIds": [],
+                    "emptyShardMarker": str(shard_dir / "EMPTY_SHARD.txt"),
+                }
+            )
+
+    (export_dir / "all_shards_manifest.json").write_text(
+        json.dumps(
+            {
+                "schema": "parameter-golf-gpu-queue-all-shards-export/v1",
+                "queuePath": str(args.queue),
+                "shardCount": args.shard_count,
+                "statusFilter": sorted(statuses),
+                "laneFilter": sorted(lanes),
+                "onlyFilter": sorted(only),
+                "maxExperimentsPerShard": args.max_experiments,
+                "shards": shard_manifests,
+                "operatorInstruction": "Copy or mount the whole export directory on GPU pods; each pod runs its shard_N/run_command.sh.",
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return export_dir
+
+
 def run_queue(args: argparse.Namespace) -> int:
     queue = load_queue(args.queue)
     if args.print_inventory:
         print(json.dumps({"inventory": inventory_by_lane_status(queue)}, indent=2))
+    if args.export_all_shards:
+        export_dir = materialize_all_shard_runbooks(args, queue)
+        print(f"all_shards_export={export_dir}")
+        print(f"all_shards_manifest={export_dir / 'all_shards_manifest.json'}")
+        return 0
     statuses = set(args.status or RUNNABLE_STATUSES)
     lanes = set(args.lane or [])
     only = set(args.only or [])
@@ -230,6 +317,7 @@ def run_queue(args: argparse.Namespace) -> int:
         candidate_file=candidate_file,
         output_root=args.output_root,
         timeout_seconds=args.timeout_seconds,
+        nproc_per_node=args.nproc_per_node,
         only=[],
         max_candidates=None,
         stop_on_failure=args.stop_on_failure,
@@ -256,7 +344,13 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--max-experiments", type=int, default=None)
     parser.add_argument("--shard-count", type=int, default=1, help="Split selected experiments into N independent GPU-pod shards.")
     parser.add_argument("--shard-index", type=int, default=0, help="Run the zero-based shard index for this pod.")
+    parser.add_argument(
+        "--export-all-shards",
+        action="store_true",
+        help="With --export-only, materialize one runbook per shard from the same queue snapshot.",
+    )
     parser.add_argument("--timeout-seconds", type=int, default=900)
+    parser.add_argument("--nproc-per-node", type=int, default=1, help="torchrun processes per node for default candidate commands.")
     parser.add_argument("--stop-on-failure", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--export-only", action="store_true", help="Materialize shard candidates and runbook without starting training.")
