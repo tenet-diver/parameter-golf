@@ -58,6 +58,13 @@ BATCH_TUNE_RE = re.compile(
 BASE_ENV = {
     "DATA_PATH": str(DEFAULT_DATA_PATH),
     "TOKENIZER_PATH": str(DEFAULT_TOKENIZER_PATH),
+    "SUBMISSION_CODE_PATHS": ",".join(
+        [
+            str(REPO_ROOT / "train_gpt.py"),
+            str(REPO_ROOT / "candidates"),
+            str(REPO_ROOT / "fastest/scripts/artifact_budget_analyzer.py"),
+        ]
+    ),
     "VOCAB_SIZE": "1024",
     "MAX_WALLCLOCK_SECONDS": "600",
     "VAL_LOSS_EVERY": "0",
@@ -1118,6 +1125,117 @@ def svg_scatter_chart(path: Path, rows: list[dict[str, Any]]) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def parse_training_series(stdout: str) -> list[dict[str, Any]]:
+    points: list[dict[str, Any]] = []
+    for match in TRAIN_STEP_RE.finditer(stdout):
+        points.append(
+            {
+                "kind": "train",
+                "step": int(match.group("step")),
+                "loss": float(match.group("loss")),
+                "trainTimeMs": float(match.group("ms")),
+                "stepAvgMs": float(match.group("avg")),
+            }
+        )
+    for match in VAL_STEP_RE.finditer(stdout):
+        points.append(
+            {
+                "kind": "val",
+                "step": int(match.group("step")),
+                "loss": float(match.group("loss")),
+                "valBpb": float(match.group("bpb")),
+                "trainTimeMs": float(match.group("ms")),
+                "stepAvgMs": float(match.group("avg")),
+            }
+        )
+    return sorted(points, key=lambda point: (int(point["step"]), str(point["kind"])))
+
+
+def svg_training_curve(path: Path, series: list[dict[str, Any]], title: str) -> None:
+    points = [point for point in series if numeric(point.get("loss")) is not None]
+    width, height = 900, 520
+    if not points:
+        path.write_text(
+            "<svg xmlns='http://www.w3.org/2000/svg' width='900' height='120'>"
+            "<text x='20' y='60'>No training curve points</text></svg>\n",
+            encoding="utf-8",
+        )
+        return
+    xs = [float(point["step"]) for point in points]
+    ys = [float(point["loss"]) for point in points]
+    min_x, max_x = min(xs), max(xs)
+    min_y, max_y = min(ys), max(ys)
+    x_span = max(max_x - min_x, 1e-9)
+    y_span = max(max_y - min_y, 1e-9)
+
+    def sx(value: float) -> float:
+        return 70 + (value - min_x) / x_span * 760
+
+    def sy(value: float) -> float:
+        return 440 - (value - min_y) / y_span * 340
+
+    train_polyline = " ".join(
+        f"{sx(float(point['step'])):.1f},{sy(float(point['loss'])):.1f}"
+        for point in points
+        if point.get("kind") == "train"
+    )
+    lines = [
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{width}' height='{height}' viewBox='0 0 {width} {height}'>",
+        "<rect width='100%' height='100%' fill='white'/>",
+        f"<text x='24' y='36' font-family='Arial' font-size='21' font-weight='700'>{escape_xml(title)}</text>",
+        "<line x1='70' y1='440' x2='830' y2='440' stroke='#333'/>",
+        "<line x1='70' y1='100' x2='70' y2='440' stroke='#333'/>",
+        "<text x='410' y='492' font-family='Arial' font-size='14'>step</text>",
+        "<text x='18' y='92' font-family='Arial' font-size='14'>loss</text>",
+        f"<text x='70' y='462' font-family='Arial' font-size='12'>{int(min_x)}</text>",
+        f"<text x='802' y='462' font-family='Arial' font-size='12'>{int(max_x)}</text>",
+        f"<text x='18' y='444' font-family='Arial' font-size='12'>{min_y:.3f}</text>",
+        f"<text x='18' y='106' font-family='Arial' font-size='12'>{max_y:.3f}</text>",
+    ]
+    if train_polyline:
+        lines.append(f"<polyline fill='none' stroke='#1f77b4' stroke-width='2.5' points='{train_polyline}'/>")
+    for point in points:
+        if point.get("kind") != "val":
+            continue
+        x = sx(float(point["step"]))
+        y = sy(float(point["loss"]))
+        label = f"{point.get('valBpb', ''):.4f}" if numeric(point.get("valBpb")) is not None else ""
+        lines.extend(
+            [
+                f"<circle cx='{x:.1f}' cy='{y:.1f}' r='6' fill='#d62728'/>",
+                f"<text x='{x + 8:.1f}' y='{y - 8:.1f}' font-family='Arial' font-size='12'>{escape_xml(label)}</text>",
+            ]
+        )
+    lines.extend(
+        [
+            "<rect x='650' y='58' width='14' height='3' fill='#1f77b4'/>",
+            "<text x='672' y='64' font-family='Arial' font-size='13'>train loss</text>",
+            "<circle cx='657' cy='84' r='6' fill='#d62728'/>",
+            "<text x='672' y='88' font-family='Arial' font-size='13'>validation bpb point</text>",
+            "</svg>",
+        ]
+    )
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_chart_index(path: Path, output_dir: Path, rows: list[dict[str, Any]]) -> None:
+    lines = [
+        "# Training Run Charts",
+        "",
+        f"- Leaderboard: `{output_dir / 'leaderboard.csv'}`",
+        f"- Final val_bpb chart: `{output_dir / 'charts/final_val_bpb.svg'}`",
+        f"- Speed versus bpb chart: `{output_dir / 'charts/speed_vs_bpb.svg'}`",
+        "",
+        "| Candidate | Status | Training curve |",
+        "|---|---|---|",
+    ]
+    for row in rows:
+        chart = row.get("trainingCurvePath")
+        chart_text = f"`{chart}`" if chart else ""
+        lines.append(f"| `{row.get('id')}` | `{row.get('status')}` | {chart_text} |")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def escape_xml(value: str) -> str:
     return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
@@ -1370,6 +1488,9 @@ def run_batch(args: argparse.Namespace) -> int:
             status = "completed" if completed["returnCode"] == 0 and metrics["finalValBpb"] is not None else "failed"
             if completed["timedOut"]:
                 status = "timed_out"
+        training_series = parse_training_series(completed["stdout"])
+        training_curve_path = run_dir / "training_curve.svg"
+        svg_training_curve(training_curve_path, training_series, f"{candidate_id}{seed_suffix} training curve")
         selected_train_batch_tokens = int_env(env, "TRAIN_BATCH_TOKENS", 524_288)
         derived_tokens_per_second = tokens_per_second(selected_train_batch_tokens, metrics.get("stepAvgMs"))
         row = {
@@ -1402,6 +1523,15 @@ def run_batch(args: argparse.Namespace) -> int:
                         "VAL_BATCH_SIZE",
                         "VAL_TOKEN_LIMIT",
                         "SEED",
+                        "MLP_BLOCK_GROUPS",
+                        "MTP_NUM_TOKENS",
+                        "MTP_LOSS_WEIGHT",
+                        "SPARSE_ATTN_MODE",
+                        "SPARSE_ATTN_WINDOW",
+                        "SPARSE_ATTN_GLOBAL_TOKENS",
+                        "SPARSE_ATTN_BLOCK_SIZE",
+                        "LOCAL_SGD_SYNC_STEPS",
+                        "TORCH_COMPILE",
                     }
                 )
                 if key in env
@@ -1410,6 +1540,8 @@ def run_batch(args: argparse.Namespace) -> int:
             "tokensPerSecond": derived_tokens_per_second,
             "batchTuneStatus": batch_tune.get("status") if batch_tune.get("enabled") else None,
             "batchTune": batch_tune,
+            "trainingSeries": training_series,
+            "trainingCurvePath": str(training_curve_path),
             **artifact_state,
             **metrics,
         }
@@ -1420,6 +1552,7 @@ def run_batch(args: argparse.Namespace) -> int:
         (output_dir / "results.json").write_text(json.dumps(ranked, indent=2) + "\n", encoding="utf-8")
         svg_bar_chart(output_dir / "charts/final_val_bpb.svg", ranked)
         svg_scatter_chart(output_dir / "charts/speed_vs_bpb.svg", ranked)
+        write_chart_index(output_dir / "charts/README.md", output_dir, ranked)
         write_analysis_outputs(output_dir, ranked, hardware, started_at)
         write_summary(output_dir / "summary.md", ranked, started_at, output_dir)
         if status == "completed":
@@ -1436,6 +1569,7 @@ def run_batch(args: argparse.Namespace) -> int:
     (output_dir / "results.json").write_text(json.dumps(ranked, indent=2) + "\n", encoding="utf-8")
     svg_bar_chart(output_dir / "charts/final_val_bpb.svg", ranked)
     svg_scatter_chart(output_dir / "charts/speed_vs_bpb.svg", ranked)
+    write_chart_index(output_dir / "charts/README.md", output_dir, ranked)
     write_analysis_outputs(output_dir, ranked, hardware, started_at)
     write_summary(output_dir / "summary.md", ranked, started_at, output_dir)
     print(f"wrote {output_dir}")

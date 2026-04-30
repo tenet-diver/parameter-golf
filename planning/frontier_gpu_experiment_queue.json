@@ -1,0 +1,612 @@
+{
+  "schemaVersion": 1,
+  "kind": "parameter-golf-gpu-experiment-queue",
+  "generatedAt": "2026-04-30T00:00:00Z",
+  "runCommand": "PG_GPUS=1 PG_MAX_EXPERIMENTS=8 scripts/run_frontier_experiment_batch.sh",
+  "purpose": "Independent frontier queue for the deadline run. This file intentionally does not alter planning/gpu_experiment_queue.json or the existing deadline batch.",
+  "gpuPolicy": {
+    "firstPass": "Run ready h100-1x-frontier-* lanes on one H100; promote only the strongest completed artifacts to h100-8x-frontier-* lanes.",
+    "batching": "The queue is designed for a second machine while the main deadline queue is already running.",
+    "charts": "Batch outputs include leaderboard.csv, summary.md, charts/final_val_bpb.svg, charts/speed_vs_bpb.svg, charts/README.md, and per-run runs/*/training_curve.svg."
+  },
+  "researchSources": [
+    {
+      "sourceId": "arxiv-2412.19437-deepseek-v3",
+      "title": "DeepSeek-V3 Technical Report",
+      "url": "https://arxiv.org/abs/2412.19437",
+      "idea": "Multi-token prediction and aggressive architecture/systems co-design are strong current motifs; this queue tests a shared-head MTP auxiliary loss because it adds no submission parameters."
+    },
+    {
+      "sourceId": "deepmind-diloco",
+      "title": "DiLoCo: Distributed Low-Communication Training of Language Models",
+      "url": "https://deepmind.google/research/publications/diloco-distributed-low-communication-training-of-language-models/",
+      "idea": "Periodic local training before synchronization can reduce global dependency cost; the 8x lanes test Local SGD sync intervals."
+    },
+    {
+      "sourceId": "deepmind-decoupled-diloco",
+      "title": "Decoupled DiLoCo",
+      "url": "https://deepmind.google/blog/decoupled-diloco/",
+      "idea": "Recent local-island training work motivates keeping 8x runs from synchronizing every micro-step when convergence remains stable."
+    },
+    {
+      "sourceId": "arxiv-2402.19427-griffin",
+      "title": "Griffin: Mixing Gated Linear Recurrences with Local Attention for Efficient Language Models",
+      "url": "https://arxiv.org/abs/2402.19427",
+      "idea": "Hybrid local attention and recurrence motivates depth recurrence plus changing sparse masks rather than pure dense synchronization every layer."
+    },
+    {
+      "sourceId": "arxiv-2007.14062-bigbird",
+      "title": "BigBird: Transformers for Longer Sequences",
+      "url": "https://arxiv.org/abs/2007.14062",
+      "idea": "Local, global, and sparse long-range attention patterns inform the rotating and head-specialized sparse-attention probes."
+    },
+    {
+      "sourceId": "arxiv-2507.03117-blast",
+      "title": "BLaST: High Performance Inference and Pretraining using BLock Sparse Transformers",
+      "url": "https://arxiv.org/abs/2507.03117",
+      "idea": "Block-sparse linear layers motivate hardware-friendly structured MLP sparsity rather than unstructured pruning."
+    }
+  ],
+  "experiments": [
+    {
+      "id": "frontier_mtp2_recur_qk525",
+      "lane": "h100-1x-frontier-mtp",
+      "status": "ready",
+      "priority": 1,
+      "expectedSignal": "Shared-head MTP should improve hidden-state shaping without adding artifact bytes; recurrence/QK stack matches the current strongest motifs.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote to 8x if val_bpb beats the active control stack or shows a faster early-loss curve."
+      },
+      "candidate": {
+        "id": "frontier_mtp2_recur_qk525",
+        "family": "frontier_autoregressive",
+        "hypothesis": "shared_head_mtp2_improves_recurrent_control_stack",
+        "hypothesisTags": [
+          "mtp",
+          "depth_recurrence",
+          "qk_gain",
+          "parallel_residual"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "DeepSeek-V3-inspired two-token auxiliary prediction on the strongest recurrent autoregressive control path.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.05",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_mtp4_recur_qk525",
+      "lane": "h100-1x-frontier-mtp",
+      "status": "ready",
+      "priority": 2,
+      "expectedSignal": "Tests whether a wider MTP horizon helps compression or whether extra auxiliary pressure hurts next-token loss.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote only if it beats MTP2 or has a clearly better loss slope without final bpb regression."
+      },
+      "candidate": {
+        "id": "frontier_mtp4_recur_qk525",
+        "family": "frontier_autoregressive",
+        "hypothesis": "shared_head_mtp4_longer_horizon_improves_hidden_representations",
+        "hypothesisTags": [
+          "mtp",
+          "depth_recurrence",
+          "auxiliary_loss"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Four-token shared-head MTP with lower auxiliary weight to test horizon sensitivity under the recurrent stack.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "4",
+          "MTP_LOSS_WEIGHT": "0.03",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_swiglu_mtp2_recur_qk525",
+      "lane": "h100-1x-frontier-mtp",
+      "status": "ready",
+      "priority": 3,
+      "expectedSignal": "Combines the MTP auxiliary signal with the existing clamped SwiGLU lane to test whether a smoother gate helps the deeper recurrent path.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote if it beats the ReLU2 MTP2 lane or has a cleaner loss curve and legal artifact size."
+      },
+      "candidate": {
+        "id": "frontier_swiglu_mtp2_recur_qk525",
+        "family": "frontier_autoregressive_mlp",
+        "hypothesis": "clamped_swiglu_plus_mtp2_improves_recurrent_training",
+        "hypothesisTags": [
+          "mtp",
+          "swiglu",
+          "activation_clamp",
+          "depth_recurrence"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Clamped SwiGLU plus MTP2 on the same recurrent/QK/parallel residual stack.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "ACTIVATION_MODE": "swiglu",
+          "SWIGLU_CLAMP_ENABLED": "1",
+          "SWIGLU_LINEAR_CLAMP_MIN": "-10",
+          "SWIGLU_LINEAR_CLAMP_MAX": "10",
+          "SWIGLU_GATE_CLAMP_MAX": "10",
+          "MLP_MULT": "2",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.04",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_blockdiag_9x640_mlp4_g4_recur_mtp2",
+      "lane": "h100-1x-frontier-structured-sparsity",
+      "status": "ready",
+      "priority": 4,
+      "expectedSignal": "Block-diagonal MLP should buy width and MLP expansion inside the 16MB artifact budget while retaining dense attention for stability.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote if bpb improves or if artifacts show width/throughput gains without budget pressure."
+      },
+      "candidate": {
+        "id": "frontier_blockdiag_9x640_mlp4_g4_recur_mtp2",
+        "family": "frontier_structured_sparse_mlp",
+        "hypothesis": "block_diagonal_mlp_expansion_improves_capacity_per_artifact_byte",
+        "hypothesisTags": [
+          "block_diagonal_mlp",
+          "structured_sparsity",
+          "mtp",
+          "depth_recurrence"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Nine 640d blocks with 4x grouped MLP expansion, recurrence, parallel residuals, and MTP2.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "NUM_LAYERS": "9",
+          "MODEL_DIM": "640",
+          "NUM_HEADS": "8",
+          "NUM_KV_HEADS": "4",
+          "MLP_MULT": "4",
+          "MLP_BLOCK_GROUPS": "4",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,3,4",
+          "DECODER_LAYER_ORDER": "4,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.04",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_blockdiag_8x672_mlp4_g4_recur",
+      "lane": "h100-1x-frontier-structured-sparsity",
+      "status": "ready",
+      "priority": 5,
+      "expectedSignal": "Wider 672d block-diagonal MLP tests whether sparse MLP width beats the smaller dense recurrent stack under the artifact cap.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote if final bpb or early-loss slope beats the 640d grouped MLP lane."
+      },
+      "candidate": {
+        "id": "frontier_blockdiag_8x672_mlp4_g4_recur",
+        "family": "frontier_structured_sparse_mlp",
+        "hypothesis": "wider_block_diagonal_mlp_improves_capacity_per_byte",
+        "hypothesisTags": [
+          "block_diagonal_mlp",
+          "structured_sparsity",
+          "wide",
+          "depth_recurrence"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Eight 672d blocks with 4x grouped MLP expansion and recurrent reuse.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "NUM_LAYERS": "8",
+          "MODEL_DIM": "672",
+          "NUM_HEADS": "8",
+          "NUM_KV_HEADS": "4",
+          "MLP_MULT": "4",
+          "MLP_BLOCK_GROUPS": "4",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,2,3",
+          "DECODER_LAYER_ORDER": "3,2,3,4,5,6,7",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_blockdiag_8x608_mlp6_g4_recur_mtp2",
+      "lane": "h100-1x-frontier-structured-sparsity",
+      "status": "ready",
+      "priority": 6,
+      "expectedSignal": "Tests whether deeper per-token MLP capacity is more valuable than attention width when block groups keep bytes controlled.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote if MLP6 improves bpb over MLP4 lanes without a major throughput hit."
+      },
+      "candidate": {
+        "id": "frontier_blockdiag_8x608_mlp6_g4_recur_mtp2",
+        "family": "frontier_structured_sparse_mlp",
+        "hypothesis": "high_expansion_block_diagonal_mlp_improves_next_token_compression",
+        "hypothesisTags": [
+          "block_diagonal_mlp",
+          "structured_sparsity",
+          "mlp_capacity",
+          "mtp"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Eight 608d blocks with 6x grouped MLP expansion, recurrence, and MTP2.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "NUM_LAYERS": "8",
+          "MODEL_DIM": "608",
+          "NUM_HEADS": "8",
+          "NUM_KV_HEADS": "4",
+          "MLP_MULT": "6",
+          "MLP_BLOCK_GROUPS": "4",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,2,3",
+          "DECODER_LAYER_ORDER": "3,2,3,4,5,6,7",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.04",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_rotating_block_sparse_recur_mtp2",
+      "lane": "h100-1x-frontier-sparse-attention",
+      "status": "ready",
+      "priority": 7,
+      "expectedSignal": "Changing block-local sparse masks across recurrent virtual depth should let information propagate without full attention every pass.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote only if bpb holds up and charts show no severe speed regression from math SDPA masking."
+      },
+      "candidate": {
+        "id": "frontier_rotating_block_sparse_recur_mtp2",
+        "family": "frontier_sparse_attention",
+        "hypothesis": "rotating_block_sparse_attention_plus_recurrence_propagates_long_range_context",
+        "hypothesisTags": [
+          "block_sparse_attention",
+          "rotating_mask",
+          "depth_recurrence",
+          "mtp"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Block-local/global attention with rotating dilated remote blocks over recurrent virtual layers.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "SPARSE_ATTN_MODE": "rotating_block_local_global",
+          "SPARSE_ATTN_WINDOW": "512",
+          "SPARSE_ATTN_GLOBAL_TOKENS": "8",
+          "SPARSE_ATTN_BLOCK_SIZE": "64",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.04",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_head_swarm_block_sparse_recur",
+      "lane": "h100-1x-frontier-sparse-attention",
+      "status": "ready",
+      "priority": 8,
+      "expectedSignal": "Different heads attending to different sparse remote blocks approximates a worker-swarm synchronization pattern.",
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned 10 minute train/test",
+        "promotionGate": "Promote only if sparse head specialization beats rotating sparse attention or gives a clear artifact/throughput edge."
+      },
+      "candidate": {
+        "id": "frontier_head_swarm_block_sparse_recur",
+        "family": "frontier_sparse_attention",
+        "hypothesis": "head_specialized_block_sparse_attention_improves_parallel_context_mixing",
+        "hypothesisTags": [
+          "block_sparse_attention",
+          "head_specialization",
+          "depth_recurrence",
+          "swarm_attention"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Head-specialized block sparse attention with per-head remote strides and recurrent depth.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "SPARSE_ATTN_MODE": "head_swarm_block",
+          "SPARSE_ATTN_WINDOW": "512",
+          "SPARSE_ATTN_GLOBAL_TOKENS": "8",
+          "SPARSE_ATTN_BLOCK_SIZE": "64",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_blockdiag_7x672_mlp6_g4_recur_mtp2",
+      "lane": "h100-1x-frontier-structured-sparsity",
+      "status": "queued",
+      "priority": 9,
+      "expectedSignal": "Backup wider grouped-MLP run if the first eight finish early or a sparse-attention lane is too slow.",
+      "gpuPlan": {
+        "firstPass": "1xH100 optional overflow run",
+        "promotionGate": "Promote only if top-eight grouped MLP lanes underperform."
+      },
+      "candidate": {
+        "id": "frontier_blockdiag_7x672_mlp6_g4_recur_mtp2",
+        "family": "frontier_structured_sparse_mlp",
+        "hypothesis": "seven_layer_wide_high_expansion_grouped_mlp_can_trade_depth_for_width",
+        "hypothesisTags": [
+          "block_diagonal_mlp",
+          "structured_sparsity",
+          "wide",
+          "mtp"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Seven 672d blocks with 6x grouped MLP expansion and MTP2.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "NUM_LAYERS": "7",
+          "MODEL_DIM": "672",
+          "NUM_HEADS": "8",
+          "NUM_KV_HEADS": "4",
+          "MLP_MULT": "6",
+          "MLP_BLOCK_GROUPS": "4",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,2,3",
+          "DECODER_LAYER_ORDER": "3,2,3,4,5,6",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.04",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_routed_moe_top1_448_g2",
+      "lane": "h100-1x-frontier-moe",
+      "status": "queued",
+      "priority": 10,
+      "expectedSignal": "Optional DeepSeek-style conditional-capacity probe; queued behind safer paths because routed token subsets are slower without a fused expert kernel.",
+      "gpuPlan": {
+        "firstPass": "1xH100 optional overflow run",
+        "promotionGate": "Promote only if it completes cleanly and beats the dense/structured-sparse lanes."
+      },
+      "candidate": {
+        "id": "frontier_routed_moe_top1_448_g2",
+        "family": "frontier_mixture_of_experts",
+        "hypothesis": "top1_routed_moe_conditional_capacity_improves_artifact_efficiency",
+        "hypothesisTags": [
+          "moe",
+          "top1_routing",
+          "conditional_capacity",
+          "structured_sparsity"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "Top-1 routed MoE with grouped MLP experts and compile disabled for the data-dependent expert loop.",
+        "implementation": "routed_moe_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "routed_moe_gpt",
+          "TORCH_COMPILE": "0",
+          "NUM_LAYERS": "5",
+          "MODEL_DIM": "448",
+          "NUM_HEADS": "7",
+          "NUM_KV_HEADS": "1",
+          "MLP_MULT": "2",
+          "MLP_BLOCK_GROUPS": "2",
+          "MOE_NUM_EXPERTS": "4",
+          "MOE_TOP_K": "1",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_8x_local_sgd_sync2_mtp2_recur",
+      "lane": "h100-8x-frontier-local-sgd",
+      "status": "ready",
+      "priority": 20,
+      "expectedSignal": "On 8xH100, sync every two optimizer steps should reduce synchronization pressure while preserving enough coupling for a short record run.",
+      "gpuPlan": {
+        "firstPass": "8xH100 record-candidate rerun after a 1x MTP win",
+        "promotionGate": "Use for submission packaging if it beats the 1x frontier winner and remains stable across requested seeds."
+      },
+      "candidate": {
+        "id": "frontier_8x_local_sgd_sync2_mtp2_recur",
+        "family": "frontier_distributed_autoregressive",
+        "hypothesis": "local_sgd_sync2_preserves_mtp_recurrence_quality_with_lower_sync_pressure",
+        "hypothesisTags": [
+          "local_sgd",
+          "mtp",
+          "depth_recurrence",
+          "distributed"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "8xH100 Local SGD sync-2 version of the MTP2 recurrent control path.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "LOCAL_SGD_SYNC_STEPS": "2",
+          "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": "0",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.05",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_8x_local_sgd_sync4_mtp2_recur",
+      "lane": "h100-8x-frontier-local-sgd",
+      "status": "ready",
+      "priority": 21,
+      "expectedSignal": "Sync-4 is the more aggressive Local SGD variant; it may improve throughput but risks drift in a 10 minute run.",
+      "gpuPlan": {
+        "firstPass": "8xH100 record-candidate rerun after sync-2 is stable",
+        "promotionGate": "Use only if charts show stable loss and better wall-clock progress than sync-2."
+      },
+      "candidate": {
+        "id": "frontier_8x_local_sgd_sync4_mtp2_recur",
+        "family": "frontier_distributed_autoregressive",
+        "hypothesis": "local_sgd_sync4_improves_distributed_throughput_if_short_run_drift_is_controlled",
+        "hypothesisTags": [
+          "local_sgd",
+          "mtp",
+          "depth_recurrence",
+          "distributed"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "8xH100 Local SGD sync-4 version of the MTP2 recurrent control path.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "LOCAL_SGD_SYNC_STEPS": "4",
+          "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": "0",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.05",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_8x_blockdiag_9x640_mlp4_g4_local_sgd",
+      "lane": "h100-8x-frontier-structured-sparsity",
+      "status": "ready",
+      "priority": 22,
+      "expectedSignal": "If grouped-MLP width wins on 1x, rerun the same architecture with Local SGD sync-2 on 8x for submission-quality timing.",
+      "gpuPlan": {
+        "firstPass": "8xH100 record-candidate rerun after grouped-MLP 1x win",
+        "promotionGate": "Use for submission packaging if it beats dense MTP and has legal artifact size."
+      },
+      "candidate": {
+        "id": "frontier_8x_blockdiag_9x640_mlp4_g4_local_sgd",
+        "family": "frontier_distributed_structured_sparse_mlp",
+        "hypothesis": "block_diagonal_mlp_width_combines_with_local_sgd_for_record_attempt",
+        "hypothesisTags": [
+          "block_diagonal_mlp",
+          "structured_sparsity",
+          "local_sgd",
+          "mtp"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "8xH100 Local SGD sync-2 version of the 9x640 grouped-MLP MTP2 lane.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "LOCAL_SGD_SYNC_STEPS": "2",
+          "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": "0",
+          "NUM_LAYERS": "9",
+          "MODEL_DIM": "640",
+          "NUM_HEADS": "8",
+          "NUM_KV_HEADS": "4",
+          "MLP_MULT": "4",
+          "MLP_BLOCK_GROUPS": "4",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,3,4",
+          "DECODER_LAYER_ORDER": "4,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.04",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "frontier_8x_rotating_block_sparse_local_sgd",
+      "lane": "h100-8x-frontier-sparse-attention",
+      "status": "queued",
+      "priority": 23,
+      "expectedSignal": "Optional 8x rerun for the rotating sparse-attention path if the 1x masked-attention speed penalty is acceptable.",
+      "gpuPlan": {
+        "firstPass": "8xH100 optional record-candidate rerun",
+        "promotionGate": "Use only after the 1x sparse-attention lane beats dense or gives a credible speed/quality tradeoff."
+      },
+      "candidate": {
+        "id": "frontier_8x_rotating_block_sparse_local_sgd",
+        "family": "frontier_distributed_sparse_attention",
+        "hypothesis": "rotating_block_sparse_attention_can_combine_with_local_sgd_for_longer_virtual_context",
+        "hypothesisTags": [
+          "block_sparse_attention",
+          "rotating_mask",
+          "local_sgd",
+          "depth_recurrence"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "8xH100 Local SGD sync-2 version of rotating block sparse attention.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "LOCAL_SGD_SYNC_STEPS": "2",
+          "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": "0",
+          "SPARSE_ATTN_MODE": "rotating_block_local_global",
+          "SPARSE_ATTN_WINDOW": "512",
+          "SPARSE_ATTN_GLOBAL_TOKENS": "8",
+          "SPARSE_ATTN_BLOCK_SIZE": "64",
+          "ENCODER_LAYER_ORDER": "0,1,2,3,4,5,3,4",
+          "DECODER_LAYER_ORDER": "5,3,4,5,6,7,8",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "MTP_NUM_TOKENS": "2",
+          "MTP_LOSS_WEIGHT": "0.04",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    }
+  ]
+}

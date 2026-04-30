@@ -30,6 +30,35 @@ sys.modules.setdefault("train_gpt", sys.modules[__name__])
 from candidates.registry import build_model, candidate_name_from_env
 from fastest.scripts.artifact_budget_analyzer import estimate_artifact_budget
 
+
+def submission_code_files(main_file: Path) -> list[Path]:
+    raw_paths = os.environ.get("SUBMISSION_CODE_PATHS", "").strip()
+    if not raw_paths:
+        return [main_file]
+
+    script_dir = main_file.parent
+    files: set[Path] = {main_file.resolve()}
+    for raw in raw_paths.split(","):
+        raw = raw.strip()
+        if not raw:
+            continue
+        path = Path(raw)
+        if not path.is_absolute():
+            path = script_dir / path
+        if path.is_dir():
+            files.update(
+                item.resolve()
+                for item in path.rglob("*.py")
+                if "__pycache__" not in item.parts
+            )
+        elif path.is_file():
+            files.add(path.resolve())
+    return sorted(files)
+
+
+def submission_code_size_bytes(main_file: Path) -> int:
+    return sum(path.stat().st_size for path in submission_code_files(main_file))
+
 # -----------------------------
 # HYPERPARAMETERS
 # -----------------------------
@@ -72,9 +101,13 @@ class Hyperparameters:
     swiglu_linear_clamp_min = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MIN", -10.0))
     swiglu_linear_clamp_max = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MAX", 10.0))
     swiglu_gate_clamp_max = float(os.environ.get("SWIGLU_GATE_CLAMP_MAX", 10.0))
+    mlp_block_groups = int(os.environ.get("MLP_BLOCK_GROUPS", "1"))
+    mtp_num_tokens = int(os.environ.get("MTP_NUM_TOKENS", "1"))
+    mtp_loss_weight = float(os.environ.get("MTP_LOSS_WEIGHT", "0.0"))
     moe_num_experts = int(os.environ.get("MOE_NUM_EXPERTS", "1"))
     moe_top_k = int(os.environ.get("MOE_TOP_K", "1"))
     candidate_impl = os.environ.get("CANDIDATE_IMPL", "autoregressive_gpt").strip() or "autoregressive_gpt"
+    torch_compile = bool(int(os.environ.get("TORCH_COMPILE", "1")))
 
     # Model shape.
     vocab_size = int(os.environ.get("VOCAB_SIZE", 1024))
@@ -580,7 +613,7 @@ def average_optimizer_tensor_states(optimizers: list[torch.optim.Optimizer]) -> 
 # CANDIDATE MODEL INTERFACE
 # -----------------------------
 
-from candidates.autoregressive.architecture import CastedLinear, restore_low_dim_params_to_fp32
+from candidates.autoregressive.architecture import BlockDiagonalLinear, CastedLinear, restore_low_dim_params_to_fp32
 
 
 
@@ -591,9 +624,11 @@ from candidates.autoregressive.architecture import CastedLinear, restore_low_dim
 def main() -> None:
     global zeropower_via_newtonschulz5
 
-    code = Path(__file__).read_text(encoding="utf-8")
+    code_path = Path(__file__)
+    code = code_path.read_text(encoding="utf-8")
+    code_bytes = submission_code_size_bytes(code_path)
     args = Hyperparameters()
-    compile_enabled = torch.cuda.is_available()
+    compile_enabled = torch.cuda.is_available() and args.torch_compile
     if compile_enabled:
         zeropower_via_newtonschulz5 = torch.compile(zeropower_via_newtonschulz5)
 
@@ -636,10 +671,11 @@ def main() -> None:
         torch.backends.cudnn.allow_tf32 = True
         from torch.backends.cuda import enable_cudnn_sdp, enable_flash_sdp, enable_math_sdp, enable_mem_efficient_sdp
 
+        masked_sparse_attention = args.sparse_attn_mode != "dense"
         enable_cudnn_sdp(False)
         enable_flash_sdp(True)
         enable_mem_efficient_sdp(False)
-        enable_math_sdp(False)
+        enable_math_sdp(masked_sparse_attention)
 
     logfile = None
     if master_process:
@@ -707,7 +743,7 @@ def main() -> None:
     if use_cuda:
         base_model = base_model.bfloat16()
     for module in base_model.modules():
-        if isinstance(module, CastedLinear):
+        if isinstance(module, (CastedLinear, BlockDiagonalLinear)):
             module.float()
     restore_low_dim_params_to_fp32(base_model, CONTROL_TENSOR_NAME_PATTERNS)
     compiled_model = torch.compile(base_model, dynamic=False, fullgraph=True) if compile_enabled else base_model
@@ -765,12 +801,13 @@ def main() -> None:
 
     n_params = sum(p.numel() for p in base_model.parameters())
     log0(f"model_params:{n_params}")
+    log0(f"torch_compile:enabled:{int(compile_enabled)}")
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
     log0(
         f"local_sgd:enabled:{int(local_sgd_enabled)} sync_steps:{local_sgd_sync_steps} "
         f"average_optimizer_states:{int(args.local_sgd_average_optimizer_states)}"
     )
-    log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
+    log0(f"sdp_backends:cudnn=False flash=True mem_efficient=False math={int(args.sparse_attn_mode != 'dense')}")
     log0(
         f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads} "
         f"attn_norm_mode:{args.attn_norm_mode} attn_norm_eps:{args.attn_norm_eps}"
@@ -778,6 +815,10 @@ def main() -> None:
     log0(
         f"sparse_attention:mode:{args.sparse_attn_mode} window:{args.sparse_attn_window} "
         f"global_tokens:{args.sparse_attn_global_tokens} block_size:{args.sparse_attn_block_size}"
+    )
+    log0(
+        f"structured_sparsity:mlp_block_groups:{args.mlp_block_groups} "
+        f"mtp_num_tokens:{args.mtp_num_tokens} mtp_loss_weight:{args.mtp_loss_weight}"
     )
     log0(f"candidate_impl:{candidate_name_from_env()}")
     log0(
@@ -1030,7 +1071,6 @@ def main() -> None:
     if master_process:
         torch.save(base_model.state_dict(), "final_model.pt")
         model_bytes = os.path.getsize("final_model.pt")
-        code_bytes = len(code.encode("utf-8"))
         log0(f"Serialized model: {model_bytes} bytes")
         log0(f"Code size: {code_bytes} bytes")
         log0(f"Total submission size: {model_bytes + code_bytes} bytes")
@@ -1045,7 +1085,6 @@ def main() -> None:
         with open("final_model.int8.ptz", "wb") as f:
             f.write(quant_blob)
         quant_file_bytes = os.path.getsize("final_model.int8.ptz")
-        code_bytes = len(code.encode("utf-8"))
         ratio = quant_stats["baseline_tensor_bytes"] / max(quant_stats["int8_payload_bytes"], 1)
         log0(
             f"Serialized model int8+zlib: {quant_file_bytes} bytes "

@@ -8,14 +8,14 @@ fi
 
 cd "$PARAMETER_GOLF_DIR"
 
-PG_QUEUE="${PG_QUEUE:-planning/gpu_experiment_queue.json}"
+PG_QUEUE="${PG_QUEUE:-planning/frontier_gpu_experiment_queue.json}"
 PG_GPUS="${PG_GPUS:-1}"
-PG_STATUS="${PG_STATUS:-ready,queued}"
+PG_STATUS="${PG_STATUS:-ready}"
 PG_ONLY="${PG_ONLY:-}"
 PG_LANES="${PG_LANES:-${PG_LANE:-}}"
 PG_SEEDS="${PG_SEEDS:-}"
-PG_OUTPUT_ROOT="${PG_OUTPUT_ROOT:-records/h100_candidate_batch}"
-PG_EXPORT_ROOT="${PG_EXPORT_ROOT:-records/gpu_experiment_queue_exports}"
+PG_OUTPUT_ROOT="${PG_OUTPUT_ROOT:-records/frontier_h100_candidate_batch}"
+PG_EXPORT_ROOT="${PG_EXPORT_ROOT:-records/frontier_gpu_experiment_queue_exports}"
 PG_TIMEOUT_SECONDS="${PG_TIMEOUT_SECONDS:-900}"
 PG_BATCH_TUNE_TARGET_MEMORY_FRACTION="${PG_BATCH_TUNE_TARGET_MEMORY_FRACTION:-0.90}"
 PG_BATCH_TUNE_MAX_TOKENS="${PG_BATCH_TUNE_MAX_TOKENS:-2097152}"
@@ -31,7 +31,7 @@ PG_KEEP_RAW_CHECKPOINTS="${PG_KEEP_RAW_CHECKPOINTS:-0}"
 PG_DRY_RUN="${PG_DRY_RUN:-0}"
 PG_PRINT_INVENTORY="${PG_PRINT_INVENTORY:-0}"
 PG_ALLOW_FEWER_GPUS="${PG_ALLOW_FEWER_GPUS:-0}"
-PG_LOG_ROOT="${PG_LOG_ROOT:-records/deadline_logs}"
+PG_LOG_ROOT="${PG_LOG_ROOT:-records/frontier_deadline_logs}"
 PG_PACKAGE_SUBMISSION="${PG_PACKAGE_SUBMISSION:-0}"
 PG_SUBMISSION_AUTHOR="${PG_SUBMISSION_AUTHOR:-}"
 PG_SUBMISSION_GITHUB_ID="${PG_SUBMISSION_GITHUB_ID:-}"
@@ -63,9 +63,9 @@ fi
 
 if [ -z "${PG_MAX_EXPERIMENTS+x}" ]; then
   if [ "$PG_GPUS" -eq 1 ]; then
-    PG_MAX_EXPERIMENTS=12
+    PG_MAX_EXPERIMENTS=8
   else
-    PG_MAX_EXPERIMENTS=6
+    PG_MAX_EXPERIMENTS=3
   fi
 fi
 
@@ -127,6 +127,7 @@ while IFS= read -r status; do
   queue_args+=(--status "$status")
 done < <(split_csv "$PG_STATUS")
 
+inferred_lanes=()
 if [ -n "$PG_ONLY" ]; then
   while IFS= read -r candidate_id; do
     queue_args+=(--only "$candidate_id")
@@ -144,7 +145,7 @@ from pathlib import Path
 queue_path = Path(sys.argv[1])
 gpus = sys.argv[2]
 payload = json.loads(queue_path.read_text(encoding="utf-8"))
-prefix = f"h100-{gpus}x-"
+prefix = f"h100-{gpus}x-frontier-"
 lanes = sorted(
     {
         str(experiment.get("lane") or "")
@@ -205,9 +206,9 @@ fi
 
 mkdir -p "$PG_LOG_ROOT" "$PG_OUTPUT_ROOT"
 timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
-run_log="$PG_LOG_ROOT/deadline_batch_${timestamp}_${PG_GPUS}x.log"
+run_log="$PG_LOG_ROOT/frontier_batch_${timestamp}_${PG_GPUS}x.log"
 
-echo "Parameter Golf deadline batch"
+echo "Parameter Golf frontier batch"
 echo "repo:     $PARAMETER_GOLF_DIR"
 echo "queue:    $PG_QUEUE"
 echo "gpus:     $PG_GPUS"
@@ -237,7 +238,10 @@ if [ -n "$latest_output" ]; then
   [ -f "$latest_output/leaderboard.csv" ] && echo "Leaderboard: $latest_output/leaderboard.csv"
   [ -f "$latest_output/summary.md" ] && echo "Summary:     $latest_output/summary.md"
   [ -f "$latest_output/model_factory_evidence.json" ] && echo "Evidence:    $latest_output/model_factory_evidence.json"
-  [ -d "$latest_output/runs" ] && echo "Run logs:    $latest_output/runs"
+  [ -f "$latest_output/charts/README.md" ] && echo "Charts:      $latest_output/charts/README.md"
+  [ -f "$latest_output/charts/final_val_bpb.svg" ] && echo "Bpb chart:   $latest_output/charts/final_val_bpb.svg"
+  [ -f "$latest_output/charts/speed_vs_bpb.svg" ] && echo "Speed chart: $latest_output/charts/speed_vs_bpb.svg"
+  [ -d "$latest_output/runs" ] && echo "Run curves:  $latest_output/runs/*/training_curve.svg"
 
   if bool_true "$PG_PACKAGE_SUBMISSION"; then
     package_args=(

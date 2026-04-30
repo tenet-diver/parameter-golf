@@ -163,6 +163,10 @@ def git_commit() -> str | None:
     return result.stdout.strip() if result.returncode == 0 else None
 
 
+def utc_submission_timestamp() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
 def title_from_row(row: dict[str, Any]) -> str:
     description = str(row.get("description") or "").strip()
     if description:
@@ -173,6 +177,16 @@ def title_from_row(row: dict[str, Any]) -> str:
     return str(row.get("id") or "Parameter Golf submission")
 
 
+def row_model_bytes(row: dict[str, Any]) -> int | None:
+    for key in ("quantizedArtifactBytes", "modelBytes", "bytes_model_int8_zlib"):
+        value = row.get(key)
+        if isinstance(value, int) and not isinstance(value, bool):
+            return value
+        if isinstance(value, float) and value.is_integer():
+            return int(value)
+    return None
+
+
 def build_submission_payload(
     rows: list[dict[str, Any]],
     *,
@@ -181,9 +195,16 @@ def build_submission_payload(
     name: str,
     track: str,
     date: str,
+    code_bytes: int,
 ) -> dict[str, Any]:
     bpbs = [float(row["finalValBpb"]) for row in rows]
     losses = [float(row["finalValLoss"]) for row in rows if numeric(row.get("finalValLoss")) is not None]
+    effective_artifact_bytes = [
+        (row_model_bytes(row) + code_bytes)
+        if row_model_bytes(row) is not None
+        else row_artifact_bytes(row)
+        for row in rows
+    ]
     seed_results: dict[str, dict[str, Any]] = {}
     for index, row in enumerate(rows, start=1):
         seed = seed_label(row)
@@ -191,15 +212,19 @@ def build_submission_payload(
         seed_results[key] = {
             "val_bpb": row.get("finalValBpb"),
             "val_loss": row.get("finalValLoss"),
-            "artifact_bytes": row_artifact_bytes(row),
+            "artifact_bytes": effective_artifact_bytes[index - 1],
+            "model_bytes": row_model_bytes(row),
+            "code_bytes": code_bytes,
             "train_time_s": row_train_seconds(row),
             "run_dir": row.get("runDir"),
         }
 
+    blurb = title_from_row(rows[0])
     payload: dict[str, Any] = {
         "author": author,
         "github_id": github_id,
         "name": name,
+        "blurb": blurb,
         "date": date,
         "track": track,
         "candidate_id": rows[0].get("id"),
@@ -208,9 +233,10 @@ def build_submission_payload(
         "seed_results": seed_results,
         "hardware": hardware_label(rows[0]),
         "technique_summary": title_from_row(rows[0]),
+        "bytes_code": code_bytes,
         "compliance": {
             "train_under_600s": all((row_train_seconds(row) or float("inf")) <= 600 for row in rows),
-            "artifact_under_16mb": all((row_artifact_bytes(row) or 16_000_001) <= 16_000_000 for row in rows),
+            "artifact_under_16mb": all((value or 16_000_001) <= 16_000_000 for value in effective_artifact_bytes),
             "three_seeds": len(rows) >= 3,
             "generated_from_h100_batch": True,
         },
@@ -225,7 +251,10 @@ def build_submission_payload(
         payload["val_loss"] = statistics.mean(losses)
     if len(bpbs) > 1:
         payload["val_bpb_std"] = statistics.stdev(bpbs)
-    max_bytes = max((row_artifact_bytes(row) or 0) for row in rows)
+    max_model_bytes = max((row_model_bytes(row) or 0) for row in rows)
+    if max_model_bytes:
+        payload["bytes_model_int8_zlib"] = max_model_bytes
+    max_bytes = max((value or 0) for value in effective_artifact_bytes)
     if max_bytes:
         payload["bytes_total"] = max_bytes
     max_train = max((row_train_seconds(row) or 0.0) for row in rows)
@@ -235,7 +264,7 @@ def build_submission_payload(
 
 
 def shell_quote_env(env: dict[str, Any]) -> list[str]:
-    excluded = {"RUN_ID", "DATA_PATH", "TOKENIZER_PATH"}
+    excluded = {"RUN_ID", "DATA_PATH", "TOKENIZER_PATH", "SUBMISSION_CODE_PATHS"}
     lines = []
     for key in sorted(env):
         if key in excluded:
@@ -246,7 +275,7 @@ def shell_quote_env(env: dict[str, Any]) -> list[str]:
 
 
 def write_run_script(path: Path, row: dict[str, Any], nproc_per_node: int) -> None:
-    env = row.get("env") if isinstance(row.get("env"), dict) else {}
+    env = dict(row.get("env") if isinstance(row.get("env"), dict) else {})
     lines = [
         "#!/usr/bin/env bash",
         "set -euo pipefail",
@@ -262,6 +291,19 @@ def write_run_script(path: Path, row: dict[str, Any], nproc_per_node: int) -> No
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
     path.chmod(path.stat().st_mode | 0o111)
+
+
+def reproduction_command(row: dict[str, Any], nproc_per_node: int) -> list[str]:
+    env = row.get("env") if isinstance(row.get("env"), dict) else {}
+    exports = shell_quote_env(env)
+    return [
+        *exports,
+        f'export NPROC_PER_NODE="${{NPROC_PER_NODE:-{nproc_per_node}}}"',
+        'export DATA_PATH="${DATA_PATH:-../../data/datasets/fineweb10B_sp1024}"',
+        'export TOKENIZER_PATH="${TOKENIZER_PATH:-../../data/tokenizers/fineweb_1024_bpe.model}"',
+        'export RUN_ID="${RUN_ID:-submission_rerun}"',
+        'torchrun --standalone --nproc_per_node="$NPROC_PER_NODE" train_gpt.py',
+    ]
 
 
 def write_readme(path: Path, rows: list[dict[str, Any]], payload: dict[str, Any]) -> None:
@@ -303,21 +345,22 @@ def write_readme(path: Path, rows: list[dict[str, Any]], payload: dict[str, Any]
             "",
             str(payload.get("technique_summary") or row.get("description") or row.get("hypothesis") or row.get("id")),
             "",
-            "Candidate environment is captured in `candidate_env.json`; the source batch row is copied into `run_result*.json`.",
+            "Candidate environment is captured in `candidate_env.json`; source batch rows are copied into `run_result*.json`.",
             "",
             "## Reproduction",
             "",
             "From this record folder:",
             "",
             "```bash",
-            "./run_submission.sh > train_rerun.log 2>&1",
+            *reproduction_command(row, int(row.get("nprocPerNode") or 8)),
             "```",
             "",
             "For a 3-seed verification run:",
             "",
             "```bash",
             "for SEED in 42 314 1234; do",
-            "  SEED=$SEED RUN_ID=submission_seed${SEED} ./run_submission.sh > train_seed${SEED}_rerun.log 2>&1",
+            "  SEED=$SEED RUN_ID=submission_seed${SEED} \\",
+            "    torchrun --standalone --nproc_per_node=8 train_gpt.py > train_seed${SEED}_rerun.log 2>&1",
             "done",
             "```",
             "",
@@ -332,11 +375,10 @@ def write_readme(path: Path, rows: list[dict[str, Any]], payload: dict[str, Any]
             "- `README.md`",
             "- `submission.json`",
             "- `train_gpt.py`",
-            "- `run_submission.sh`",
+            "- `train.log`",
             "- `candidate_env.json`",
             "- `train*.log`",
             "- `run_result*.json`",
-            "- `candidates/` and `fastest/scripts/artifact_budget_analyzer.py` local dependencies",
             "",
         ]
     )
@@ -348,23 +390,76 @@ def format_number(value: Any, digits: int) -> str:
     return "" if number is None else f"{number:.{digits}f}"
 
 
-def copy_sources(output_dir: Path) -> None:
-    shutil.copy2(REPO_ROOT / "train_gpt.py", output_dir / "train_gpt.py")
-    if (REPO_ROOT / "requirements.txt").exists():
-        shutil.copy2(REPO_ROOT / "requirements.txt", output_dir / "requirements.txt")
-    shutil.copytree(
-        REPO_ROOT / "candidates",
-        output_dir / "candidates",
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+def _module_source(relative_path: str) -> str:
+    source = (REPO_ROOT / relative_path).read_text(encoding="utf-8")
+    lines = [
+        line
+        for line in source.splitlines()
+        if line.strip() != "from __future__ import annotations"
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def bundled_module_prelude() -> str:
+    modules = [
+        ("fastest.scripts.artifact_budget_analyzer", "fastest/scripts/artifact_budget_analyzer.py"),
+        ("candidates.registry", "candidates/registry.py"),
+        ("candidates.autoregressive.architecture", "candidates/autoregressive/architecture.py"),
+        ("candidates.autoregressive.model", "candidates/autoregressive/model.py"),
+        ("candidates.moe.model", "candidates/moe/model.py"),
+        ("candidates.autoregressive.candidates", "candidates/autoregressive/candidates.py"),
+        ("candidates.moe.candidates", "candidates/moe/candidates.py"),
+    ]
+    lines = [
+        "# --- Bundled local modules for Parameter Golf submission compliance ---",
+        "import sys as _pg_sys",
+        "import types as _pg_types",
+        "",
+        "def _pg_install_package(name):",
+        "    module = _pg_sys.modules.get(name)",
+        "    if module is None:",
+        "        module = _pg_types.ModuleType(name)",
+        "        module.__path__ = []",
+        "        module.__package__ = name",
+        "        _pg_sys.modules[name] = module",
+        "    return module",
+        "",
+        "def _pg_install_module(name, source):",
+        "    package_name, _, short_name = name.rpartition('.')",
+        "    if package_name:",
+        "        parts = package_name.split('.')",
+        "        for index in range(1, len(parts) + 1):",
+        "            _pg_install_package('.'.join(parts[:index]))",
+        "    module = _pg_types.ModuleType(name)",
+        "    module.__file__ = '<bundled ' + name + '>'",
+        "    module.__package__ = package_name",
+        "    _pg_sys.modules[name] = module",
+        "    if package_name:",
+        "        setattr(_pg_sys.modules[package_name], short_name, module)",
+        "    exec(compile(source, module.__file__, 'exec'), module.__dict__)",
+        "",
+    ]
+    for name, relative_path in modules:
+        lines.append(f"_pg_install_module({name!r}, {_module_source(relative_path)!r})")
+    lines.extend(
+        [
+            "del _pg_install_module, _pg_install_package, _pg_sys, _pg_types",
+            "# --- End bundled local modules ---",
+            "",
+        ]
     )
-    helper_dir = output_dir / "fastest" / "scripts"
-    helper_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "fastest" / "__init__.py").write_text("", encoding="utf-8")
-    (helper_dir / "__init__.py").write_text("", encoding="utf-8")
-    shutil.copy2(
-        REPO_ROOT / "fastest" / "scripts" / "artifact_budget_analyzer.py",
-        helper_dir / "artifact_budget_analyzer.py",
+    return "\n".join(lines)
+
+
+def write_self_contained_train_script(path: Path) -> None:
+    train_source = _module_source("train_gpt.py")
+    content = (
+        '"""Self-contained Parameter Golf training script generated from the experiment branch."""\n'
+        "from __future__ import annotations\n\n"
+        f"{bundled_module_prelude()}"
+        f"{train_source}"
     )
+    path.write_text(content, encoding="utf-8")
 
 
 def copy_run_artifacts(output_dir: Path, rows: list[dict[str, Any]]) -> None:
@@ -373,6 +468,8 @@ def copy_run_artifacts(output_dir: Path, rows: list[dict[str, Any]]) -> None:
         suffix = f"seed{seed}" if len(rows) == 1 else f"seed{seed}_run{index}"
         run_dir = Path(str(row.get("runDir") or ""))
         if (run_dir / "stdout.txt").exists():
+            if index == 1:
+                shutil.copy2(run_dir / "stdout.txt", output_dir / "train.log")
             shutil.copy2(run_dir / "stdout.txt", output_dir / f"train_{suffix}.log")
         if (run_dir / "stderr.txt").exists():
             shutil.copy2(run_dir / "stderr.txt", output_dir / f"stderr_{suffix}.txt")
@@ -392,19 +489,11 @@ def package_submission(args: argparse.Namespace) -> Path:
     batch_dirs = normalize_batch_dirs(args.batch_dir)
     rows = select_rows(load_rows(batch_dirs), args.candidate_id)
     name = args.name or title_from_row(rows[0])
-    date = args.date or datetime.now(timezone.utc).date().isoformat()
+    date = args.date or utc_submission_timestamp()
     author = args.author or "TODO"
     github_id = args.github_id or "TODO"
-    payload = build_submission_payload(
-        rows,
-        author=author,
-        github_id=github_id,
-        name=name,
-        track=args.track,
-        date=date,
-    )
-    score = f"{payload['val_bpb']:.5f}".replace(".", "p")
-    slug = args.slug or f"{date}_{safe_slug(str(rows[0].get('id') or name))}_{score}"
+    preliminary_score = f"{float(rows[0]['finalValBpb']):.5f}".replace(".", "p")
+    slug = args.slug or f"{date[:10]}_{safe_slug(str(rows[0].get('id') or name))}_{preliminary_score}"
     output_dir = args.output_dir or (args.records_root / slug)
     if output_dir.exists():
         if not args.force:
@@ -412,10 +501,19 @@ def package_submission(args: argparse.Namespace) -> Path:
         shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True)
 
-    copy_sources(output_dir)
+    write_self_contained_train_script(output_dir / "train_gpt.py")
+    code_bytes = (output_dir / "train_gpt.py").stat().st_size
+    payload = build_submission_payload(
+        rows,
+        author=author,
+        github_id=github_id,
+        name=name,
+        track=args.track,
+        date=date,
+        code_bytes=code_bytes,
+    )
     copy_run_artifacts(output_dir, rows)
     nproc = int(args.nproc_per_node or rows[0].get("nprocPerNode") or 8)
-    write_run_script(output_dir / "run_submission.sh", rows[0], nproc)
     (output_dir / "submission.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     write_readme(output_dir / "README.md", rows, payload)
     return output_dir

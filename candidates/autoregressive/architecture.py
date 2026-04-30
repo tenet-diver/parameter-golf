@@ -20,6 +20,35 @@ class CastedLinear(nn.Linear):
         return F.linear(x, self.weight.to(x.dtype), bias)
 
 
+class BlockDiagonalLinear(nn.Module):
+    # Structured block sparsity: each feature group is transformed independently.
+    # The flattened 2D parameter keeps Muon handling identical to dense matrices.
+    def __init__(self, in_features: int, out_features: int, groups: int, bias: bool = False):
+        super().__init__()
+        if groups < 1:
+            raise ValueError("groups must be positive")
+        if in_features % groups != 0 or out_features % groups != 0:
+            raise ValueError(
+                f"in_features={in_features} and out_features={out_features} must be divisible by groups={groups}"
+            )
+        if bias:
+            raise ValueError("BlockDiagonalLinear currently supports bias=False only")
+        self.in_features = in_features
+        self.out_features = out_features
+        self.groups = groups
+        self.in_per_group = in_features // groups
+        self.out_per_group = out_features // groups
+        self.weight = nn.Parameter(torch.empty(out_features, self.in_per_group))
+        nn.init.kaiming_uniform_(self.weight, a=5**0.5)
+
+    def forward(self, x: Tensor) -> Tensor:
+        original_shape = x.shape[:-1]
+        grouped_x = x.reshape(*original_shape, self.groups, self.in_per_group)
+        grouped_w = self.weight.to(dtype=x.dtype).reshape(self.groups, self.out_per_group, self.in_per_group)
+        y = torch.einsum("...gi,goi->...go", grouped_x, grouped_w)
+        return y.reshape(*original_shape, self.out_features)
+
+
 def restore_low_dim_params_to_fp32(module: nn.Module, control_patterns: tuple[str, ...]) -> None:
     # Keep small/control parameters in fp32 even when the model body runs in bf16.
     with torch.no_grad():
@@ -98,7 +127,13 @@ class CausalSelfAttention(nn.Module):
             raise ValueError(f"Unsupported ATTN_NORM_MODE={attn_norm_mode!r}")
         if attn_norm_eps <= 0.0:
             raise ValueError(f"ATTN_NORM_EPS must be > 0, got {attn_norm_eps}")
-        if sparse_attn_mode not in {"dense", "local_global", "block_local_global"}:
+        if sparse_attn_mode not in {
+            "dense",
+            "local_global",
+            "block_local_global",
+            "rotating_block_local_global",
+            "head_swarm_block",
+        }:
             raise ValueError(f"Unsupported SPARSE_ATTN_MODE={sparse_attn_mode!r}")
         if sparse_attn_window < 1:
             raise ValueError(f"SPARSE_ATTN_WINDOW must be >= 1, got {sparse_attn_window}")
@@ -116,7 +151,7 @@ class CausalSelfAttention(nn.Module):
         self.sparse_attn_block_size = sparse_attn_block_size
         self.q_gain = nn.Parameter(torch.full((num_heads,), qk_gain_init, dtype=torch.float32))
         self.rotary = Rotary(self.head_dim, base=rope_base)
-        self._mask_seq_len_cached = 0
+        self._mask_cache_key: tuple[int, torch.device, int, int] | None = None
         self._mask_cached: Tensor | None = None
 
     def _normalize_qk(self, q: Tensor, k: Tensor) -> tuple[Tensor, Tensor]:
@@ -133,7 +168,7 @@ class CausalSelfAttention(nn.Module):
     def _local_global_mask(self, seqlen: int, device: torch.device) -> Tensor:
         if (
             self._mask_cached is not None
-            and self._mask_seq_len_cached == seqlen
+            and self._mask_cache_key == (seqlen, device, 0, 0)
             and self._mask_cached.device == device
         ):
             return self._mask_cached
@@ -145,13 +180,21 @@ class CausalSelfAttention(nn.Module):
         global_key = key_pos < self.sparse_attn_global_tokens
         mask = (causal & (local | global_key))[None, None, :, :]
         self._mask_cached = mask
-        self._mask_seq_len_cached = seqlen
+        self._mask_cache_key = (seqlen, device, 0, 0)
         return mask
 
-    def _block_local_global_mask(self, seqlen: int, device: torch.device) -> Tensor:
+    def _block_local_global_mask(
+        self,
+        seqlen: int,
+        device: torch.device,
+        pattern_step: int = 0,
+        *,
+        rotating: bool = False,
+    ) -> Tensor:
+        mode_key = 2 if rotating else 1
         if (
             self._mask_cached is not None
-            and self._mask_seq_len_cached == seqlen
+            and self._mask_cache_key == (seqlen, device, pattern_step, mode_key)
             and self._mask_cached.device == device
         ):
             return self._mask_cached
@@ -167,13 +210,50 @@ class CausalSelfAttention(nn.Module):
         )
         causal = key_pos <= query_pos
         local_blocks = key_block >= (query_block - block_window + 1)
+        if rotating:
+            max_stride = max((seqlen + self.sparse_attn_block_size - 1) // self.sparse_attn_block_size, 1)
+            stride = min(2 ** (pattern_step % 6), max_stride)
+            dilated_block = key_block == (query_block - stride)
+            offset_block = key_block == (query_block - stride - block_window)
+            local_blocks = local_blocks | dilated_block | offset_block
         global_key = key_pos < self.sparse_attn_global_tokens
         mask = (causal & (local_blocks | global_key))[None, None, :, :]
         self._mask_cached = mask
-        self._mask_seq_len_cached = seqlen
+        self._mask_cache_key = (seqlen, device, pattern_step, mode_key)
         return mask
 
-    def forward(self, x: Tensor) -> Tensor:
+    def _head_swarm_block_mask(self, seqlen: int, device: torch.device, pattern_step: int) -> Tensor:
+        if (
+            self._mask_cached is not None
+            and self._mask_cache_key == (seqlen, device, pattern_step, 3)
+            and self._mask_cached.device == device
+        ):
+            return self._mask_cached
+        positions = torch.arange(seqlen, device=device)
+        query_pos = positions[:, None]
+        key_pos = positions[None, :]
+        query_block = query_pos // self.sparse_attn_block_size
+        key_block = key_pos // self.sparse_attn_block_size
+        block_window = max(
+            (self.sparse_attn_window + self.sparse_attn_block_size - 1)
+            // self.sparse_attn_block_size,
+            1,
+        )
+        causal = key_pos <= query_pos
+        global_key = key_pos < self.sparse_attn_global_tokens
+        local_blocks = key_block >= (query_block - block_window + 1)
+        head_masks = []
+        max_stride = max((seqlen + self.sparse_attn_block_size - 1) // self.sparse_attn_block_size, 1)
+        for head_index in range(self.num_heads):
+            stride = min(2 ** ((head_index + pattern_step) % 6), max_stride)
+            remote = (key_block == (query_block - stride)) | (key_block == (query_block - stride - block_window))
+            head_masks.append(causal & (local_blocks | global_key | remote))
+        mask = torch.stack(head_masks, dim=0)[None, :, :, :]
+        self._mask_cached = mask
+        self._mask_cache_key = (seqlen, device, pattern_step, 3)
+        return mask
+
+    def forward(self, x: Tensor, pattern_step: int = 0) -> Tensor:
         bsz, seqlen, dim = x.shape
         q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim).transpose(1, 2)
         k = self.c_k(x).reshape(bsz, seqlen, self.num_kv_heads, self.head_dim).transpose(1, 2)
@@ -202,12 +282,30 @@ class CausalSelfAttention(nn.Module):
                 is_causal=False,
                 enable_gqa=(self.num_kv_heads != self.num_heads),
             )
-        else:
+        elif self.sparse_attn_mode == "block_local_global":
             y = F.scaled_dot_product_attention(
                 q,
                 k,
                 v,
                 attn_mask=self._block_local_global_mask(seqlen, x.device),
+                is_causal=False,
+                enable_gqa=(self.num_kv_heads != self.num_heads),
+            )
+        elif self.sparse_attn_mode == "rotating_block_local_global":
+            y = F.scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                attn_mask=self._block_local_global_mask(seqlen, x.device, pattern_step, rotating=True),
+                is_causal=False,
+                enable_gqa=(self.num_kv_heads != self.num_heads),
+            )
+        else:
+            y = F.scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                attn_mask=self._head_swarm_block_mask(seqlen, x.device, pattern_step),
                 is_causal=False,
                 enable_gqa=(self.num_kv_heads != self.num_heads),
             )
@@ -226,6 +324,7 @@ class MLP(nn.Module):
         swiglu_linear_clamp_min: float,
         swiglu_linear_clamp_max: float,
         swiglu_gate_clamp_max: float,
+        block_groups: int = 1,
     ):
         super().__init__()
         hidden = mlp_mult * dim
@@ -242,8 +341,14 @@ class MLP(nn.Module):
         self.swiglu_linear_clamp_min = swiglu_linear_clamp_min
         self.swiglu_linear_clamp_max = swiglu_linear_clamp_max
         self.swiglu_gate_clamp_max = swiglu_gate_clamp_max
-        self.fc = CastedLinear(dim, hidden * (2 if activation_mode == "swiglu" else 1), bias=False)
-        self.proj = CastedLinear(hidden, dim, bias=False)
+        self.block_groups = block_groups
+        fc_out = hidden * (2 if activation_mode == "swiglu" else 1)
+        if block_groups == 1:
+            self.fc = CastedLinear(dim, fc_out, bias=False)
+            self.proj = CastedLinear(hidden, dim, bias=False)
+        else:
+            self.fc = BlockDiagonalLinear(dim, fc_out, block_groups, bias=False)
+            self.proj = BlockDiagonalLinear(hidden, dim, block_groups, bias=False)
         self.proj._zero_init = True
 
     def forward(self, x: Tensor) -> Tensor:
@@ -273,6 +378,7 @@ class MoEMLP(nn.Module):
         swiglu_gate_clamp_max: float,
         num_experts: int,
         top_k: int,
+        block_groups: int,
     ):
         super().__init__()
         if num_experts < 2:
@@ -292,6 +398,7 @@ class MoEMLP(nn.Module):
                     swiglu_linear_clamp_min,
                     swiglu_linear_clamp_max,
                     swiglu_gate_clamp_max,
+                    block_groups,
                 )
                 for _ in range(num_experts)
             ]
@@ -339,6 +446,7 @@ class Block(nn.Module):
         parallel_residual: bool,
         moe_num_experts: int,
         moe_top_k: int,
+        mlp_block_groups: int,
     ):
         super().__init__()
         self.parallel_residual = parallel_residual
@@ -368,6 +476,7 @@ class Block(nn.Module):
                 swiglu_gate_clamp_max,
                 moe_num_experts,
                 moe_top_k,
+                mlp_block_groups,
             )
         else:
             self.mlp = MLP(
@@ -378,15 +487,16 @@ class Block(nn.Module):
                 swiglu_linear_clamp_min,
                 swiglu_linear_clamp_max,
                 swiglu_gate_clamp_max,
+                mlp_block_groups,
             )
         self.attn_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
         self.mlp_scale = nn.Parameter(torch.ones(dim, dtype=torch.float32))
         self.resid_mix = nn.Parameter(torch.stack((torch.ones(dim), torch.zeros(dim))).float())
 
-    def forward(self, x: Tensor, x0: Tensor) -> Tensor:
+    def forward(self, x: Tensor, x0: Tensor, pattern_step: int = 0) -> Tensor:
         mix = self.resid_mix.to(dtype=x.dtype)
         x = mix[0][None, None, :] * x + mix[1][None, None, :] * x0
-        attn_out = self.attn(self.attn_norm(x))
+        attn_out = self.attn(self.attn_norm(x), pattern_step=pattern_step)
         if self.parallel_residual:
             mlp_out = self.mlp(self.mlp_norm(x))
             x = x + self.attn_scale.to(dtype=x.dtype)[None, None, :] * attn_out
@@ -440,13 +550,24 @@ class GPT(nn.Module):
         decoder_layer_order: str,
         moe_num_experts: int,
         moe_top_k: int,
+        mlp_block_groups: int,
+        mtp_num_tokens: int,
+        mtp_loss_weight: float,
     ):
         super().__init__()
         if logit_softcap <= 0.0:
             raise ValueError(f"logit_softcap must be positive, got {logit_softcap}")
+        if mlp_block_groups < 1:
+            raise ValueError(f"MLP_BLOCK_GROUPS must be positive, got {mlp_block_groups}")
+        if mtp_num_tokens < 1:
+            raise ValueError(f"MTP_NUM_TOKENS must be positive, got {mtp_num_tokens}")
+        if mtp_loss_weight < 0.0:
+            raise ValueError(f"MTP_LOSS_WEIGHT must be non-negative, got {mtp_loss_weight}")
         self.tie_embeddings = tie_embeddings
         self.tied_embed_init_std = tied_embed_init_std
         self.logit_softcap = logit_softcap
+        self.mtp_num_tokens = mtp_num_tokens
+        self.mtp_loss_weight = mtp_loss_weight
         self.tok_emb = nn.Embedding(vocab_size, model_dim)
         default_num_encoder_layers = num_layers // 2
         default_encoder_layer_order = list(range(default_num_encoder_layers))
@@ -488,6 +609,7 @@ class GPT(nn.Module):
                     parallel_residual,
                     moe_num_experts,
                     moe_top_k,
+                    mlp_block_groups,
                 )
                 for i in range(num_layers)
             ]
@@ -502,31 +624,47 @@ class GPT(nn.Module):
         if self.tie_embeddings:
             nn.init.normal_(self.tok_emb.weight, mean=0.0, std=self.tied_embed_init_std)
         for module in self.modules():
-            if isinstance(module, nn.Linear) and getattr(module, "_zero_init", False):
+            if isinstance(module, (nn.Linear, BlockDiagonalLinear)) and getattr(module, "_zero_init", False):
                 nn.init.zeros_(module.weight)
 
-    def forward(self, input_ids: Tensor, target_ids: Tensor) -> Tensor:
-        x = self.tok_emb(input_ids)
-        x = F.rms_norm(x, (x.size(-1),))
-        x0 = x
-        skips: list[Tensor] = []
-
-        # First half stores skips; second half reuses them in reverse order.
-        for block_index in self.encoder_layer_order:
-            x = self.blocks[block_index](x, x0)
-            skips.append(x)
-        for i, block_index in enumerate(self.decoder_layer_order):
-            if i < self.num_skip_weights and skips:
-                x = x + self.skip_weights[i].to(dtype=x.dtype)[None, None, :] * skips.pop()
-            x = self.blocks[block_index](x, x0)
-
-        x = self.final_norm(x).reshape(-1, x.size(-1))
-        targets = target_ids.reshape(-1)
+    def _project_logits(self, x: Tensor) -> Tensor:
         if self.tie_embeddings:
             logits_proj = F.linear(x, self.tok_emb.weight)
         else:
             if self.lm_head is None:
                 raise RuntimeError("lm_head is required when tie_embeddings=False")
             logits_proj = self.lm_head(x)
-        logits = self.logit_softcap * torch.tanh(logits_proj / self.logit_softcap)
-        return F.cross_entropy(logits.float(), targets, reduction="mean")
+        return self.logit_softcap * torch.tanh(logits_proj / self.logit_softcap)
+
+    def forward(self, input_ids: Tensor, target_ids: Tensor) -> Tensor:
+        x = self.tok_emb(input_ids)
+        x = F.rms_norm(x, (x.size(-1),))
+        x0 = x
+        skips: list[Tensor] = []
+        pattern_step = 0
+
+        # First half stores skips; second half reuses them in reverse order.
+        for block_index in self.encoder_layer_order:
+            x = self.blocks[block_index](x, x0, pattern_step=pattern_step)
+            pattern_step += 1
+            skips.append(x)
+        for i, block_index in enumerate(self.decoder_layer_order):
+            if i < self.num_skip_weights and skips:
+                x = x + self.skip_weights[i].to(dtype=x.dtype)[None, None, :] * skips.pop()
+            x = self.blocks[block_index](x, x0, pattern_step=pattern_step)
+            pattern_step += 1
+
+        hidden = self.final_norm(x)
+        logits = self._project_logits(hidden.reshape(-1, hidden.size(-1)))
+        loss = F.cross_entropy(logits.float(), target_ids.reshape(-1), reduction="mean")
+        if self.training and self.mtp_num_tokens > 1 and self.mtp_loss_weight > 0.0:
+            aux_losses = []
+            for offset in range(1, self.mtp_num_tokens):
+                if hidden.size(1) <= offset:
+                    continue
+                aux_logits = self._project_logits(hidden[:, :-offset, :].reshape(-1, hidden.size(-1)))
+                aux_targets = target_ids[:, offset:].reshape(-1)
+                aux_losses.append(F.cross_entropy(aux_logits.float(), aux_targets, reduction="mean"))
+            if aux_losses:
+                loss = loss + self.mtp_loss_weight * torch.stack(aux_losses).mean()
+        return loss

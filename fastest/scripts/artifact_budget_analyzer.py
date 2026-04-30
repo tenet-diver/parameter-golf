@@ -157,6 +157,7 @@ def estimate_artifact_budget(
     num_heads = _int_attr(config, "num_heads", 8)
     num_kv_heads = _int_attr(config, "num_kv_heads", 4)
     mlp_mult = _int_attr(config, "mlp_mult", 2)
+    mlp_block_groups = _int_attr(config, "mlp_block_groups", 1)
     tie_embeddings = _bool_attr(config, "tie_embeddings", True)
     quantization_bits = _int_attr(config, "quantization_bits", 8)
     quantization_scheme = str(
@@ -173,10 +174,16 @@ def estimate_artifact_budget(
         raise ValueError("model_dim must be divisible by num_heads")
     if num_heads % num_kv_heads != 0:
         raise ValueError("num_heads must be divisible by num_kv_heads")
+    if mlp_block_groups <= 0:
+        raise ValueError("mlp_block_groups must be positive")
+    if model_dim % mlp_block_groups != 0:
+        raise ValueError("model_dim must be divisible by mlp_block_groups")
 
     head_dim = model_dim // num_heads
     kv_dim = num_kv_heads * head_dim
     hidden_dim = model_dim * mlp_mult
+    if hidden_dim % mlp_block_groups != 0:
+        raise ValueError("hidden_dim must be divisible by mlp_block_groups")
 
     embedding_params = vocab_size * model_dim
     embedding_raw = _matrix_quantized_payload_bytes(
@@ -209,7 +216,7 @@ def estimate_artifact_budget(
         + _matrix_quantization_overhead_bytes(kv_dim)
         + _matrix_quantization_overhead_bytes(model_dim)
     )
-    mlp_params_per_layer = model_dim * hidden_dim * 2
+    mlp_params_per_layer = (model_dim * hidden_dim * 2) // mlp_block_groups
     mlp_raw_per_layer = _matrix_quantized_payload_bytes(
         hidden_dim,
         model_dim,
@@ -219,6 +226,7 @@ def estimate_artifact_budget(
         hidden_dim,
         quantization_bits,
     )
+    mlp_raw_per_layer //= mlp_block_groups
     quantization_overhead_raw += num_layers * (
         _matrix_quantization_overhead_bytes(hidden_dim)
         + _matrix_quantization_overhead_bytes(model_dim)

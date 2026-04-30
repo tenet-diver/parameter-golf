@@ -1,4 +1,5 @@
 import json
+import py_compile
 import tempfile
 import unittest
 from argparse import Namespace
@@ -110,12 +111,18 @@ class PackageCompetitionSubmissionTest(unittest.TestCase):
             submission = json.loads((output_dir / "submission.json").read_text(encoding="utf-8"))
             self.assertEqual(submission["candidate_id"], "candidate_b")
             self.assertEqual(submission["val_bpb"], 1.1)
+            self.assertIn("blurb", submission)
+            self.assertIn("bytes_code", submission)
+            self.assertGreater(submission["bytes_code"], 0)
             self.assertTrue((output_dir / "README.md").exists())
             self.assertTrue((output_dir / "train_gpt.py").exists())
-            self.assertTrue((output_dir / "candidates" / "registry.py").exists())
-            self.assertTrue((output_dir / "fastest" / "scripts" / "artifact_budget_analyzer.py").exists())
+            self.assertFalse((output_dir / "candidates").exists())
+            self.assertFalse((output_dir / "fastest").exists())
+            self.assertTrue((output_dir / "train.log").exists())
             self.assertTrue((output_dir / "train_seed314.log").exists())
-            self.assertIn("--nproc_per_node", (output_dir / "run_submission.sh").read_text(encoding="utf-8"))
+            self.assertFalse((output_dir / "run_submission.sh").exists())
+            self.assertIn("--nproc_per_node", (output_dir / "README.md").read_text(encoding="utf-8"))
+            py_compile.compile(str(output_dir / "train_gpt.py"), doraise=True)
 
 
 if __name__ == "__main__":

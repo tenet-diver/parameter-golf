@@ -37,6 +37,9 @@ def create_model(args):
         decoder_layer_order=args.decoder_layer_order,
         moe_num_experts=1,
         moe_top_k=1,
+        mlp_block_groups=args.mlp_block_groups,
+        mtp_num_tokens=args.mtp_num_tokens,
+        mtp_loss_weight=args.mtp_loss_weight,
     )
 
 

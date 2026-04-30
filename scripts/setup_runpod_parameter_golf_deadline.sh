@@ -92,6 +92,11 @@ clone_or_update() {
     fi
     return
   fi
+  if [ -e "$dest" ]; then
+    local backup="${dest}.preexisting.$(date -u +%Y%m%dT%H%M%SZ)"
+    echo "$dest already exists but is not a git checkout; moving it to $backup"
+    mv "$dest" "$backup"
+  fi
 
   log "Cloning $label into $dest"
   if git ls-remote --exit-code --heads "$repo_url" "$ref" >/dev/null 2>&1; then
@@ -139,7 +144,7 @@ clone_or_update "$PARAMETER_GOLF_REPO_URL" "$PARAMETER_GOLF_REF" "$PARAMETER_GOL
 cd "$PARAMETER_GOLF_DIR"
 
 log "Installing Parameter Golf Python dependencies"
-python3 -m pip install --upgrade pip setuptools wheel
+python3 -m pip install --upgrade --ignore-installed pip setuptools wheel
 python3 -m pip install -r requirements.txt
 if bool_true "$INSTALL_TORCH"; then
   python3 -m pip install --upgrade --force-reinstall \
@@ -189,6 +194,9 @@ EOF
   exit 1
 fi
 chmod +x "$PARAMETER_GOLF_DIR/scripts/run_deadline_experiment_batch.sh"
+if [ -f "$PARAMETER_GOLF_DIR/scripts/run_frontier_experiment_batch.sh" ]; then
+  chmod +x "$PARAMETER_GOLF_DIR/scripts/run_frontier_experiment_batch.sh"
+fi
 
 log "GPU experiment queue inventory"
 python3 fastest/scripts/run_gpu_experiment_queue.py --print-inventory --dry-run --max-experiments 12 || true
@@ -211,10 +219,15 @@ Recommended first pass on a 1xH100 pod:
   source /workspace/pg_deadline_env.sh
   tmux new -s pg1 'PG_GPUS=1 PG_MAX_EXPERIMENTS=12 scripts/run_deadline_experiment_batch.sh'
 
+Recommended separate frontier pass on a second 1xH100 pod:
+  cd "$PARAMETER_GOLF_DIR"
+  source /workspace/pg_deadline_env.sh
+  tmux new -s pgfrontier 'PG_GPUS=1 PG_MAX_EXPERIMENTS=8 scripts/run_frontier_experiment_batch.sh'
+
 After selecting winners, run the 8xH100 phase with explicit IDs:
   cd "$PARAMETER_GOLF_DIR"
   source /workspace/pg_deadline_env.sh
-  tmux new -s pg8 'PG_GPUS=8 PG_ONLY=id1 PG_SEEDS=42,314,1234 PG_PACKAGE_SUBMISSION=1 PG_SUBMISSION_AUTHOR="Your Name" PG_SUBMISSION_GITHUB_ID="your-handle" scripts/run_deadline_experiment_batch.sh'
+  tmux new -s pg8 'PG_GPUS=8 PG_ONLY=id1 PG_SEEDS=42,314,1234 PG_PACKAGE_SUBMISSION=1 PG_SUBMISSION_AUTHOR="Your Name" PG_SUBMISSION_GITHUB_ID="your-handle" scripts/run_frontier_experiment_batch.sh'
 
 Useful overrides:
   PG_TRAIN_SHARDS=1       # faster setup smoke only

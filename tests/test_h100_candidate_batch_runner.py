@@ -14,9 +14,11 @@ from fastest.scripts.run_h100_candidate_batch import (
     load_candidates,
     parse_args,
     parse_metrics,
+    parse_training_series,
     prune_raw_checkpoint,
     rank_rows,
     summarize_groups,
+    svg_training_curve,
     write_csv,
     write_hypothesis_graph,
 )
@@ -46,6 +48,29 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
         self.assertEqual(metrics["int8SubmissionBytes"], 15500000)
         self.assertEqual(metrics["artifactBudgetState"], "within-budget")
         self.assertEqual(metrics["peakAllocatedMiB"], 9876)
+
+    def test_parses_training_series_and_writes_curve_svg(self) -> None:
+        series = parse_training_series(
+            "\n".join(
+                [
+                    "step:1/20000 train_loss:3.2100 train_time:100ms step_avg:100.00ms",
+                    "step:2/20000 val_loss:2.1000 val_bpb:1.0500 train_time:220ms step_avg:110.00ms",
+                    "step:3/20000 train_loss:2.9000 train_time:330ms step_avg:110.00ms",
+                ]
+            )
+        )
+
+        self.assertEqual([point["kind"] for point in series], ["train", "val", "train"])
+        self.assertEqual(series[1]["valBpb"], 1.05)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            chart_path = Path(tmp) / "training_curve.svg"
+            svg_training_curve(chart_path, series, "candidate training curve")
+            svg = chart_path.read_text(encoding="utf-8")
+
+        self.assertIn("<svg", svg)
+        self.assertIn("candidate training curve", svg)
+        self.assertIn("validation bpb point", svg)
 
     def test_smoke_default_command_uses_plain_python(self) -> None:
         command = command_for_candidate({"id": "baseline"}, smoke=True)
