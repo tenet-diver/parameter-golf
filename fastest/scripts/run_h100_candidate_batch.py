@@ -1390,6 +1390,7 @@ def run_batch(args: argparse.Namespace) -> int:
                         "TRAIN_SEQ_LEN",
                         "VAL_BATCH_SIZE",
                         "VAL_TOKEN_LIMIT",
+                        "SEED",
                     }
                 )
                 if key in env

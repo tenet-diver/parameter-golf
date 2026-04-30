@@ -31,6 +31,12 @@ PG_DRY_RUN="${PG_DRY_RUN:-0}"
 PG_PRINT_INVENTORY="${PG_PRINT_INVENTORY:-0}"
 PG_ALLOW_FEWER_GPUS="${PG_ALLOW_FEWER_GPUS:-0}"
 PG_LOG_ROOT="${PG_LOG_ROOT:-records/deadline_logs}"
+PG_PACKAGE_SUBMISSION="${PG_PACKAGE_SUBMISSION:-0}"
+PG_SUBMISSION_AUTHOR="${PG_SUBMISSION_AUTHOR:-}"
+PG_SUBMISSION_GITHUB_ID="${PG_SUBMISSION_GITHUB_ID:-}"
+PG_SUBMISSION_NAME="${PG_SUBMISSION_NAME:-}"
+PG_SUBMISSION_CANDIDATE_ID="${PG_SUBMISSION_CANDIDATE_ID:-}"
+PG_SUBMISSION_RECORDS_ROOT="${PG_SUBMISSION_RECORDS_ROOT:-records/track_10min_16mb}"
 
 if ! [[ "$PG_GPUS" =~ ^[0-9]+$ ]] || [ "$PG_GPUS" -lt 1 ]; then
   echo "PG_GPUS must be a positive integer, got '$PG_GPUS'" >&2
@@ -208,6 +214,20 @@ if [ -n "$latest_output" ]; then
   [ -f "$latest_output/summary.md" ] && echo "Summary:     $latest_output/summary.md"
   [ -f "$latest_output/model_factory_evidence.json" ] && echo "Evidence:    $latest_output/model_factory_evidence.json"
   [ -d "$latest_output/runs" ] && echo "Run logs:    $latest_output/runs"
+
+  if bool_true "$PG_PACKAGE_SUBMISSION"; then
+    package_args=(
+      --batch-dir "$latest_output"
+      --records-root "$PG_SUBMISSION_RECORDS_ROOT"
+      --nproc-per-node "$PG_GPUS"
+    )
+    [ -n "$PG_SUBMISSION_AUTHOR" ] && package_args+=(--author "$PG_SUBMISSION_AUTHOR")
+    [ -n "$PG_SUBMISSION_GITHUB_ID" ] && package_args+=(--github-id "$PG_SUBMISSION_GITHUB_ID")
+    [ -n "$PG_SUBMISSION_NAME" ] && package_args+=(--name "$PG_SUBMISSION_NAME")
+    [ -n "$PG_SUBMISSION_CANDIDATE_ID" ] && package_args+=(--candidate-id "$PG_SUBMISSION_CANDIDATE_ID")
+    echo
+    python3 fastest/scripts/package_competition_submission.py "${package_args[@]}"
+  fi
 fi
 
 exit "$rc"
