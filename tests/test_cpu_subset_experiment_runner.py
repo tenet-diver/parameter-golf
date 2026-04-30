@@ -111,6 +111,24 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
         self.assertEqual(env["ATTN_NORM_MODE"], "qk_rmsnorm")
         self.assertEqual(env["ATTN_NORM_EPS"], "1e-5")
 
+    def test_accepts_sparse_attention_env_overrides(self) -> None:
+        env = build_cpu_subset_env(
+            {
+                "candidateId": "sparse-attn",
+                "seed": 19,
+                "env": {
+                    "SPARSE_ATTN_MODE": "local_global",
+                    "SPARSE_ATTN_WINDOW": "32",
+                    "SPARSE_ATTN_GLOBAL_TOKENS": "2",
+                },
+            },
+            "cpu_subset_sparse_attn",
+        )
+
+        self.assertEqual(env["SPARSE_ATTN_MODE"], "local_global")
+        self.assertEqual(env["SPARSE_ATTN_WINDOW"], "32")
+        self.assertEqual(env["SPARSE_ATTN_GLOBAL_TOKENS"], "2")
+
     def test_rejects_non_finite_swiglu_clamp_config_before_subprocess(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)

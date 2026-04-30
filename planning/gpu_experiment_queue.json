@@ -223,10 +223,49 @@
       }
     },
     {
+      "id": "gpuq_local_global_sparse_attention_rehearsal",
+      "lane": "h100-1x-sparse-attention",
+      "status": "ready",
+      "priority": 7,
+      "expectedSignal": "Measure whether local-window attention plus global source tokens reduces attention dependencies enough to improve throughput or memory headroom without bpb regression.",
+      "argumentation": {
+        "acceptedArgumentIds": ["arg-pg-sparse-attn-local-global-v1", "arg-pg-dependency-reduction-v1"],
+        "evidenceIds": ["FAST-889", "candidates/autoregressive/architecture.py:SPARSE_ATTN_MODE", "tests/test_sparse_attention.py", "arxiv-2004.05150-longformer", "arxiv-2007.14062-bigbird", "arxiv-1904.10509-sparse-transformer"],
+        "expectedDecision": "Keep local/global sparse attention only if it beats dense-control throughput or preserves bpb while increasing memory headroom.",
+        "stopConditions": ["Retire on causal leakage", "Retire if dense fallback drifts", "Retire if bpb worsens without a measured throughput or memory-headroom gain"]
+      },
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run after CPU sparse-mask preflight",
+        "promotionGate": "equal bpb within noise with better tokens/sec or memory headroom versus dense-control batch tune",
+        "eightH100PromotionGate": "only after one-H100 sparse attention run has positive throughput or headroom signal and no artifact-budget regression",
+        "retirementCriteria": "Retire if window/global routing loses bpb without measurable throughput gain."
+      },
+      "candidate": {
+        "id": "gpuq_local_global_sparse_attention_rehearsal",
+        "family": "sparse_attention_autoregressive",
+        "hypothesis": "local_global_sparse_attention_reduces_dependencies_with_global_summary_tokens",
+        "hypothesisTags": ["sparse_attention", "local_window", "global_tokens", "throughput"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Ready implementation of local/global sparse attention with dense fallback and CPU mask preflight coverage.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "SPARSE_ATTN_MODE": "local_global",
+          "SPARSE_ATTN_WINDOW": "256",
+          "SPARSE_ATTN_GLOBAL_TOKENS": "4",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "0",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
       "id": "gpuq_dense_control_batch_tune_max_tokens",
       "lane": "h100-1x-throughput-baseline",
       "status": "ready",
-      "priority": 7,
+      "priority": 8,
       "expectedSignal": "Measure dense-control max usable microbatch tokens on the current H100 image before comparing MoE, sparse, or Local-SGD throughput claims.",
       "argumentation": {
         "acceptedArgumentIds": ["throughput-baseline-needed-before-parallelism-claims"],
@@ -261,7 +300,7 @@
       "id": "gpuq_flash_attention_kernel_policy_rehearsal",
       "lane": "h100-1x-throughput-baseline",
       "status": "queued",
-      "priority": 8,
+      "priority": 9,
       "expectedSignal": "Confirm the current flash-only SDPA backend policy remains faster than alternative attention backend settings after batch auto-tune.",
       "argumentation": {
         "acceptedArgumentIds": ["flash-attention-like-kernels-already-enabled"],

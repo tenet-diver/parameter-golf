@@ -94,6 +94,26 @@ def candidate_specs() -> list[CandidateSpec]:
             },
         ),
         CandidateSpec(
+            id="local_global_sparse_attention",
+            family="sparse_attention_autoregressive",
+            hypothesis="local_global_sparse_attention_reduces_dependencies_with_global_summary_tokens",
+            hypothesis_tags=("sparse_attention", "local_window", "global_tokens", "throughput"),
+            quantization="int8-zlib-artifact",
+            description=(
+                "Local-window causal attention with a small number of global source tokens, "
+                "kept behind an explicit dense fallback."
+            ),
+            implementation=IMPLEMENTATION,
+            env={
+                "CANDIDATE_IMPL": IMPLEMENTATION,
+                "SPARSE_ATTN_MODE": "local_global",
+                "SPARSE_ATTN_WINDOW": "256",
+                "SPARSE_ATTN_GLOBAL_TOKENS": "4",
+                "PARALLEL_RESIDUAL": "1",
+                "QK_GAIN_INIT": "5.25",
+            },
+        ),
+        CandidateSpec(
             id="wide_shallow",
             family="autoregressive_shape",
             hypothesis="width_beats_depth_at_fixed_artifact_budget",

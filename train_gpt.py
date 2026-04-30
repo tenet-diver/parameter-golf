@@ -63,6 +63,9 @@ class Hyperparameters:
     qk_gain_init = float(os.environ.get("QK_GAIN_INIT", 1.5))
     attn_norm_mode = os.environ.get("ATTN_NORM_MODE", "baseline").strip().lower()
     attn_norm_eps = float(os.environ.get("ATTN_NORM_EPS", 1e-6))
+    sparse_attn_mode = os.environ.get("SPARSE_ATTN_MODE", "dense").strip().lower()
+    sparse_attn_window = int(os.environ.get("SPARSE_ATTN_WINDOW", "256"))
+    sparse_attn_global_tokens = int(os.environ.get("SPARSE_ATTN_GLOBAL_TOKENS", "4"))
     activation_mode = os.environ.get("ACTIVATION_MODE", "relu2").strip().lower()
     swiglu_clamp_enabled = bool(int(os.environ.get("SWIGLU_CLAMP_ENABLED", "0")))
     swiglu_linear_clamp_min = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MIN", -10.0))
@@ -714,6 +717,10 @@ def main() -> None:
     log0(
         f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads} "
         f"attn_norm_mode:{args.attn_norm_mode} attn_norm_eps:{args.attn_norm_eps}"
+    )
+    log0(
+        f"sparse_attention:mode:{args.sparse_attn_mode} window:{args.sparse_attn_window} "
+        f"global_tokens:{args.sparse_attn_global_tokens}"
     )
     log0(f"candidate_impl:{candidate_name_from_env()}")
     log0(

@@ -73,6 +73,9 @@ class CausalSelfAttention(nn.Module):
         qk_gain_init: float,
         attn_norm_mode: str,
         attn_norm_eps: float,
+        sparse_attn_mode: str,
+        sparse_attn_window: int,
+        sparse_attn_global_tokens: int,
     ):
         super().__init__()
         if dim % num_heads != 0:
@@ -94,10 +97,23 @@ class CausalSelfAttention(nn.Module):
             raise ValueError(f"Unsupported ATTN_NORM_MODE={attn_norm_mode!r}")
         if attn_norm_eps <= 0.0:
             raise ValueError(f"ATTN_NORM_EPS must be > 0, got {attn_norm_eps}")
+        if sparse_attn_mode not in {"dense", "local_global"}:
+            raise ValueError(f"Unsupported SPARSE_ATTN_MODE={sparse_attn_mode!r}")
+        if sparse_attn_window < 1:
+            raise ValueError(f"SPARSE_ATTN_WINDOW must be >= 1, got {sparse_attn_window}")
+        if sparse_attn_global_tokens < 0:
+            raise ValueError(
+                f"SPARSE_ATTN_GLOBAL_TOKENS must be >= 0, got {sparse_attn_global_tokens}"
+            )
         self.attn_norm_mode = attn_norm_mode
         self.attn_norm_eps = attn_norm_eps
+        self.sparse_attn_mode = sparse_attn_mode
+        self.sparse_attn_window = sparse_attn_window
+        self.sparse_attn_global_tokens = sparse_attn_global_tokens
         self.q_gain = nn.Parameter(torch.full((num_heads,), qk_gain_init, dtype=torch.float32))
         self.rotary = Rotary(self.head_dim, base=rope_base)
+        self._mask_seq_len_cached = 0
+        self._mask_cached: Tensor | None = None
 
     def _normalize_qk(self, q: Tensor, k: Tensor) -> tuple[Tensor, Tensor]:
         if self.attn_norm_mode == "qk_rmsnorm":
@@ -110,6 +126,24 @@ class CausalSelfAttention(nn.Module):
             return q, k
         return q, k
 
+    def _local_global_mask(self, seqlen: int, device: torch.device) -> Tensor:
+        if (
+            self._mask_cached is not None
+            and self._mask_seq_len_cached == seqlen
+            and self._mask_cached.device == device
+        ):
+            return self._mask_cached
+        positions = torch.arange(seqlen, device=device)
+        query_pos = positions[:, None]
+        key_pos = positions[None, :]
+        causal = key_pos <= query_pos
+        local = key_pos >= (query_pos - self.sparse_attn_window + 1)
+        global_key = key_pos < self.sparse_attn_global_tokens
+        mask = (causal & (local | global_key))[None, None, :, :]
+        self._mask_cached = mask
+        self._mask_seq_len_cached = seqlen
+        return mask
+
     def forward(self, x: Tensor) -> Tensor:
         bsz, seqlen, dim = x.shape
         q = self.c_q(x).reshape(bsz, seqlen, self.num_heads, self.head_dim).transpose(1, 2)
@@ -121,14 +155,24 @@ class CausalSelfAttention(nn.Module):
         q, k = self._normalize_qk(q, k)
         if self.attn_norm_mode == "baseline":
             q = q * self.q_gain.to(dtype=q.dtype)[None, :, None, None]
-        y = F.scaled_dot_product_attention(
-            q,
-            k,
-            v,
-            attn_mask=None,
-            is_causal=True,
-            enable_gqa=(self.num_kv_heads != self.num_heads),
-        )
+        if self.sparse_attn_mode == "dense":
+            y = F.scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                attn_mask=None,
+                is_causal=True,
+                enable_gqa=(self.num_kv_heads != self.num_heads),
+            )
+        else:
+            y = F.scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                attn_mask=self._local_global_mask(seqlen, x.device),
+                is_causal=False,
+                enable_gqa=(self.num_kv_heads != self.num_heads),
+            )
         y = y.transpose(1, 2).contiguous().reshape(bsz, seqlen, dim)
         return self.proj(y)
 
@@ -245,6 +289,9 @@ class Block(nn.Module):
         qk_gain_init: float,
         attn_norm_mode: str,
         attn_norm_eps: float,
+        sparse_attn_mode: str,
+        sparse_attn_window: int,
+        sparse_attn_global_tokens: int,
         activation_mode: str,
         swiglu_clamp_enabled: bool,
         swiglu_linear_clamp_min: float,
@@ -259,7 +306,16 @@ class Block(nn.Module):
         self.attn_norm = RMSNorm()
         self.mlp_norm = RMSNorm()
         self.attn = CausalSelfAttention(
-            dim, num_heads, num_kv_heads, rope_base, qk_gain_init, attn_norm_mode, attn_norm_eps
+            dim,
+            num_heads,
+            num_kv_heads,
+            rope_base,
+            qk_gain_init,
+            attn_norm_mode,
+            attn_norm_eps,
+            sparse_attn_mode,
+            sparse_attn_window,
+            sparse_attn_global_tokens,
         )
         if moe_num_experts > 1:
             self.mlp = MoEMLP(
@@ -330,6 +386,9 @@ class GPT(nn.Module):
         qk_gain_init: float,
         attn_norm_mode: str,
         attn_norm_eps: float,
+        sparse_attn_mode: str,
+        sparse_attn_window: int,
+        sparse_attn_global_tokens: int,
         activation_mode: str,
         swiglu_clamp_enabled: bool,
         swiglu_linear_clamp_min: float,
@@ -376,6 +435,9 @@ class GPT(nn.Module):
                     qk_gain_init,
                     attn_norm_mode,
                     attn_norm_eps,
+                    sparse_attn_mode,
+                    sparse_attn_window,
+                    sparse_attn_global_tokens,
                     activation_mode,
                     swiglu_clamp_enabled,
                     swiglu_linear_clamp_min,
