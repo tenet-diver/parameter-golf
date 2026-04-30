@@ -117,17 +117,19 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
                 "candidateId": "sparse-attn",
                 "seed": 19,
                 "env": {
-                    "SPARSE_ATTN_MODE": "local_global",
+                    "SPARSE_ATTN_MODE": "block_local_global",
                     "SPARSE_ATTN_WINDOW": "32",
                     "SPARSE_ATTN_GLOBAL_TOKENS": "2",
+                    "SPARSE_ATTN_BLOCK_SIZE": "8",
                 },
             },
             "cpu_subset_sparse_attn",
         )
 
-        self.assertEqual(env["SPARSE_ATTN_MODE"], "local_global")
+        self.assertEqual(env["SPARSE_ATTN_MODE"], "block_local_global")
         self.assertEqual(env["SPARSE_ATTN_WINDOW"], "32")
         self.assertEqual(env["SPARSE_ATTN_GLOBAL_TOKENS"], "2")
+        self.assertEqual(env["SPARSE_ATTN_BLOCK_SIZE"], "8")
 
     def test_accepts_local_sgd_env_overrides(self) -> None:
         env = build_cpu_subset_env(

@@ -66,6 +66,7 @@ class Hyperparameters:
     sparse_attn_mode = os.environ.get("SPARSE_ATTN_MODE", "dense").strip().lower()
     sparse_attn_window = int(os.environ.get("SPARSE_ATTN_WINDOW", "256"))
     sparse_attn_global_tokens = int(os.environ.get("SPARSE_ATTN_GLOBAL_TOKENS", "4"))
+    sparse_attn_block_size = int(os.environ.get("SPARSE_ATTN_BLOCK_SIZE", "64"))
     activation_mode = os.environ.get("ACTIVATION_MODE", "relu2").strip().lower()
     swiglu_clamp_enabled = bool(int(os.environ.get("SWIGLU_CLAMP_ENABLED", "0")))
     swiglu_linear_clamp_min = float(os.environ.get("SWIGLU_LINEAR_CLAMP_MIN", -10.0))
@@ -776,7 +777,7 @@ def main() -> None:
     )
     log0(
         f"sparse_attention:mode:{args.sparse_attn_mode} window:{args.sparse_attn_window} "
-        f"global_tokens:{args.sparse_attn_global_tokens}"
+        f"global_tokens:{args.sparse_attn_global_tokens} block_size:{args.sparse_attn_block_size}"
     )
     log0(f"candidate_impl:{candidate_name_from_env()}")
     log0(

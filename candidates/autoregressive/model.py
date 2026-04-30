@@ -26,6 +26,7 @@ def create_model(args):
         sparse_attn_mode=args.sparse_attn_mode,
         sparse_attn_window=args.sparse_attn_window,
         sparse_attn_global_tokens=args.sparse_attn_global_tokens,
+        sparse_attn_block_size=args.sparse_attn_block_size,
         activation_mode=args.activation_mode,
         swiglu_clamp_enabled=args.swiglu_clamp_enabled,
         swiglu_linear_clamp_min=args.swiglu_linear_clamp_min,

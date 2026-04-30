@@ -367,6 +367,46 @@
           "TRAIN_LOG_EVERY": "100"
         }
       }
+    },
+    {
+      "id": "gpuq_block_sparse_attention_rehearsal",
+      "lane": "h100-1x-block-sparse-attention",
+      "status": "ready",
+      "priority": 11,
+      "expectedSignal": "Measure whether block-aligned local/global attention preserves causal quality while preparing a drop-in path for block-sparse FlashAttention-style kernels.",
+      "argumentation": {
+        "acceptedArgumentIds": ["arg-pg-block-sparse-attn-v1", "arg-pg-dependency-reduction-v1"],
+        "evidenceIds": ["FAST-890", "candidates/autoregressive/architecture.py:SPARSE_ATTN_BLOCK_SIZE", "tests/test_sparse_attention.py", "arxiv-1904.10509-sparse-transformer", "blast-block-sparse-transformers"],
+        "expectedDecision": "Keep block sparse attention only if block-aligned sparsity preserves bpb versus local/global sparse attention while enabling a kernel-friendly sparsity structure.",
+        "stopConditions": ["Retire on causal leakage", "Retire if block alignment worsens bpb without kernel or memory-headroom upside", "Promote only if GPU run records comparable bpb with a credible block-kernel follow-up"]
+      },
+      "gpuPlan": {
+        "firstPass": "1xH100 auto-tuned batch run after CPU block-mask preflight",
+        "promotionGate": "matches local/global sparse bpb within noise and shows memory or kernel-readiness signal",
+        "eightH100PromotionGate": "only after block sparse one-H100 evidence justifies implementing or enabling a real block-sparse kernel",
+        "retirementCriteria": "Retire if block windows are strictly worse than token-local sparse attention under the same artifact budget."
+      },
+      "candidate": {
+        "id": "gpuq_block_sparse_attention_rehearsal",
+        "family": "block_sparse_attention_autoregressive",
+        "hypothesis": "block_aligned_local_global_attention_preserves_sparse_signal_while_matching_kernel_friendly_layout",
+        "hypothesisTags": ["block_sparse_attention", "flash_attention", "local_window", "global_tokens", "throughput"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Ready implementation of block-aligned causal local/global sparse attention with CPU mask preflight coverage.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "SPARSE_ATTN_MODE": "block_local_global",
+          "SPARSE_ATTN_WINDOW": "256",
+          "SPARSE_ATTN_GLOBAL_TOKENS": "4",
+          "SPARSE_ATTN_BLOCK_SIZE": "64",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "0",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
     }
   ]
 }
