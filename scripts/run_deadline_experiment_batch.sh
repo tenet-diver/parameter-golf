@@ -13,6 +13,7 @@ PG_GPUS="${PG_GPUS:-1}"
 PG_STATUS="${PG_STATUS:-ready,queued}"
 PG_ONLY="${PG_ONLY:-}"
 PG_LANES="${PG_LANES:-${PG_LANE:-}}"
+PG_SEEDS="${PG_SEEDS:-}"
 PG_OUTPUT_ROOT="${PG_OUTPUT_ROOT:-records/h100_candidate_batch}"
 PG_EXPORT_ROOT="${PG_EXPORT_ROOT:-records/gpu_experiment_queue_exports}"
 PG_TIMEOUT_SECONDS="${PG_TIMEOUT_SECONDS:-900}"
@@ -37,6 +38,9 @@ PG_SUBMISSION_GITHUB_ID="${PG_SUBMISSION_GITHUB_ID:-}"
 PG_SUBMISSION_NAME="${PG_SUBMISSION_NAME:-}"
 PG_SUBMISSION_CANDIDATE_ID="${PG_SUBMISSION_CANDIDATE_ID:-}"
 PG_SUBMISSION_RECORDS_ROOT="${PG_SUBMISSION_RECORDS_ROOT:-records/track_10min_16mb}"
+PG_SUBMISSION_OUTPUT_DIR="${PG_SUBMISSION_OUTPUT_DIR:-}"
+PG_SUBMISSION_SLUG="${PG_SUBMISSION_SLUG:-}"
+PG_SUBMISSION_FORCE="${PG_SUBMISSION_FORCE:-0}"
 
 if ! [[ "$PG_GPUS" =~ ^[0-9]+$ ]] || [ "$PG_GPUS" -lt 1 ]; then
   echo "PG_GPUS must be a positive integer, got '$PG_GPUS'" >&2
@@ -146,6 +150,11 @@ fi
 if [ -n "$PG_MAX_EXPERIMENTS" ]; then
   queue_args+=(--max-experiments "$PG_MAX_EXPERIMENTS")
 fi
+if [ -n "$PG_SEEDS" ]; then
+  while IFS= read -r seed; do
+    queue_args+=(--seed "$seed")
+  done < <(split_csv "$PG_SEEDS")
+fi
 
 if bool_true "$PG_PRINT_INVENTORY"; then
   queue_args+=(--print-inventory)
@@ -191,6 +200,7 @@ echo "gpus:     $PG_GPUS"
 echo "statuses: $PG_STATUS"
 echo "only:     ${PG_ONLY:-<none>}"
 echo "lanes:    ${PG_LANES:-${inferred_lanes[*]:-<none>}}"
+echo "seeds:    ${PG_SEEDS:-<default>}"
 echo "max:      ${PG_MAX_EXPERIMENTS:-<none>}"
 echo "log:      $run_log"
 printf 'command: python3 fastest/scripts/run_gpu_experiment_queue.py'
@@ -225,6 +235,9 @@ if [ -n "$latest_output" ]; then
     [ -n "$PG_SUBMISSION_GITHUB_ID" ] && package_args+=(--github-id "$PG_SUBMISSION_GITHUB_ID")
     [ -n "$PG_SUBMISSION_NAME" ] && package_args+=(--name "$PG_SUBMISSION_NAME")
     [ -n "$PG_SUBMISSION_CANDIDATE_ID" ] && package_args+=(--candidate-id "$PG_SUBMISSION_CANDIDATE_ID")
+    [ -n "$PG_SUBMISSION_OUTPUT_DIR" ] && package_args+=(--output-dir "$PG_SUBMISSION_OUTPUT_DIR")
+    [ -n "$PG_SUBMISSION_SLUG" ] && package_args+=(--slug "$PG_SUBMISSION_SLUG")
+    bool_true "$PG_SUBMISSION_FORCE" && package_args+=(--force)
     echo
     python3 fastest/scripts/package_competition_submission.py "${package_args[@]}"
   fi

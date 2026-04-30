@@ -119,6 +119,7 @@ class GpuExperimentQueueTest(unittest.TestCase):
                 keep_raw_checkpoints=False,
                 auto_tune_batch=True,
                 tune_only=False,
+                seed=["42", "314"],
                 batch_tune_target_memory_fraction=0.9,
                 batch_tune_max_tokens=2_097_152,
                 batch_tune_timeout_seconds=180,
@@ -131,10 +132,12 @@ class GpuExperimentQueueTest(unittest.TestCase):
             command = build_batch_command(args, candidate_file)
 
         self.assertEqual(manifest["selectedExperimentIds"], ["candidate-a"])
+        self.assertEqual(manifest["seeds"], ["42", "314"])
         self.assertEqual(manifest["shard"], {"index": 0, "count": 2})
         self.assertEqual(manifest["batchCommand"], command)
         self.assertEqual(command[0:2], ["python", "fastest/scripts/run_h100_candidate_batch.py"])
         self.assertIn("--nproc-per-node", command)
+        self.assertIn("--seed", command)
 
     def test_export_all_shards_materializes_one_runbook_per_gpu_pod(self) -> None:
         queue = {

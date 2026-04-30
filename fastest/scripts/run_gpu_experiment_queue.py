@@ -155,6 +155,8 @@ def build_batch_command(args: argparse.Namespace, candidate_file: Path) -> list[
         command.append("--auto-tune-batch")
     if args.tune_only:
         command.append("--tune-only")
+    for seed in getattr(args, "seed", []) or []:
+        command.extend(["--seed", str(seed)])
     command.extend(["--batch-tune-target-memory-fraction", str(args.batch_tune_target_memory_fraction)])
     command.extend(["--batch-tune-max-tokens", str(args.batch_tune_max_tokens)])
     command.extend(["--batch-tune-timeout-seconds", str(args.batch_tune_timeout_seconds)])
@@ -180,6 +182,7 @@ def write_export_runbook(
                 "queuePath": str(args.queue),
                 "candidateFile": str(candidate_file),
                 "selectedExperimentIds": [str(experiment["id"]) for experiment in experiments],
+                "seeds": [str(seed) for seed in getattr(args, "seed", []) or []],
                 "shard": {"index": args.shard_index, "count": args.shard_count},
                 "batchCommand": command,
                 "shellCommand": shell_command,
@@ -326,6 +329,7 @@ def run_queue(args: argparse.Namespace) -> int:
         keep_raw_checkpoints=args.keep_raw_checkpoints,
         auto_tune_batch=args.auto_tune_batch,
         tune_only=args.tune_only,
+        seed=args.seed,
         batch_tune_target_memory_fraction=args.batch_tune_target_memory_fraction,
         batch_tune_max_tokens=args.batch_tune_max_tokens,
         batch_tune_timeout_seconds=args.batch_tune_timeout_seconds,
@@ -358,6 +362,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--keep-raw-checkpoints", action="store_true")
     parser.add_argument("--auto-tune-batch", action="store_true")
     parser.add_argument("--tune-only", action="store_true")
+    parser.add_argument("--seed", action="append", default=[], help="Seed to run for every selected candidate; can be repeated.")
     parser.add_argument("--print-inventory", action="store_true")
     parser.add_argument("--batch-tune-target-memory-fraction", type=float, default=0.90)
     parser.add_argument("--batch-tune-max-tokens", type=int, default=2_097_152)

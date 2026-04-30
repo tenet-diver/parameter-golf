@@ -214,7 +214,7 @@ Recommended first pass on a 1xH100 pod:
 After selecting winners, run the 8xH100 phase with explicit IDs:
   cd "$PARAMETER_GOLF_DIR"
   source /workspace/pg_deadline_env.sh
-  tmux new -s pg8 'PG_GPUS=8 PG_ONLY=id1,id2 PG_PACKAGE_SUBMISSION=1 PG_SUBMISSION_AUTHOR="Your Name" PG_SUBMISSION_GITHUB_ID="your-handle" scripts/run_deadline_experiment_batch.sh'
+  tmux new -s pg8 'PG_GPUS=8 PG_ONLY=id1 PG_SEEDS=42,314,1234 PG_PACKAGE_SUBMISSION=1 PG_SUBMISSION_AUTHOR="Your Name" PG_SUBMISSION_GITHUB_ID="your-handle" scripts/run_deadline_experiment_batch.sh'
 
 Useful overrides:
   PG_TRAIN_SHARDS=1       # faster setup smoke only
@@ -222,4 +222,6 @@ Useful overrides:
   PG_LANES=h100-1x-clean-ablation,h100-1x-parameter-tuning
   PG_STATUS=ready         # skip queued experiments
   PG_PACKAGE_SUBMISSION=1 # create a PR-ready records/track_10min_16mb folder from the best completed run
+  PG_SEEDS=42,314,1234    # run selected 8xH100 candidate once per seed for PR evidence
+  PG_SUBMISSION_FORCE=1   # replace the generated record folder if you rerun the exact same slug
 EOF

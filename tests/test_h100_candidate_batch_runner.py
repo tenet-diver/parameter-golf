@@ -1,3 +1,5 @@
+import json
+import sys
 import tempfile
 import unittest
 import warnings
@@ -172,6 +174,10 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
                 "--tune-only",
                 "--nproc-per-node",
                 "8",
+                "--seed",
+                "42",
+                "--seed",
+                "314",
             ]
         )
 
@@ -181,6 +187,7 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
         self.assertEqual(args.batch_tune_timeout_seconds, 45)
         self.assertTrue(args.tune_only)
         self.assertEqual(args.nproc_per_node, 8)
+        self.assertEqual(args.seed, ["42", "314"])
 
     def test_prunes_raw_checkpoint_by_default_but_keeps_quantized_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -313,6 +320,53 @@ class H100CandidateBatchRunnerTest(unittest.TestCase):
             )
 
             self.assertEqual(batch_runner.run_batch(args), 1)
+
+    def test_run_batch_repeats_selected_candidate_for_requested_seeds(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            candidate_file = root / "candidates.json"
+            candidate_file.write_text(
+                json.dumps(
+                    [
+                        {
+                            "id": "seeded",
+                            "family": "test",
+                            "command": [
+                                sys.executable,
+                                "-c",
+                                (
+                                    "print('Total submission size int8+zlib: 123 bytes'); "
+                                    "print('final_int8_zlib_roundtrip_exact val_loss:1.0 val_bpb:1.0')"
+                                ),
+                            ],
+                        }
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            args = parse_args(
+                [
+                    "--candidate-file",
+                    str(candidate_file),
+                    "--output-root",
+                    str(root / "out"),
+                    "--timeout-seconds",
+                    "30",
+                    "--seed",
+                    "42",
+                    "--seed",
+                    "314",
+                ]
+            )
+
+            self.assertEqual(batch_runner.run_batch(args), 0)
+
+            batch_dirs = list((root / "out").iterdir())
+            self.assertEqual(len(batch_dirs), 1)
+            results = json.loads((batch_dirs[0] / "results.json").read_text(encoding="utf-8"))
+            self.assertEqual([row["id"] for row in results], ["seeded", "seeded"])
+            self.assertEqual(sorted(row["env"]["SEED"] for row in results), ["314", "42"])
 
 
 if __name__ == "__main__":

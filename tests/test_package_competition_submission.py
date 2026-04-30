@@ -4,10 +4,41 @@ import unittest
 from argparse import Namespace
 from pathlib import Path
 
-from fastest.scripts.package_competition_submission import package_submission
+from fastest.scripts.package_competition_submission import package_submission, select_rows
 
 
 class PackageCompetitionSubmissionTest(unittest.TestCase):
+    def test_selects_all_completed_rows_for_best_candidate_mean(self) -> None:
+        selected = select_rows(
+            [
+                {
+                    "id": "candidate_a",
+                    "status": "completed",
+                    "finalValBpb": 1.08,
+                    "env": {"SEED": "314"},
+                    "runDir": "/runs/a314",
+                },
+                {
+                    "id": "candidate_b",
+                    "status": "completed",
+                    "finalValBpb": 1.11,
+                    "env": {"SEED": "42"},
+                    "runDir": "/runs/b42",
+                },
+                {
+                    "id": "candidate_a",
+                    "status": "completed",
+                    "finalValBpb": 1.10,
+                    "env": {"SEED": "42"},
+                    "runDir": "/runs/a42",
+                },
+            ],
+            candidate_id=None,
+        )
+
+        self.assertEqual([row["id"] for row in selected], ["candidate_a", "candidate_a"])
+        self.assertEqual([row["env"]["SEED"] for row in selected], ["314", "42"])
+
     def test_packages_best_completed_batch_row_as_record_folder(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

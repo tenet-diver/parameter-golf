@@ -1289,6 +1289,14 @@ def run_batch(args: argparse.Namespace) -> int:
             print(f"{candidate['id']}: {candidate.get('family', '')} - {candidate.get('description', '')}")
         return 0
 
+    seeds = [str(seed).strip() for seed in getattr(args, "seed", []) if str(seed).strip()]
+    run_plan: list[tuple[dict[str, Any], str | None]] = []
+    for candidate in candidates:
+        if seeds:
+            run_plan.extend((candidate, seed) for seed in seeds)
+        else:
+            run_plan.append((candidate, None))
+
     started_at = utc_slug()
     output_dir = (args.output_root / started_at).resolve()
     output_dir.mkdir(parents=True, exist_ok=False)
@@ -1302,12 +1310,15 @@ def run_batch(args: argparse.Namespace) -> int:
     )
 
     rows: list[dict[str, Any]] = []
-    for index, candidate in enumerate(candidates, start=1):
+    for index, (candidate, seed) in enumerate(run_plan, start=1):
         candidate_id = safe_id(candidate["id"])
-        run_id = f"h100_batch_{started_at}_{index:02d}_{candidate_id}"
-        run_dir = output_dir / "runs" / f"{index:02d}_{candidate_id}"
+        seed_suffix = f"_seed{safe_id(seed)}" if seed is not None else ""
+        run_id = f"h100_batch_{started_at}_{index:02d}_{candidate_id}{seed_suffix}"
+        run_dir = output_dir / "runs" / f"{index:02d}_{candidate_id}{seed_suffix}"
         run_dir.mkdir(parents=True)
         env = build_env(candidate, run_id)
+        if seed is not None:
+            env["SEED"] = seed
         if args.smoke:
             apply_smoke_overrides(env)
         batch_tune: dict[str, Any] = {"enabled": False}
@@ -1320,7 +1331,7 @@ def run_batch(args: argparse.Namespace) -> int:
                     "selectedTrainBatchTokens": int_env(env, "TRAIN_BATCH_TOKENS", 524_288),
                 }
             else:
-                print(f"[{index}/{len(candidates)}] tuning batch for {candidate_id}")
+                print(f"[{index}/{len(run_plan)}] tuning batch for {candidate_id}{seed_suffix}")
                 batch_tune = auto_tune_batch_size(
                     candidate=candidate,
                     run_dir=run_dir,
@@ -1345,7 +1356,7 @@ def run_batch(args: argparse.Namespace) -> int:
             artifact_state = prune_raw_checkpoint(run_dir, args.keep_raw_checkpoints)
             status = "tuned" if batch_tune.get("status") == "completed" else str(batch_tune.get("status") or "tune_skipped")
         else:
-            print(f"[{index}/{len(candidates)}] running {candidate_id}")
+            print(f"[{index}/{len(run_plan)}] running {candidate_id}{seed_suffix}")
             completed = stream_subprocess(
                 command=command,
                 cwd=run_dir,
@@ -1412,11 +1423,11 @@ def run_batch(args: argparse.Namespace) -> int:
         write_analysis_outputs(output_dir, ranked, hardware, started_at)
         write_summary(output_dir / "summary.md", ranked, started_at, output_dir)
         if status == "completed":
-            print(f"[{index}/{len(candidates)}] {candidate_id} val_bpb={metrics['finalValBpb']:.8f}")
+            print(f"[{index}/{len(run_plan)}] {candidate_id}{seed_suffix} val_bpb={metrics['finalValBpb']:.8f}")
         elif args.tune_only:
-            print(f"[{index}/{len(candidates)}] {candidate_id} tune_status={status} train_batch_tokens={selected_train_batch_tokens}")
+            print(f"[{index}/{len(run_plan)}] {candidate_id}{seed_suffix} tune_status={status} train_batch_tokens={selected_train_batch_tokens}")
         else:
-            print(f"[{index}/{len(candidates)}] {candidate_id} status={status} return_code={completed['returnCode']}")
+            print(f"[{index}/{len(run_plan)}] {candidate_id}{seed_suffix} status={status} return_code={completed['returnCode']}")
         if args.stop_on_failure and status != "completed":
             break
 
@@ -1438,6 +1449,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--timeout-seconds", type=int, default=900, help="Host timeout per candidate, including final eval.")
     parser.add_argument("--nproc-per-node", type=int, default=1, help="torchrun processes per node for default candidate commands.")
     parser.add_argument("--only", action="append", default=[], help="Candidate id to run; can be repeated.")
+    parser.add_argument("--seed", action="append", default=[], help="Seed to run for every selected candidate; can be repeated.")
     parser.add_argument("--max-candidates", type=int, default=None, help="Run only the first N selected candidates.")
     parser.add_argument("--stop-on-failure", action="store_true", help="Stop the batch after the first failed candidate.")
     parser.add_argument("--dry-run", action="store_true", help="Print selected candidates without running them.")

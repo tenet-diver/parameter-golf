@@ -85,6 +85,10 @@ def completed_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     ]
 
 
+def sort_seed_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(rows, key=lambda row: (seed_label(row), str(row.get("runDir") or "")))
+
+
 def select_rows(rows: list[dict[str, Any]], candidate_id: str | None) -> list[dict[str, Any]]:
     scored = completed_rows(rows)
     if not scored:
@@ -93,8 +97,22 @@ def select_rows(rows: list[dict[str, Any]], candidate_id: str | None) -> list[di
         selected = [row for row in scored if str(row.get("id")) == candidate_id]
         if not selected:
             raise ValueError(f"no completed scored runs found for candidate {candidate_id!r}")
-        return sorted(selected, key=lambda row: (seed_label(row), str(row.get("runDir") or "")))
-    return [min(scored, key=lambda row: (float(row["finalValBpb"]), str(row.get("id") or "")))]
+        return sort_seed_rows(selected)
+
+    by_candidate: dict[str, list[dict[str, Any]]] = {}
+    for row in scored:
+        by_candidate.setdefault(str(row.get("id") or ""), []).append(row)
+    best_candidate_id, best_rows = min(
+        by_candidate.items(),
+        key=lambda item: (
+            statistics.mean(float(row["finalValBpb"]) for row in item[1]),
+            min(float(row["finalValBpb"]) for row in item[1]),
+            item[0],
+        ),
+    )
+    if not best_candidate_id:
+        raise ValueError("completed scored runs are missing candidate ids")
+    return sort_seed_rows(best_rows)
 
 
 def seed_label(row: dict[str, Any]) -> str:
