@@ -129,6 +129,22 @@ class CpuSubsetExperimentRunnerTest(unittest.TestCase):
         self.assertEqual(env["SPARSE_ATTN_WINDOW"], "32")
         self.assertEqual(env["SPARSE_ATTN_GLOBAL_TOKENS"], "2")
 
+    def test_accepts_local_sgd_env_overrides(self) -> None:
+        env = build_cpu_subset_env(
+            {
+                "candidateId": "local-sgd",
+                "seed": 23,
+                "env": {
+                    "LOCAL_SGD_SYNC_STEPS": "4",
+                    "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": "1",
+                },
+            },
+            "cpu_subset_local_sgd",
+        )
+
+        self.assertEqual(env["LOCAL_SGD_SYNC_STEPS"], "4")
+        self.assertEqual(env["LOCAL_SGD_AVERAGE_OPTIMIZER_STATES"], "1")
+
     def test_rejects_non_finite_swiglu_clamp_config_before_subprocess(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)

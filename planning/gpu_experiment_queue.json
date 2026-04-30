@@ -329,6 +329,44 @@
           "TRAIN_BATCH_TOKENS": "1048576"
         }
       }
+    },
+    {
+      "id": "gpuq_local_sgd_sync4_throughput_rehearsal",
+      "lane": "h100-8x-local-sgd",
+      "status": "ready",
+      "priority": 10,
+      "expectedSignal": "Measure whether periodic parameter averaging every four optimizer steps reduces multi-GPU synchronization dependency enough to improve tokens/sec without early bpb collapse.",
+      "argumentation": {
+        "acceptedArgumentIds": ["arg-pg-local-sgd-dependency-reduction-v1", "arg-pg-throughput-critical-path-v1"],
+        "evidenceIds": ["FAST-893", "train_gpt.py:LOCAL_SGD_SYNC_STEPS", "arxiv-2401.09135-async-local-sgd", "neurips-2019-qsparse-local-sgd"],
+        "expectedDecision": "Keep Local-SGD only if 8xH100 tokens/sec improves over dense-control DDP while early validation remains within the retirement threshold.",
+        "stopConditions": ["Retire if bpb diverges before the first validation checkpoint", "Retire if tokens/sec does not improve over dense DDP", "Promote only after one-H100 control and eight-H100 sync-period rehearsal both produce structured evidence"]
+      },
+      "gpuPlan": {
+        "firstPass": "8xH100 throughput rehearsal after dense-control batch tune establishes the pod baseline",
+        "promotionGate": "tokens/sec improves by at least 10% with no early validation collapse versus dense DDP control",
+        "eightH100PromotionGate": "this packet is the eight-H100 synchronization test; only submission candidates with positive throughput and stable bpb continue",
+        "retirementCriteria": "Retire sync4 if local model drift erases throughput gains or requires optimizer-state averaging that removes the speedup."
+      },
+      "candidate": {
+        "id": "gpuq_local_sgd_sync4_throughput_rehearsal",
+        "family": "distributed_training_throughput",
+        "hypothesis": "local_sgd_periodic_averaging_reduces_ddp_sync_dependency_for_parameter_golf_training",
+        "hypothesisTags": ["local_sgd", "diloco", "distributed_training", "throughput", "dependency_reduction"],
+        "quantization": "int8-zlib-artifact",
+        "description": "Periodic parameter averaging ablation that disables per-step DDP gradient sync and Muon all-reduce, then averages model weights every four optimizer steps.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "LOCAL_SGD_SYNC_STEPS": "4",
+          "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": "0",
+          "QK_GAIN_INIT": "5.25",
+          "PARALLEL_RESIDUAL": "1",
+          "TTT_ENABLED": "0",
+          "TRAIN_BATCH_TOKENS": "1048576",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
     }
   ]
 }

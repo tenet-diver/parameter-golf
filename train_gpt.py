@@ -104,6 +104,8 @@ class Hyperparameters:
     beta2 = float(os.environ.get("BETA2", 0.95))
     adam_eps = float(os.environ.get("ADAM_EPS", 1e-8))
     grad_clip_norm = float(os.environ.get("GRAD_CLIP_NORM", 0.0))
+    local_sgd_sync_steps = int(os.environ.get("LOCAL_SGD_SYNC_STEPS", "1"))
+    local_sgd_average_optimizer_states = bool(int(os.environ.get("LOCAL_SGD_AVERAGE_OPTIMIZER_STATES", "0")))
 
 # -----------------------------
 # MUON OPTIMIZER 
@@ -129,10 +131,24 @@ def zeropower_via_newtonschulz5(G: Tensor, steps: int = 10, eps: float = 1e-7) -
 
 
 class Muon(torch.optim.Optimizer):
-    def __init__(self, params, lr: float, momentum: float, backend_steps: int, nesterov: bool = True):
+    def __init__(
+        self,
+        params,
+        lr: float,
+        momentum: float,
+        backend_steps: int,
+        nesterov: bool = True,
+        distributed_reduce: bool = True,
+    ):
         super().__init__(
             params,
-            dict(lr=lr, momentum=momentum, backend_steps=backend_steps, nesterov=nesterov),
+            dict(
+                lr=lr,
+                momentum=momentum,
+                backend_steps=backend_steps,
+                nesterov=nesterov,
+                distributed_reduce=distributed_reduce,
+            ),
         )
 
     @torch.no_grad()
@@ -142,10 +158,6 @@ class Muon(torch.optim.Optimizer):
             with torch.enable_grad():
                 loss = closure()
 
-        distributed = dist.is_available() and dist.is_initialized()
-        world_size = dist.get_world_size() if distributed else 1
-        rank = dist.get_rank() if distributed else 0
-
         for group in self.param_groups:
             params = group["params"]
             if not params:
@@ -154,13 +166,17 @@ class Muon(torch.optim.Optimizer):
             momentum = group["momentum"]
             backend_steps = group["backend_steps"]
             nesterov = group["nesterov"]
+            distributed_reduce = group["distributed_reduce"]
+            distributed = dist.is_available() and dist.is_initialized()
+            shard_world_size = dist.get_world_size() if distributed and distributed_reduce else 1
+            shard_rank = dist.get_rank() if distributed and distributed_reduce else 0
 
             total_params = sum(int(p.numel()) for p in params)
             updates_flat = torch.zeros(total_params, device=params[0].device, dtype=torch.bfloat16)
 
             curr = 0
             for i, p in enumerate(params):
-                if i % world_size == rank and p.grad is not None:
+                if i % shard_world_size == shard_rank and p.grad is not None:
                     g = p.grad
                     state = self.state[p]
                     if "momentum_buffer" not in state:
@@ -175,7 +191,7 @@ class Muon(torch.optim.Optimizer):
                     updates_flat[curr : curr + p.numel()] = g.reshape(-1)
                 curr += p.numel()
 
-            if distributed:
+            if distributed and distributed_reduce:
                 dist.all_reduce(updates_flat, op=dist.ReduceOp.SUM)
 
             curr = 0
@@ -526,6 +542,39 @@ class DistributedTokenLoader:
         y = local[1:].reshape(-1, seq_len)
         return x.to(self.device, non_blocking=True), y.to(self.device, non_blocking=True)
 
+
+def resolve_local_sgd_sync_steps(value: int) -> int:
+    if value < 1:
+        raise ValueError(f"LOCAL_SGD_SYNC_STEPS must be >= 1, got {value}")
+    return value
+
+
+def should_average_local_sgd(step: int, sync_steps: int) -> bool:
+    return sync_steps > 1 and step > 0 and step % sync_steps == 0
+
+
+@torch.no_grad()
+def average_model_parameters(module: nn.Module) -> None:
+    if not (dist.is_available() and dist.is_initialized()):
+        return
+    world_size = dist.get_world_size()
+    for param in module.parameters():
+        dist.all_reduce(param.data, op=dist.ReduceOp.SUM)
+        param.data.div_(world_size)
+
+
+@torch.no_grad()
+def average_optimizer_tensor_states(optimizers: list[torch.optim.Optimizer]) -> None:
+    if not (dist.is_available() and dist.is_initialized()):
+        return
+    world_size = dist.get_world_size()
+    for optimizer in optimizers:
+        for state in optimizer.state.values():
+            for value in state.values():
+                if torch.is_tensor(value) and value.is_floating_point():
+                    dist.all_reduce(value, op=dist.ReduceOp.SUM)
+                    value.div_(world_size)
+
 # -----------------------------
 # CANDIDATE MODEL INTERFACE
 # -----------------------------
@@ -570,6 +619,8 @@ def main() -> None:
     if distributed:
         dist.init_process_group(backend="nccl", device_id=device)
         dist.barrier()
+    local_sgd_sync_steps = resolve_local_sgd_sync_steps(args.local_sgd_sync_steps)
+    local_sgd_enabled = distributed and local_sgd_sync_steps > 1
     master_process = rank == 0
     autocast_enabled = use_cuda
     autocast_dtype = torch.bfloat16
@@ -691,6 +742,7 @@ def main() -> None:
         lr=args.matrix_lr,
         momentum=args.muon_momentum,
         backend_steps=args.muon_backend_steps,
+        distributed_reduce=not local_sgd_enabled,
     )
     for group in optimizer_muon.param_groups:
         group["base_lr"] = args.matrix_lr
@@ -713,6 +765,10 @@ def main() -> None:
     n_params = sum(p.numel() for p in base_model.parameters())
     log0(f"model_params:{n_params}")
     log0(f"world_size:{world_size} grad_accum_steps:{grad_accum_steps}")
+    log0(
+        f"local_sgd:enabled:{int(local_sgd_enabled)} sync_steps:{local_sgd_sync_steps} "
+        f"average_optimizer_states:{int(args.local_sgd_average_optimizer_states)}"
+    )
     log0("sdp_backends:cudnn=False flash=True mem_efficient=False math=False")
     log0(
         f"attention_mode:gqa num_heads:{args.num_heads} num_kv_heads:{args.num_kv_heads} "
@@ -784,7 +840,9 @@ def main() -> None:
         train_loss = torch.zeros((), device=device)
         for micro_step in range(grad_accum_steps):
             if distributed:
-                model.require_backward_grad_sync = micro_step == grad_accum_steps - 1
+                model.require_backward_grad_sync = (
+                    not local_sgd_enabled and micro_step == grad_accum_steps - 1
+                )
             x, y = train_loader.next_batch(args.train_batch_tokens, args.train_seq_len, grad_accum_steps)
             with torch.autocast(device_type=device.type, dtype=autocast_dtype, enabled=autocast_enabled):
                 loss = model(x, y)
@@ -793,6 +851,10 @@ def main() -> None:
         train_loss /= grad_accum_steps
         for opt in optimizers:
             opt.step()
+        if local_sgd_enabled:
+            average_model_parameters(base_model)
+            if args.local_sgd_average_optimizer_states:
+                average_optimizer_tensor_states(optimizers)
         zero_grad_all()
         synchronize_device()
         tune_ms = 1000.0 * (time.perf_counter() - t_tune)
@@ -822,13 +884,19 @@ def main() -> None:
             zero_grad_all()
             for micro_step in range(grad_accum_steps):
                 if distributed:
-                    model.require_backward_grad_sync = micro_step == grad_accum_steps - 1
+                    model.require_backward_grad_sync = (
+                        not local_sgd_enabled and micro_step == grad_accum_steps - 1
+                    )
                 x, y = train_loader.next_batch(args.train_batch_tokens, args.train_seq_len, grad_accum_steps)
                 with torch.autocast(device_type=device.type, dtype=autocast_dtype, enabled=autocast_enabled):
                     warmup_loss = model(x, y)
                 (warmup_loss * grad_scale).backward()
             for opt in optimizers:
                 opt.step()
+            if local_sgd_enabled:
+                average_model_parameters(base_model)
+                if args.local_sgd_average_optimizer_states:
+                    average_optimizer_tensor_states(optimizers)
             zero_grad_all()
             if args.warmup_steps <= 20 or (warmup_step + 1) % 10 == 0 or warmup_step + 1 == args.warmup_steps:
                 log0(f"warmup_step:{warmup_step + 1}/{args.warmup_steps}")
@@ -893,7 +961,9 @@ def main() -> None:
         train_loss = torch.zeros((), device=device)
         for micro_step in range(grad_accum_steps):
             if distributed:
-                model.require_backward_grad_sync = micro_step == grad_accum_steps - 1
+                model.require_backward_grad_sync = (
+                    not local_sgd_enabled and micro_step == grad_accum_steps - 1
+                )
             x, y = train_loader.next_batch(args.train_batch_tokens, args.train_seq_len, grad_accum_steps)
             with torch.autocast(device_type=device.type, dtype=autocast_dtype, enabled=autocast_enabled):
                 loss = model(x, y)
@@ -914,6 +984,11 @@ def main() -> None:
             torch.nn.utils.clip_grad_norm_(base_model.parameters(), args.grad_clip_norm)
         for opt in optimizers:
             opt.step()
+        if local_sgd_enabled and should_average_local_sgd(step + 1, local_sgd_sync_steps):
+            average_model_parameters(base_model)
+            if args.local_sgd_average_optimizer_states:
+                average_optimizer_tensor_states(optimizers)
+            log0(f"local_sgd_average step:{step + 1} sync_steps:{local_sgd_sync_steps}")
         zero_grad_all()
 
         step += 1
