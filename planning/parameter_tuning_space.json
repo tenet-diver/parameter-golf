@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "kind": "parameter-golf-parameter-tuning-space",
+  "generatedAt": "2026-04-30T00:00:00Z",
+  "defaultStrategy": "one-factor",
+  "maxVariantsPerSpace": 8,
+  "priorityStart": 20,
+  "legalityPolicy": {
+    "allowed": "Pre-run tuning may select static hyperparameters and runtime knobs before the leaderboard-timed run.",
+    "forbidden": "Do not carry pretrained weights, validation-derived state, paid-prefix data, or external downloads into the timed artifact."
+  },
+  "searchSpaces": [
+    {
+      "id": "dense-control-optimizer",
+      "lane": "h100-1x-parameter-tuning",
+      "status": "ready",
+      "priorityStart": 20,
+      "implementation": "autoregressive_gpt",
+      "family": "dense_control_optimizer_tuning",
+      "hypothesis": "dense_control_static_hyperparameter_tuning_improves_bpb_or_tokens_per_second",
+      "hypothesisTags": ["parameter_tuning", "qk_gain", "matrix_lr", "batch_tokens", "throughput"],
+      "acceptedArgumentIds": ["arg-pg-static-hyperparameter-search-legal-v1", "arg-pg-throughput-critical-path-v1"],
+      "evidenceIds": ["train_gpt.py:QK_GAIN_INIT", "train_gpt.py:MATRIX_LR", "train_gpt.py:TRAIN_BATCH_TOKENS", "planning/gpu_experiment_queue.json"],
+      "expectedSignal": "Find dense-control static parameter values worth promoting to one-H100 rehearsal without carrying learned state across runs.",
+      "expectedDecision": "Promote a value only if it improves early bpb, tokens/sec, or artifact headroom versus dense control.",
+      "firstPass": "1xH100 bounded parameter tuning rehearsal",
+      "promotionGate": "early bpb improves or tokens/sec improves without artifact-budget regression",
+      "eightH100PromotionGate": "only after one-H100 tuning evidence beats dense control and remains reproducible across seeds",
+      "retirementCriteria": "Retire dominated values after one bounded rehearsal or earlier if artifact budget is exceeded.",
+      "stopConditions": [
+        "Stop on artifact budget over 16MB",
+        "Stop if early validation is worse and tokens/sec does not improve",
+        "Stop if runtime exceeds the bounded rehearsal cap"
+      ],
+      "baseEnv": {
+        "CANDIDATE_IMPL": "autoregressive_gpt",
+        "QK_GAIN_INIT": "5.25",
+        "MATRIX_LR": "0.04",
+        "PARALLEL_RESIDUAL": "1",
+        "TTT_ENABLED": "0",
+        "TRAIN_BATCH_TOKENS": "1048576",
+        "TRAIN_LOG_EVERY": "100",
+        "VAL_LOSS_EVERY": "500",
+        "ITERATIONS": "2000"
+      },
+      "axes": {
+        "QK_GAIN_INIT": ["4.75", "5.25", "5.75"],
+        "MATRIX_LR": ["0.03", "0.04", "0.05"],
+        "TRAIN_BATCH_TOKENS": ["786432", "1048576", "1310720"]
+      }
+    },
+    {
+      "id": "block-sparse-attention",
+      "lane": "h100-1x-block-sparse-attention-tuning",
+      "status": "ready",
+      "priorityStart": 40,
+      "implementation": "autoregressive_gpt",
+      "family": "block_sparse_attention_tuning",
+      "hypothesis": "block_sparse_attention_static_shape_tuning_finds_kernel_friendly_sparse_layouts",
+      "hypothesisTags": ["parameter_tuning", "block_sparse_attention", "sparse_window", "block_size"],
+      "acceptedArgumentIds": ["arg-pg-block-sparse-attn-v1", "arg-pg-dependency-reduction-v1"],
+      "evidenceIds": ["FAST-890", "train_gpt.py:SPARSE_ATTN_BLOCK_SIZE", "candidates/autoregressive/architecture.py:block_local_global"],
+      "expectedSignal": "Find sparse window and block-size values that preserve local/global sparse signal while exposing kernel-friendly block structure.",
+      "expectedDecision": "Promote only layouts that keep bpb competitive with token-local sparse attention and improve memory or kernel-readiness signal.",
+      "firstPass": "1xH100 block sparse tuning rehearsal",
+      "promotionGate": "no causal leakage and no bpb regression without throughput or memory-headroom upside",
+      "eightH100PromotionGate": "only after one-H100 block sparse evidence justifies kernel implementation or 8xH100 rehearsal",
+      "retirementCriteria": "Retire block layouts dominated by local/global sparse attention.",
+      "stopConditions": [
+        "Stop on causal mask failure",
+        "Stop if bpb regresses without memory or throughput gain",
+        "Stop if artifact budget is exceeded"
+      ],
+      "baseEnv": {
+        "CANDIDATE_IMPL": "autoregressive_gpt",
+        "SPARSE_ATTN_MODE": "block_local_global",
+        "SPARSE_ATTN_WINDOW": "256",
+        "SPARSE_ATTN_GLOBAL_TOKENS": "4",
+        "SPARSE_ATTN_BLOCK_SIZE": "64",
+        "PARALLEL_RESIDUAL": "1",
+        "QK_GAIN_INIT": "5.25",
+        "TTT_ENABLED": "0",
+        "TRAIN_BATCH_TOKENS": "1048576",
+        "TRAIN_LOG_EVERY": "100",
+        "VAL_LOSS_EVERY": "500",
+        "ITERATIONS": "2000"
+      },
+      "axes": {
+        "SPARSE_ATTN_WINDOW": ["128", "256", "512"],
+        "SPARSE_ATTN_BLOCK_SIZE": ["32", "64", "128"],
+        "SPARSE_ATTN_GLOBAL_TOKENS": ["2", "4", "8"]
+      }
+    },
+    {
+      "id": "local-sgd-sync",
+      "lane": "h100-8x-local-sgd-tuning",
+      "status": "ready",
+      "priorityStart": 60,
+      "implementation": "autoregressive_gpt",
+      "family": "local_sgd_sync_period_tuning",
+      "hypothesis": "local_sgd_sync_period_tuning_reduces_distributed_training_dependency_without_bpb_collapse",
+      "hypothesisTags": ["parameter_tuning", "local_sgd", "diloco", "sync_period", "throughput"],
+      "acceptedArgumentIds": ["arg-pg-local-sgd-dependency-reduction-v1", "arg-pg-throughput-critical-path-v1"],
+      "evidenceIds": ["FAST-893", "train_gpt.py:LOCAL_SGD_SYNC_STEPS", "arxiv-2401.09135-async-local-sgd"],
+      "expectedSignal": "Find a Local-SGD averaging period that improves 8xH100 tokens/sec without unstable early validation.",
+      "expectedDecision": "Promote sync periods only when tokens/sec improves over DDP and early bpb remains stable.",
+      "firstPass": "8xH100 bounded Local-SGD synchronization rehearsal",
+      "promotionGate": "tokens/sec improves by at least 10% without early bpb collapse",
+      "eightH100PromotionGate": "this is already an eight-H100 tuning lane; promote only static sync periods with stable evidence",
+      "retirementCriteria": "Retire sync periods that require optimizer-state averaging to avoid divergence unless speedup remains positive.",
+      "stopConditions": [
+        "Stop if early validation collapses",
+        "Stop if tokens/sec does not improve over DDP",
+        "Stop if optimizer-state averaging removes the speedup"
+      ],
+      "baseEnv": {
+        "CANDIDATE_IMPL": "autoregressive_gpt",
+        "LOCAL_SGD_SYNC_STEPS": "4",
+        "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": "0",
+        "PARALLEL_RESIDUAL": "1",
+        "QK_GAIN_INIT": "5.25",
+        "TTT_ENABLED": "0",
+        "TRAIN_BATCH_TOKENS": "1048576",
+        "TRAIN_LOG_EVERY": "100",
+        "VAL_LOSS_EVERY": "500",
+        "ITERATIONS": "2000"
+      },
+      "axes": {
+        "LOCAL_SGD_SYNC_STEPS": ["1", "2", "4", "8"],
+        "LOCAL_SGD_AVERAGE_OPTIMIZER_STATES": ["0", "1"]
+      }
+    }
+  ]
+}
