@@ -197,6 +197,9 @@ chmod +x "$PARAMETER_GOLF_DIR/scripts/run_deadline_experiment_batch.sh"
 if [ -f "$PARAMETER_GOLF_DIR/scripts/run_frontier_experiment_batch.sh" ]; then
   chmod +x "$PARAMETER_GOLF_DIR/scripts/run_frontier_experiment_batch.sh"
 fi
+if [ -f "$PARAMETER_GOLF_DIR/scripts/run_4x_best_experiment_batch.sh" ]; then
+  chmod +x "$PARAMETER_GOLF_DIR/scripts/run_4x_best_experiment_batch.sh"
+fi
 
 log "GPU experiment queue inventory"
 python3 fastest/scripts/run_gpu_experiment_queue.py --print-inventory --dry-run --max-experiments 12 || true
@@ -223,6 +226,11 @@ Recommended separate frontier pass on a second 1xH100 pod:
   cd "$PARAMETER_GOLF_DIR"
   source /workspace/pg_deadline_env.sh
   tmux new -s pgfrontier 'PG_GPUS=1 PG_MAX_EXPERIMENTS=8 scripts/run_frontier_experiment_batch.sh'
+
+Recommended 4xH100 best-candidate pass if 8xH100 is unavailable:
+  cd "$PARAMETER_GOLF_DIR"
+  source /workspace/pg_deadline_env.sh
+  tmux new -s pg4 'scripts/run_4x_best_experiment_batch.sh'
 
 After selecting winners, run the 8xH100 phase with explicit IDs:
   cd "$PARAMETER_GOLF_DIR"

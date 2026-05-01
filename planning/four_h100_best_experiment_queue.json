@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "kind": "parameter-golf-gpu-experiment-queue",
+  "generatedAt": "2026-05-01T00:00:00Z",
+  "runCommand": "PG_GPUS=4 scripts/run_4x_best_experiment_batch.sh",
+  "gpuPolicy": {
+    "target": "4xNVIDIA H100",
+    "reason": "Run only the strongest completed 1xH100 candidates when 8xH100 capacity is unavailable.",
+    "defaultMaxExperiments": 4,
+    "promotionSource": "records/h100_candidate_batch/20260430T210340Z/leaderboard.csv"
+  },
+  "experiments": [
+    {
+      "id": "best4x_ttt_disabled_qk525",
+      "lane": "h100-4x-best-promotion",
+      "status": "ready",
+      "priority": 1,
+      "expectedSignal": "Best observed 1xH100 result; rerun on 4xH100 to recover more training steps without paying TTT runtime cost.",
+      "source1xResult": {
+        "sourceId": "gpuq_ttt_disabled_runtime_control",
+        "val_bpb": 1.44421409,
+        "val_loss": 2.438495,
+        "selectedTrainBatchTokens": 2097152
+      },
+      "gpuPlan": {
+        "firstPass": "4xH100 non-record promotion run",
+        "promotionGate": "beats the 1xH100 packaged non-record result while staying under 16MB int8+zlib"
+      },
+      "candidate": {
+        "id": "best4x_ttt_disabled_qk525",
+        "family": "autoregressive_eval_policy",
+        "hypothesis": "qk525_ttt_disabled_scales_best_from_1x_to_4x_h100",
+        "hypothesisTags": [
+          "ttt_disabled",
+          "qk_gain",
+          "four_h100",
+          "best_1x_promotion"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "4xH100 promotion of the best 1xH100 TTT-disabled QK5.25 control.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "0",
+          "TRAIN_BATCH_TOKENS": "2097152",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "best4x_parallel_residual_ttt_qk525",
+      "lane": "h100-4x-best-promotion",
+      "status": "ready",
+      "priority": 2,
+      "expectedSignal": "Second-best completed 1xH100 result; tests whether 4x throughput makes legal TTT plus parallel residual worthwhile.",
+      "source1xResult": {
+        "sourceId": "gpuq_parallel_residual_control_toggle",
+        "val_bpb": 1.44921999,
+        "val_loss": 2.44694725,
+        "selectedTrainBatchTokens": 2097152
+      },
+      "gpuPlan": {
+        "firstPass": "4xH100 non-record promotion run",
+        "promotionGate": "beats best4x_ttt_disabled_qk525 or provides a materially better bpb/runtime tradeoff"
+      },
+      "candidate": {
+        "id": "best4x_parallel_residual_ttt_qk525",
+        "family": "autoregressive",
+        "hypothesis": "parallel_residual_legal_ttt_improves_when_4x_h100_restores_step_budget",
+        "hypothesisTags": [
+          "parallel_residual",
+          "legal_ttt",
+          "qk_gain",
+          "four_h100"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "4xH100 promotion of the parallel-residual QK5.25 legal-TTT control.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "PARALLEL_RESIDUAL": "1",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "1",
+          "TTT_LR": "0.005",
+          "TTT_EPOCHS": "3",
+          "TRAIN_BATCH_TOKENS": "2097152",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "best4x_qk525_legal_ttt",
+      "lane": "h100-4x-best-promotion",
+      "status": "ready",
+      "priority": 3,
+      "expectedSignal": "Third-best completed 1xH100 result; isolates QK5.25 with legal TTT from the parallel-residual variant.",
+      "source1xResult": {
+        "sourceId": "gpuq_qk_gain_5p25_clean_sweep",
+        "val_bpb": 1.4512285,
+        "val_loss": 2.45033853,
+        "selectedTrainBatchTokens": 2097152
+      },
+      "gpuPlan": {
+        "firstPass": "4xH100 non-record promotion run",
+        "promotionGate": "validates whether QK5.25 legal-TTT remains competitive without parallel residuals"
+      },
+      "candidate": {
+        "id": "best4x_qk525_legal_ttt",
+        "family": "autoregressive",
+        "hypothesis": "qk525_legal_ttt_is_a_stable_4x_h100_control",
+        "hypothesisTags": [
+          "qk_gain",
+          "legal_ttt",
+          "four_h100",
+          "control"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "4xH100 promotion of the QK5.25 legal-TTT control.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "QK_GAIN_INIT": "5.25",
+          "TTT_ENABLED": "1",
+          "TTT_LR": "0.005",
+          "TTT_EPOCHS": "3",
+          "TRAIN_BATCH_TOKENS": "2097152",
+          "TRAIN_LOG_EVERY": "100"
+        }
+      }
+    },
+    {
+      "id": "best4x_dense_optimizer_base",
+      "lane": "h100-4x-best-promotion",
+      "status": "ready",
+      "priority": 4,
+      "expectedSignal": "Best dense optimizer/tuning result among completed 1xH100 runs; tests the highest-throughput no-TTT parallel-residual baseline on 4xH100.",
+      "source1xResult": {
+        "sourceId": "gpuq_tune_dense-control-optimizer_base",
+        "val_bpb": 1.45259759,
+        "val_loss": 2.45265018,
+        "selectedTrainBatchTokens": 2097152
+      },
+      "gpuPlan": {
+        "firstPass": "4xH100 non-record promotion run",
+        "promotionGate": "beats the plain TTT-disabled control or provides better throughput at similar bpb"
+      },
+      "candidate": {
+        "id": "best4x_dense_optimizer_base",
+        "family": "dense_control_optimizer_tuning",
+        "hypothesis": "dense_optimizer_base_scales_as_a_high_throughput_4x_h100_no_ttt_control",
+        "hypothesisTags": [
+          "parameter_tuning",
+          "parallel_residual",
+          "ttt_disabled",
+          "four_h100"
+        ],
+        "quantization": "int8-zlib-artifact",
+        "description": "4xH100 promotion of the dense optimizer base with QK5.25, matrix LR 0.04, parallel residuals, and TTT disabled.",
+        "implementation": "autoregressive_gpt",
+        "env": {
+          "CANDIDATE_IMPL": "autoregressive_gpt",
+          "QK_GAIN_INIT": "5.25",
+          "MATRIX_LR": "0.04",
+          "PARALLEL_RESIDUAL": "1",
+          "TTT_ENABLED": "0",
+          "TRAIN_BATCH_TOKENS": "2097152",
+          "TRAIN_LOG_EVERY": "100",
+          "VAL_LOSS_EVERY": "500",
+          "ITERATIONS": "2000"
+        }
+      }
+    }
+  ]
+}
